@@ -640,7 +640,13 @@
                 document.getElementById('info-student-nis').innerText = nis;
                 document.getElementById('info-student-class').innerText = pendingStudentSession.classId;
                 document.getElementById('info-quiz-title').innerText = selectedQuiz.title;
-                document.getElementById('info-quiz-questions').innerText = `${(selectedQuiz.questions || []).length} Soal (${selectedQuiz.duration} Menit)`;
+                const totalQ = (selectedQuiz.questions || []).length;
+                const maxQ = (selectedQuiz.max_questions && selectedQuiz.max_questions > 0) ? parseInt(selectedQuiz.max_questions) : 0;
+                if (maxQ > 0 && maxQ < totalQ) {
+                    document.getElementById('info-quiz-questions').innerText = `${maxQ} Soal Acak (dari total ${totalQ} soal di bank) • ${selectedQuiz.duration} Menit`;
+                } else {
+                    document.getElementById('info-quiz-questions').innerText = `${totalQ} Soal (${selectedQuiz.duration} Menit)`;
+                }
 
                 // Format tanggal ujian bahasa Indonesia
                 const now = new Date();
@@ -809,11 +815,28 @@
                 'scaled': 'Pilihan Berskala (Likert)'
             };
 
+            const typeInstructions = {
+                'mc': 'Pilihlah salah satu jawaban yang paling tepat.',
+                'complex': 'Pilihlah satu atau lebih jawaban yang benar (jawaban bisa lebih dari satu).',
+                'matching': 'Pasangkan setiap pernyataan di kolom kiri dengan jawaban yang sesuai di kolom kanan.',
+                'short_answer': 'Ketikkan jawaban singkat Anda dengan tepat pada kotak isian yang tersedia.',
+                'essay': 'Tuliskan jawaban atau uraian lengkap Anda pada kolom yang disediakan.',
+                'cause_effect': 'Analisis hubungan sebab-akibat antara pernyataan dan alasan, lalu tentukan pilihan yang tepat.',
+                'case_analysis': 'Cermati teks studi kasus di bawah ini, lalu pilihlah salah satu jawaban yang paling tepat.',
+                'scaled': 'Pilihlah opsi skala yang paling sesuai dengan penilaian atau kondisi Anda.'
+            };
+
             contentHtml += `
-                <div class="flex items-center justify-between border-b pb-3">
-                    <span class="text-[11px] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 px-3 py-1 rounded-full border border-brand-200">
-                        ${typeLabels[q.type] || 'Soal Pilihan Ganda'}
-                    </span>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 px-3 py-1 rounded-full border border-brand-200">
+                            ${typeLabels[q.type] || 'Soal Pilihan Ganda'}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs text-amber-900 bg-amber-50/90 px-3 py-1 rounded-xl border border-amber-200/90 shadow-2xs">
+                        <i class="fa-solid fa-circle-question text-amber-600 text-xs shrink-0"></i>
+                        <span class="font-medium">${typeInstructions[q.type] || 'Pilihlah jawaban yang paling tepat.'}</span>
+                    </div>
                 </div>
             `;
 

@@ -129,10 +129,14 @@
                     <input type="text" id="quiz-title-input" required placeholder="Contoh: Asesmen Sumatif Akhir Semester Informatika" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Durasi (Menit) <span class="text-rose-500">*</span></label>
                         <input type="number" id="quiz-duration-input" required min="1" max="360" value="60" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1" title="Berapa soal yang diacak & aktif dikerjakan siswa">Soal Dikerjakan</label>
+                        <input type="number" id="quiz-max-questions-input" min="0" placeholder="0 = Semua Soal" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs" title="Jumlah soal yang akan diacak dan dikerjakan siswa (misal 25 dari 50). Kosongkan atau isi 0 jika seluruh soal dikerjakan.">
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Jenis Soal <span class="text-rose-500">*</span></label>
@@ -147,6 +151,7 @@
                         </select>
                     </div>
                 </div>
+                <p class="text-[10px] text-slate-500 -mt-2"><b>Tips Soal Acak:</b> Isi 'Soal Dikerjakan' (misal <b>25</b>) jika hanya ingin 25 soal diacak dari total 50 soal di bank soal. Kosongkan atau isi 0 untuk mengerjakan seluruh soal.</p>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -451,6 +456,13 @@
                     </span>
                 `;
 
+                const isSubsetRandom = (q.max_questions > 0 && q.max_questions < qCount);
+                const randomBadge = isSubsetRandom ? `
+                    <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-lg text-xs font-bold" title="Siswa hanya mengerjakan ${q.max_questions} soal acak dari total ${qCount} soal">
+                        <i class="fa-solid fa-shuffle text-[10px] text-indigo-500"></i> ${q.max_questions} Soal Acak
+                    </span>
+                ` : '';
+
                 return `
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs hover:shadow-sm transition p-4 space-y-3 flex flex-col justify-between">
                         <div class="space-y-2">
@@ -464,8 +476,11 @@
                                 <h3 class="font-bold text-slate-800 text-sm leading-snug line-clamp-2" title="${q.title}">${q.title}</h3>
                                 <p class="text-[11px] text-slate-500 mt-0.5">${q.class ? 'Kelas: ' + q.class : 'Semua Kelas'}</p>
                             </div>
-                            <div class="flex items-center justify-between pt-1">
-                                ${tokenBadge}
+                            <div class="flex items-center justify-between pt-1 flex-wrap gap-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    ${tokenBadge}
+                                    ${randomBadge}
+                                </div>
                                 <span class="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
                                     <i class="fa-solid fa-clock text-slate-400"></i> ${q.duration || 60}m
                                 </span>
@@ -474,7 +489,7 @@
 
                         <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5">
                             <button type="button" onclick="openQuestionManager('${q.id}')" class="flex-1 btn-compact bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 flex items-center justify-center gap-1.5 font-bold transition">
-                                <i class="fa-solid fa-list-check text-xs"></i> <span>Soal (${qCount})</span>
+                                <i class="fa-solid fa-list-check text-xs"></i> <span>Soal (${isSubsetRandom ? `${q.max_questions}/${qCount} Acak` : qCount})</span>
                             </button>
                             <button type="button" onclick="openQuizModal('${q.id}')" class="p-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Edit Paket">
                                 <i class="fa-solid fa-pen text-xs"></i>
@@ -532,6 +547,7 @@
                     document.getElementById('edit-quiz-id').value = q.id;
                     document.getElementById('quiz-title-input').value = q.title || '';
                     document.getElementById('quiz-duration-input').value = q.duration || 60;
+                    document.getElementById('quiz-max-questions-input').value = (q.max_questions && q.max_questions > 0) ? q.max_questions : '';
                     document.getElementById('quiz-type-input').value = q.quiz_type || 'mc';
                     document.getElementById('quiz-desc-input').value = q.description || '';
                     document.getElementById('quiz-subject-input').value = q.subject || '';
@@ -544,6 +560,7 @@
                 }
             } else {
                 document.getElementById('edit-quiz-id').value = '';
+                document.getElementById('quiz-max-questions-input').value = '';
                 document.getElementById('quiz-type-input').value = 'mc';
                 document.getElementById('quiz-modal-title').innerText = "Buat Paket Kuis Baru";
                 generateQuizToken();
@@ -581,6 +598,7 @@
             const editId = document.getElementById('edit-quiz-id').value;
             const title = document.getElementById('quiz-title-input').value.trim();
             const duration = parseInt(document.getElementById('quiz-duration-input').value) || 60;
+            const maxQuestions = parseInt(document.getElementById('quiz-max-questions-input').value) || 0;
             const quizType = document.getElementById('quiz-type-input').value;
             const desc = document.getElementById('quiz-desc-input').value.trim();
             const subject = document.getElementById('quiz-subject-input').value.trim();
@@ -597,6 +615,7 @@
                 if (target) {
                     target.title = title;
                     target.duration = duration;
+                    target.max_questions = maxQuestions;
                     target.quiz_type = quizType;
                     target.description = desc;
                     Object.assign(target, { subject, class: className, start_at, end_at, status, pin, pin_enabled: !!pin });
@@ -606,6 +625,7 @@
                     id: 'quiz-' + Date.now(),
                     title: title,
                     duration: duration,
+                    max_questions: maxQuestions,
                     quiz_type: quizType,
                     description: desc,
                     subject, class: className, start_at, end_at, status, pin, pin_enabled: !!pin,

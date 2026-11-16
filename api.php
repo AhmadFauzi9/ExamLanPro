@@ -631,8 +631,24 @@ if ($action === 'start_attempt' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     $permissionKey = $nis . '_' . $quizId; $permission = $db['retake_permissions'][$permissionKey] ?? null; $retakeAllowed = is_array($permission) ? ((int)($permission['remaining'] ?? 0) > 0 && (empty($permission['expires_at']) || strtotime($permission['expires_at']) >= time())) : !empty($permission); foreach ($db['results'] as $r) if ((string)($r['nis'] ?? '') === $nis && (string)($r['code'] ?? '') === $quizId && !$retakeAllowed) { http_response_code(409); echo json_encode(['status'=>'error','message'=>'Ujian ini sudah pernah dikerjakan.']); exit; }
-    $token = bin2hex(random_bytes(32)); $order = shuffledIndices(count($quiz['questions'])); $optionOrder = [];
-    foreach ($order as $qid) if (is_array($quiz['questions'][$qid]['options'] ?? null)) $optionOrder[$qid] = shuffledIndices(count($quiz['questions'][$qid]['options']));
+    $totalQuestions = count($quiz['questions']);
+    $maxQuestions = isset($quiz['max_questions']) ? (int)$quiz['max_questions'] : 0;
+    if ($maxQuestions <= 0 && isset($quiz['question_count'])) {
+        $maxQuestions = (int)$quiz['question_count'];
+    }
+
+    $order = shuffledIndices($totalQuestions);
+    if ($maxQuestions > 0 && $maxQuestions < $totalQuestions) {
+        $order = array_slice($order, 0, $maxQuestions);
+    }
+
+    $token = bin2hex(random_bytes(32));
+    $optionOrder = [];
+    foreach ($order as $qid) {
+        if (is_array($quiz['questions'][$qid]['options'] ?? null)) {
+            $optionOrder[$qid] = shuffledIndices(count($quiz['questions'][$qid]['options']));
+        }
+    }
     $attempt = ['token_hash'=>attemptKey($token), 'quiz_id'=>$quizId, 'quiz_title'=>$quiz['title'] ?? $quizId, 'nis'=>$nis, 'name'=>$name, 'class'=>$class, 'question_order'=>$order, 'option_order'=>$optionOrder, 'answers'=>[], 'started_at'=>time(), 'ends_at'=>time() + max(1, (int)($quiz['duration'] ?? 1)) * 60, 'updated_at'=>time()];
     $db['active_attempts'][attemptKey($token)] = $attempt; saveDb($file_db, $db);
     echo json_encode(['status'=>'success','attempt_token'=>$token,'quiz'=>publicAttemptQuiz($quiz,$attempt),'server_now'=>time(),'ends_at'=>$attempt['ends_at'],'answers'=>[]]); exit;
@@ -1722,7 +1738,7 @@ if ($action === 'teacher_dashboard') {
                 'class' => $a['class'] ?? '',
                 'quiz_id' => $qid,
                 'quiz_title' => $title,
-                'question' => count($a['answers'] ?? []),
+                'question' => count($a['answers'] ?? []) . ' / ' . count($a['question_order'] ?? []),
                 'ends_at' => $a['ends_at'] ?? 0,
                 'updated_at' => $a['updated_at'] ?? 0
             ];
