@@ -83,8 +83,8 @@
                                         <th>Kelas</th>
                                         <th>Paket Kuis</th>
                                         <th class="text-center">Soal Terjawab</th>
-                                        <th>Selesai Pada</th>
-                                        <th>Update Terakhir</th>
+                                        <th>Selesai</th>
+                                        <th>Terakhir</th>
                                     </tr>
                                 </thead>
                                 <tbody id="monitoring-tbody" class="divide-y divide-slate-100">
@@ -182,18 +182,30 @@
                 return;
             }
 
-            tbody.innerHTML = monitoringData.map((m, idx) => `
+            tbody.innerHTML = monitoringData.map((m, idx) => {
+                let quizTitle = m.quiz_title;
+                if (!quizTitle && window.dbData && Array.isArray(window.dbData.questions)) {
+                    const qObj = window.dbData.questions.find(q => q.id === m.quiz_id);
+                    if (qObj && qObj.title) quizTitle = qObj.title;
+                }
+                if (!quizTitle) quizTitle = m.quiz_id || '-';
+
+                const selesaiFormatted = m.ends_at ? new Date(m.ends_at * 1000).toLocaleString('id-ID') : '-';
+                const updateFormatted = m.updated_at ? new Date(m.updated_at * 1000).toLocaleTimeString('id-ID') : '-';
+
+                return `
                 <tr class="hover:bg-slate-50 transition">
                     <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
                     <td class="p-3 font-mono font-bold text-brand-700">${escapeHtml(m.nis || '-')}</td>
                     <td class="p-3 font-bold text-slate-800">${escapeHtml(m.name || '-')}</td>
                     <td class="p-3 text-slate-600">${escapeHtml(m.class || '-')}</td>
-                    <td class="p-3 font-medium text-slate-700">${escapeHtml(m.quiz_id || '-')}</td>
+                    <td class="p-3 font-medium text-slate-700">${escapeHtml(quizTitle)}</td>
                     <td class="p-3 text-center font-bold text-brand-600">${m.question || 0}</td>
-                    <td class="p-3 text-slate-500">${m.ends_at ? new Date(m.ends_at * 1000).toLocaleTimeString('id-ID') : '-'}</td>
-                    <td class="p-3 text-slate-500 text-[11px]">${m.updated_at ? new Date(m.updated_at * 1000).toLocaleTimeString('id-ID') : '-'}</td>
+                    <td class="p-3 text-slate-500 font-mono text-[11px] whitespace-nowrap">${selesaiFormatted}</td>
+                    <td class="p-3 text-slate-500 text-[11px] font-mono whitespace-nowrap">${updateFormatted}</td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
 
         // Server Diagnostics

@@ -633,7 +633,7 @@ if ($action === 'start_attempt' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $permissionKey = $nis . '_' . $quizId; $permission = $db['retake_permissions'][$permissionKey] ?? null; $retakeAllowed = is_array($permission) ? ((int)($permission['remaining'] ?? 0) > 0 && (empty($permission['expires_at']) || strtotime($permission['expires_at']) >= time())) : !empty($permission); foreach ($db['results'] as $r) if ((string)($r['nis'] ?? '') === $nis && (string)($r['code'] ?? '') === $quizId && !$retakeAllowed) { http_response_code(409); echo json_encode(['status'=>'error','message'=>'Ujian ini sudah pernah dikerjakan.']); exit; }
     $token = bin2hex(random_bytes(32)); $order = shuffledIndices(count($quiz['questions'])); $optionOrder = [];
     foreach ($order as $qid) if (is_array($quiz['questions'][$qid]['options'] ?? null)) $optionOrder[$qid] = shuffledIndices(count($quiz['questions'][$qid]['options']));
-    $attempt = ['token_hash'=>attemptKey($token), 'quiz_id'=>$quizId, 'nis'=>$nis, 'name'=>$name, 'class'=>$class, 'question_order'=>$order, 'option_order'=>$optionOrder, 'answers'=>[], 'started_at'=>time(), 'ends_at'=>time() + max(1, (int)($quiz['duration'] ?? 1)) * 60, 'updated_at'=>time()];
+    $attempt = ['token_hash'=>attemptKey($token), 'quiz_id'=>$quizId, 'quiz_title'=>$quiz['title'] ?? $quizId, 'nis'=>$nis, 'name'=>$name, 'class'=>$class, 'question_order'=>$order, 'option_order'=>$optionOrder, 'answers'=>[], 'started_at'=>time(), 'ends_at'=>time() + max(1, (int)($quiz['duration'] ?? 1)) * 60, 'updated_at'=>time()];
     $db['active_attempts'][attemptKey($token)] = $attempt; saveDb($file_db, $db);
     echo json_encode(['status'=>'success','attempt_token'=>$token,'quiz'=>publicAttemptQuiz($quiz,$attempt),'server_now'=>time(),'ends_at'=>$attempt['ends_at'],'answers'=>[]]); exit;
 }
@@ -1672,7 +1672,24 @@ if ($action === 'clear_results' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if ($action === 'teacher_dashboard') {
     teacherOnly(); $db=loadDb($file_db); $active=[];
-    foreach ($db['active_attempts'] as $a) if (empty($a['finished'])) $active[]=['nis'=>$a['nis'],'name'=>$a['name'],'class'=>$a['class'],'quiz_id'=>$a['quiz_id'],'question'=>count($a['answers']??[]),'ends_at'=>$a['ends_at'],'updated_at'=>$a['updated_at']];
+    $quizMap = [];
+    foreach ($db['questions'] as $q) {
+        $quizMap[(string)($q['id'] ?? '')] = $q['title'] ?? $q['id'];
+    }
+    foreach ($db['active_attempts'] as $a) {
+        if (empty($a['finished'])) {
+            $active[] = [
+                'nis' => $a['nis'] ?? '',
+                'name' => $a['name'] ?? '',
+                'class' => $a['class'] ?? '',
+                'quiz_id' => $a['quiz_id'] ?? '',
+                'quiz_title' => $a['quiz_title'] ?? $quizMap[(string)($a['quiz_id'] ?? '')] ?? ($a['quiz_id'] ?? '-'),
+                'question' => count($a['answers'] ?? []),
+                'ends_at' => $a['ends_at'] ?? 0,
+                'updated_at' => $a['updated_at'] ?? 0
+            ];
+        }
+    }
     $scores=array_map(fn($r)=>(int)($r['score']??0),$db['results']);
     echo json_encode(['status'=>'success','monitoring'=>$active,'audit_logs'=>array_slice(array_reverse($db['audit_logs']),0,200),'summary'=>['students'=>count($db['students']),'quizzes'=>count($db['questions']),'results'=>count($db['results']),'average'=>$scores?(int)round(array_sum($scores)/count($scores)):0]]); exit;
 }

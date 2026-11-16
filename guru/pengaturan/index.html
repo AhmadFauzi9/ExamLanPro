@@ -45,32 +45,11 @@
                     </div>
                     <div>
                         <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Pengaturan Sistem Ujian</h2>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Konfigurasi keamanan login siswa, akun administrator, dan backup data.</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Konfigurasi akun administrator dan cadangan database server.</p>
                     </div>
                 </div>
 
-                <!-- CARD 1: KEAMANAN LOGIN SISWA (DIKELOLA DI DATA SISWA) -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-base font-bold shrink-0">
-                            <i class="fa-solid fa-user-shield"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Keamanan Login Siswa</h3>
-                                <span id="pwd-status-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                    Wajib Password
-                                </span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Pengaturan login dengan atau tanpa password saat ujian kini dikelola langsung pada halaman Data Siswa.</p>
-                        </div>
-                    </div>
-                    <a href="../data-siswa/" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 shrink-0 transition shadow-xs">
-                        <span>Buka Data Siswa</span> <i class="fa-solid fa-arrow-right text-xs"></i>
-                    </a>
-                </div>
-
-                <!-- CARD 2: GANTI PASSWORD GURU / ADMINISTRATOR -->
+                <!-- CARD 1: GANTI PASSWORD GURU / ADMINISTRATOR -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                     <div class="flex items-center gap-2.5 border-b pb-3">
                         <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold">
@@ -153,58 +132,7 @@
 
         async function loadSettingsData() {
             await fetchDataFromAPI();
-            const settings = (dbData && dbData.settings) ? dbData.settings : { require_student_password: true };
-            const isReq = settings.require_student_password !== false;
-
-            const toggle = document.getElementById('require-student-password-toggle');
-            const badge = document.getElementById('pwd-status-badge');
-
-            if (toggle) toggle.checked = isReq;
-            updatePwdBadge(isReq);
-
             renderBackupList();
-        }
-
-        function updatePwdBadge(isReq) {
-            const badge = document.getElementById('pwd-status-badge');
-            if (!badge) return;
-            if (isReq) {
-                badge.innerText = 'Wajib Password';
-                badge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
-            } else {
-                badge.innerText = 'Bebas / Tanpa Password';
-                badge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
-            }
-        }
-
-        async function saveStudentPasswordSetting(e) {
-            e.preventDefault();
-            const isReq = document.getElementById('require-student-password-toggle').checked;
-
-            try {
-                const res = await fetch(`${API_URL}?action=save_system_settings`, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ require_student_password: isReq })
-                });
-
-                const data = await res.json();
-                if (!res.ok || data.status !== 'success') {
-                    appAlert(data.message || 'Gagal menyimpan pengaturan.', 'Gagal');
-                    return;
-                }
-
-                updatePwdBadge(isReq);
-                appAlert(
-                    isReq
-                        ? 'Pengaturan tersimpan: Siswa sekarang WAJIB menggunakan password saat login ujian.'
-                        : 'Pengaturan tersimpan: Siswa sekarang DAPAT LOGIN TANPA PASSWORD.',
-                    'Pengaturan Disimpan'
-                );
-            } catch (err) {
-                appAlert('Gagal menghubungi server.', 'Gagal');
-            }
         }
 
         function togglePasswordVisibility(inputId, btn) {
