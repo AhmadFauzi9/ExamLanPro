@@ -54,17 +54,9 @@
 
                 <!-- Search & Filters Toolbar Card -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <!-- Left: Sort -> Filter -> Search Group -->
+                    <!-- Left: Filter -> Search Group -->
                     <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                        <!-- 1. Sort (Urutkan) -->
-                        <select id="quiz-sort" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Urutkan">
-                            <option value="latest">Short</option>
-                            <option value="oldest">Terlama</option>
-                            <option value="title_asc">Judul (A - Z)</option>
-                            <option value="title_desc">Judul (Z - A)</option>
-                        </select>
-
-                        <!-- 2. Filter: Mapel -->
+                        <!-- 1. Filter: Mapel -->
                         <select id="quiz-filter-subject" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[160px]" title="Filter Mata Pelajaran">
                             <option value="all">Mapel</option>
                         </select>
@@ -420,16 +412,6 @@
                     (q.pin && q.pin.toLowerCase().includes(query));
                 return matchSubject && matchClass && matchStatus && matchQuery;
             });
-
-            const sortMode = document.getElementById('quiz-sort')?.value || 'latest';
-            filteredQuizzes.sort((a, b) => {
-                if (sortMode === 'latest') return (b.created_at || b.id || '').localeCompare(a.created_at || a.id || '');
-                if (sortMode === 'oldest') return (a.created_at || a.id || '').localeCompare(b.created_at || b.id || '');
-                if (sortMode === 'title_asc') return (a.title || '').localeCompare(b.title || '');
-                if (sortMode === 'title_desc') return (b.title || '').localeCompare(a.title || '');
-                return 0;
-            });
-
             const countBadge = document.getElementById('quizzes-count-badge');
             if (countBadge) countBadge.innerText = `${allQuizzes.length} paket kuis terdaftar`;
             renderQuizCards();
