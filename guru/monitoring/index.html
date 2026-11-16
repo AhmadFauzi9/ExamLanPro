@@ -84,7 +84,7 @@
                                         <th>Paket Kuis</th>
                                         <th class="text-center">Soal Terjawab</th>
                                         <th>Selesai</th>
-                                        <th>Terakhir</th>
+                                        <th>Updated</th>
                                     </tr>
                                 </thead>
                                 <tbody id="monitoring-tbody" class="divide-y divide-slate-100">
@@ -184,11 +184,20 @@
 
             tbody.innerHTML = monitoringData.map((m, idx) => {
                 let quizTitle = m.quiz_title;
-                if (!quizTitle && window.dbData && Array.isArray(window.dbData.questions)) {
+                if ((!quizTitle || quizTitle.startsWith('quiz-')) && window.dbData && Array.isArray(window.dbData.questions)) {
                     const qObj = window.dbData.questions.find(q => q.id === m.quiz_id);
                     if (qObj && qObj.title) quizTitle = qObj.title;
                 }
-                if (!quizTitle) quizTitle = m.quiz_id || '-';
+                const fallbackTitles = {
+                    'quiz-1789790671156': 'UB STS Ganjil Kelas 7',
+                    'quiz-1791161243662': 'Soal STS Ganjil 2026-2027',
+                    'quiz-1791169015921': 'Soal STS Ganjil 2026-2027',
+                    'quiz-1794792463299': 'UB SAS GANJIL 2026-2027',
+                    'quiz-1794805923538': 'UB SAS GANJIL 26-27'
+                };
+                if (!quizTitle || quizTitle.startsWith('quiz-')) {
+                    quizTitle = fallbackTitles[m.quiz_id] || m.quiz_title || m.quiz_id || '-';
+                }
 
                 const selesaiFormatted = m.ends_at ? new Date(m.ends_at * 1000).toLocaleString('id-ID') : '-';
                 const updateFormatted = m.updated_at ? new Date(m.updated_at * 1000).toLocaleTimeString('id-ID') : '-';

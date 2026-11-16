@@ -1674,16 +1674,54 @@ if ($action === 'teacher_dashboard') {
     teacherOnly(); $db=loadDb($file_db); $active=[];
     $quizMap = [];
     foreach ($db['questions'] as $q) {
-        $quizMap[(string)($q['id'] ?? '')] = $q['title'] ?? $q['id'];
+        if (!empty($q['id'])) $quizMap[(string)$q['id']] = $q['title'] ?? $q['id'];
     }
+    foreach ($db['trash']['questions'] ?? [] as $q) {
+        $qid = (string)($q['id'] ?? '');
+        if ($qid !== '' && empty($quizMap[$qid])) $quizMap[$qid] = $q['title'] ?? $qid;
+    }
+    foreach ($db['results'] ?? [] as $r) {
+        $qid = (string)($r['code'] ?? $r['quiz_id'] ?? '');
+        if ($qid !== '' && empty($quizMap[$qid]) && !empty($r['title'])) $quizMap[$qid] = $r['title'];
+    }
+    if (is_dir('backups')) {
+        $bFiles = glob('backups/*.json');
+        if ($bFiles) {
+            foreach ($bFiles as $bf) {
+                $bc = @file_get_contents($bf);
+                if ($bc) {
+                    $bd = json_decode($bc, true);
+                    if (!empty($bd['questions']) && is_array($bd['questions'])) {
+                        foreach ($bd['questions'] as $bq) {
+                            $bqid = (string)($bq['id'] ?? '');
+                            if ($bqid !== '' && empty($quizMap[$bqid]) && !empty($bq['title'])) $quizMap[$bqid] = $bq['title'];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $fallbackTitles = [
+        'quiz-1789790671156' => 'UB STS Ganjil Kelas 7',
+        'quiz-1791161243662' => 'Soal STS Ganjil 2026-2027',
+        'quiz-1791169015921' => 'Soal STS Ganjil 2026-2027',
+        'quiz-1794792463299' => 'UB SAS GANJIL 2026-2027',
+        'quiz-1794805923538' => 'UB SAS GANJIL 26-27'
+    ];
+    foreach ($fallbackTitles as $fId => $fTitle) {
+        if (empty($quizMap[$fId])) $quizMap[$fId] = $fTitle;
+    }
+
     foreach ($db['active_attempts'] as $a) {
         if (empty($a['finished'])) {
+            $qid = (string)($a['quiz_id'] ?? '');
+            $title = (!empty($a['quiz_title']) && $a['quiz_title'] !== $qid) ? $a['quiz_title'] : ($quizMap[$qid] ?? ($qid !== '' ? $qid : '-'));
             $active[] = [
                 'nis' => $a['nis'] ?? '',
                 'name' => $a['name'] ?? '',
                 'class' => $a['class'] ?? '',
-                'quiz_id' => $a['quiz_id'] ?? '',
-                'quiz_title' => $a['quiz_title'] ?? $quizMap[(string)($a['quiz_id'] ?? '')] ?? ($a['quiz_id'] ?? '-'),
+                'quiz_id' => $qid,
+                'quiz_title' => $title,
                 'question' => count($a['answers'] ?? []),
                 'ends_at' => $a['ends_at'] ?? 0,
                 'updated_at' => $a['updated_at'] ?? 0
