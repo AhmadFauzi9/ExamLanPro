@@ -67,52 +67,37 @@
                 </div>
 
                 <!-- Action Toolbar Card -->
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center text-lg font-bold">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Hasil Ujian Siswa</h2>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span id="results-total-badge" class="text-[11px] font-semibold text-slate-500">0 hasil terekam</span>
-                                <span id="results-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
-                            </div>
-                        </div>
+                <!-- Action Toolbar Card -->
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center text-lg font-bold shrink-0">
+                        <i class="fa-solid fa-chart-line"></i>
                     </div>
-
-                    <!-- Compact Action Buttons -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button type="button" onclick="loadResultsData()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
-                        </button>
-                        <button type="button" onclick="exportToCSV()" class="btn-compact bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-xs transition">
-                            <i class="fa-solid fa-file-excel text-xs"></i> <span>Ekspor Excel</span>
-                        </button>
-                        <button type="button" id="btn-delete-selected-res" onclick="deleteSelectedResults()" disabled class="btn-compact bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1.5 cursor-not-allowed transition">
-                            <i class="fa-solid fa-trash-can text-xs"></i> <span>Hapus Terpilih</span>
-                        </button>
-                        <button type="button" onclick="clearSubmissions()" class="btn-compact bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-rotate-left text-xs"></i> <span>Reset Semua</span>
-                        </button>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Hasil Ujian Siswa</h2>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span id="results-total-badge" class="text-[11px] font-semibold text-slate-500">0 hasil terekam</span>
+                            <span id="results-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Unified Filters, Sorting & Review Control Toolbar -->
+                <!-- Unified Filters, Sorting & Toolbar Action Buttons -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
                     <!-- Left: View -> Sort -> Filter -> Search Group -->
                     <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                        <!-- 1. View (Baris) default 20 -->
-                        <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="10">10 baris</option>
-                            <option value="20" selected>20 baris</option>
-                            <option value="50">50 baris</option>
-                            <option value="100">100 baris</option>
+                        <!-- 1. View (Angka Saja) default 20 -->
+                        <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Jumlah data per halaman">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
 
-                        <!-- 2. Sort (Urutkan) -->
-                        <select id="results-sort" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="date_desc">Urut: Terbaru</option>
+                        <!-- 2. Sort (Short) -->
+                        <select id="results-sort" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Pengurutan data">
+                            <option value="date_desc">Short</option>
                             <option value="nis_asc">NIS (0 - 9)</option>
                             <option value="nis_desc">NIS (9 - 0)</option>
                             <option value="name_asc">Nama (A - Z)</option>
@@ -121,36 +106,57 @@
                             <option value="score_asc">Nilai Terendah</option>
                         </select>
 
-                        <!-- 3. Filter: Paket -->
-                        <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[170px]">
-                            <option value="all">Semua Paket Kuis</option>
+                        <!-- 3. Filter: Soal Ujian -->
+                        <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[170px]" title="Filter Soal Ujian">
+                            <option value="all">Soal Ujian</option>
                         </select>
 
                         <!-- 3. Filter: Kelas -->
-                        <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Kelas</option>
+                        <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Filter Kelas">
+                            <option value="all">Kelas</option>
                         </select>
 
                         <!-- 4. Search -->
-                        <div class="relative min-w-[180px] sm:min-w-[220px] max-w-xs flex-1">
+                        <div class="relative min-w-[160px] sm:min-w-[200px] max-w-xs flex-1">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
                             <input id="results-search-input" type="text" oninput="handleResultsFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
                         </div>
                     </div>
 
-                    <!-- Right: Toolbar Action Buttons -->
-                    <div class="flex items-center gap-2 shrink-0">
-                        <div id="review-control-group" class="relative group flex items-center gap-1.5" title="Pilih Soal Ujian terlebih dahulu">
-                            <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 transition font-bold shadow-2xs" title="Pilih Soal Ujian terlebih dahulu">
-                                <i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>
+                    <!-- Right: Toolbar Action Buttons (Icon Only with Tooltip) -->
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <!-- Buka Pembahasan -->
+                        <div id="review-control-group" class="relative group" title="Pilih Soal Ujian terlebih dahulu">
+                            <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition shadow-2xs" title="Pilih Soal Ujian terlebih dahulu">
+                                <i class="fa-solid fa-eye text-xs"></i>
                             </button>
-                            <span id="teacher-review-status" class="hidden xl:inline text-[11px] text-slate-500 truncate max-w-[120px]"></span>
+                            <span id="teacher-review-status" class="hidden"></span>
                             <!-- Visual Floating Tooltip -->
                             <div id="teacher-review-tooltip" class="pointer-events-none absolute bottom-full mb-2 right-0 hidden group-hover:flex items-center gap-1.5 bg-slate-900 text-white text-[11px] font-semibold py-1.5 px-3 rounded-xl shadow-xl whitespace-nowrap z-50">
                                 <i class="fa-solid fa-circle-info text-amber-400 text-xs"></i>
                                 <span>Pilih Soal Ujian terlebih dahulu</span>
                             </div>
                         </div>
+
+                        <!-- Ekspor Excel -->
+                        <button type="button" onclick="exportToCSV()" class="btn-icon bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition" title="Ekspor ke Excel (CSV)">
+                            <i class="fa-solid fa-file-excel text-xs"></i>
+                        </button>
+
+                        <!-- Hapus Terpilih -->
+                        <button type="button" id="btn-delete-selected-res" onclick="deleteSelectedResults()" disabled class="btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition" title="Hapus Hasil Ujian Terpilih">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+
+                        <!-- Reset Semua -->
+                        <button type="button" onclick="clearSubmissions()" class="btn-icon bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition" title="Reset Semua Hasil Ujian">
+                            <i class="fa-solid fa-rotate-left text-xs"></i>
+                        </button>
+
+                        <!-- Refresh -->
+                        <button type="button" onclick="loadResultsData()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" title="Muat Ulang Data Hasil Ujian">
+                            <i class="fa-solid fa-rotate text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -299,7 +305,7 @@
             const currentVal = select.value || 'all';
             const quizzes = dbData.questions || [];
 
-            select.innerHTML = '<option value="all">Semua Paket Kuis</option>' + quizzes.map(q => `
+            select.innerHTML = '<option value="all">Soal Ujian</option>' + quizzes.map(q => `
                 <option value="${q.id}" ${q.id === currentVal ? 'selected' : ''}>${escapeHtml(q.title || q.id)}</option>
             `).join('');
         }
@@ -310,7 +316,7 @@
             const currentVal = select.value || 'all';
             const classes = Array.from(new Set(allResults.map(r => (r.class || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
 
-            select.innerHTML = '<option value="all">Semua Kelas</option>' + classes.map(c => `
+            select.innerHTML = '<option value="all">Kelas</option>' + classes.map(c => `
                 <option value="${escapeHtml(c)}" ${c === currentVal ? 'selected' : ''}>${escapeHtml(c)}</option>
             `).join('');
         }
@@ -499,11 +505,11 @@
                 badge.innerText = `${count} dipilih`;
                 badge.classList.remove('hidden');
                 btnDelete.disabled = false;
-                btnDelete.className = 'btn-compact bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 shadow-xs transition';
+                btnDelete.className = 'btn-icon bg-rose-600 hover:bg-rose-700 text-white shadow-2xs transition';
             } else {
                 badge.classList.add('hidden');
                 btnDelete.disabled = true;
-                btnDelete.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1.5 cursor-not-allowed transition';
+                btnDelete.className = 'btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition';
                 if (selectAllCb) selectAllCb.checked = false;
             }
         }
@@ -621,7 +627,8 @@
             if (filterValue === 'all') {
                 statusEl.textContent = '';
                 toggleBtn.disabled = true;
-                toggleBtn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed';
+                toggleBtn.className = 'btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i>';
                 const tipText = 'Pilih Soal Ujian terlebih dahulu';
                 toggleBtn.title = tipText;
                 if (groupEl) groupEl.title = tipText;
@@ -635,8 +642,8 @@
             const isOpen = !!reviewStates[filterValue];
             if (isOpen) {
                 statusEl.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Terbuka</span>';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i> <span>Kunci Pembahasan</span>';
-                toggleBtn.className = 'btn-compact bg-amber-600 hover:bg-amber-700 text-white font-bold transition shadow-2xs';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i>';
+                toggleBtn.className = 'btn-icon bg-amber-600 hover:bg-amber-700 text-white transition shadow-2xs';
                 const tipText = 'Klik untuk mengunci pembahasan siswa';
                 toggleBtn.title = tipText;
                 if (groupEl) groupEl.title = tipText;
@@ -645,8 +652,8 @@
                 }
             } else {
                 statusEl.innerHTML = '<span class="text-slate-500 font-semibold"><i class="fa-solid fa-lock"></i> Terkunci</span>';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>';
-                toggleBtn.className = 'btn-compact bg-slate-800 hover:bg-slate-700 text-white font-bold transition shadow-2xs';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i>';
+                toggleBtn.className = 'btn-icon bg-brand-600 hover:bg-brand-700 text-white transition shadow-2xs';
                 const tipText = 'Klik untuk membuka pembahasan untuk siswa';
                 toggleBtn.title = tipText;
                 if (groupEl) groupEl.title = tipText;

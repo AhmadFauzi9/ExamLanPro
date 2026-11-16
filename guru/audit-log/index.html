@@ -38,8 +38,8 @@
             <!-- Content Area: AUDIT LOG -->
             <div class="space-y-4 min-w-0">
                 
-                <!-- Action Toolbar Card -->
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <!-- Page Header Card -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center text-lg font-bold">
                             <i class="fa-solid fa-shield-halved"></i>
@@ -49,30 +49,25 @@
                             <p class="text-[11px] text-slate-500 mt-0.5">Catatan aktivitas administratif, keamanan, autentikasi, dan perubahan data sistem.</p>
                         </div>
                     </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="loadAuditData()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Filters & Search Card -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
                     <!-- Left: View -> Sort -> Search Group -->
                     <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                        <!-- 1. View (Baris) default 20 -->
-                        <select id="audit-per-page" onchange="changeAuditPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="10">10 baris</option>
-                            <option value="20" selected>20 baris</option>
-                            <option value="50">50 baris</option>
-                            <option value="100">100 baris</option>
+                        <!-- 1. View (Numeric) default 20 -->
+                        <select id="audit-per-page" onchange="changeAuditPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Jumlah Baris Tampil">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
 
                         <!-- 2. Sort (Urutkan) -->
-                        <select id="audit-sort" onchange="handleAuditSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="desc">Urut: Terbaru</option>
+                        <select id="audit-sort" onchange="handleAuditSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Urutkan">
+                            <option value="desc">Short</option>
                             <option value="asc">Terlama</option>
                         </select>
 
@@ -83,10 +78,10 @@
                         </div>
                     </div>
 
-                    <!-- Right: Toolbar Action Buttons -->
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button type="button" onclick="loadAuditData()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
+                    <!-- Right: Toolbar Action Buttons (Icon Only with Tooltip) -->
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="loadAuditData()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" title="Muat Ulang Log Audit">
+                            <i class="fa-solid fa-rotate text-xs"></i>
                         </button>
                     </div>
                 </div>

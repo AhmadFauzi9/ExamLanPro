@@ -52,22 +52,17 @@
                                 <span id="student-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
                             </div>
                         </div>
+                <!-- Action Toolbar Card -->
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center text-lg font-bold shrink-0">
+                        <i class="fa-solid fa-users"></i>
                     </div>
-
-                    <!-- Compact Action Buttons -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button type="button" onclick="openStudentModal()" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5 shadow-xs transition">
-                            <i class="fa-solid fa-user-plus text-xs"></i> <span>Tambah Siswa</span>
-                        </button>
-                        <button type="button" onclick="openImportModal()" class="btn-compact bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-xs transition">
-                            <i class="fa-solid fa-file-excel text-xs"></i> <span>Import Siswa</span>
-                        </button>
-                        <button type="button" id="btn-delete-selected" onclick="deleteSelectedStudents()" disabled class="btn-compact bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1.5 cursor-not-allowed transition">
-                            <i class="fa-solid fa-trash-can text-xs"></i> <span>Hapus Terpilih</span>
-                        </button>
-                        <button type="button" onclick="loadStudents()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
-                        </button>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Data Siswa</h2>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span id="student-total-badge" class="text-[11px] font-semibold text-slate-500">0 siswa terdaftar</span>
+                            <span id="student-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
+                        </div>
                     </div>
                 </div>
 
@@ -100,17 +95,19 @@
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
                     <!-- Left: View -> Sort -> Filter -> Search Group -->
                     <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                        <!-- 1. View (Baris) default 20 -->
-                        <select id="student-per-page" onchange="changePerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="10">10 baris</option>
-                            <option value="20" selected>20 baris</option>
-                            <option value="50">50 baris</option>
-                            <option value="100">100 baris</option>
+                        <!-- 1. View (Angka Saja) default 20 -->
+                        <select id="student-per-page" onchange="changePerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Jumlah data per halaman">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
 
-                        <!-- 2. Sort (Urutkan) -->
-                        <select id="student-sort" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="nis_asc">Urut: NIS (0 - 9)</option>
+                        <!-- 2. Sort (Short) -->
+                        <select id="student-sort" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Pengurutan data">
+                            <option value="nis_asc">Short</option>
                             <option value="nis_desc">NIS (9 - 0)</option>
                             <option value="name_asc">Nama (A - Z)</option>
                             <option value="name_desc">Nama (Z - A)</option>
@@ -118,26 +115,35 @@
                         </select>
 
                         <!-- 3. Filter: Kelas -->
-                        <select id="student-filter-class" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Kelas</option>
+                        <select id="student-filter-class" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Filter Kelas">
+                            <option value="all">Kelas</option>
                         </select>
 
                         <!-- 3. Filter: Tahun -->
-                        <select id="student-filter-year" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Tahun</option>
+                        <select id="student-filter-year" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Filter Tahun">
+                            <option value="all">Tahun</option>
                         </select>
 
                         <!-- 4. Search -->
-                        <div class="relative min-w-[180px] sm:min-w-[220px] max-w-xs flex-1">
+                        <div class="relative min-w-[160px] sm:min-w-[200px] max-w-xs flex-1">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
                             <input id="student-search-input" type="text" oninput="handleSearchFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
                         </div>
                     </div>
 
-                    <!-- Right: Toolbar Action Buttons -->
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button type="button" onclick="loadStudents()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
+                    <!-- Right: Toolbar Action Buttons (Icon Only with Tooltip) -->
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="openStudentModal()" class="btn-icon bg-brand-600 hover:bg-brand-700 text-white shadow-2xs transition" title="Tambah Siswa Baru">
+                            <i class="fa-solid fa-user-plus text-xs"></i>
+                        </button>
+                        <button type="button" onclick="openImportModal()" class="btn-icon bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition" title="Import Siswa (Excel / Word)">
+                            <i class="fa-solid fa-file-excel text-xs"></i>
+                        </button>
+                        <button type="button" id="btn-delete-selected" onclick="deleteSelectedStudents()" disabled class="btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition" title="Hapus Siswa Terpilih">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                        <button type="button" onclick="loadStudents()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" title="Muat Ulang Data Siswa">
+                            <i class="fa-solid fa-rotate text-xs"></i>
                         </button>
                     </div>
                 </div>
@@ -367,8 +373,8 @@
             const classes = Array.from(new Set(rawStudents.map(s => (s.class || '').trim()).filter(Boolean))).sort();
             const years = Array.from(new Set(rawStudents.map(s => (s.tahun_ajaran || '').trim()).filter(Boolean))).sort();
 
-            classSelect.innerHTML = '<option value="all">Semua Kelas</option>' + classes.map(c => `<option value="${c}" ${c === currentClass ? 'selected' : ''}>${c}</option>`).join('');
-            yearSelect.innerHTML = '<option value="all">Semua Tahun</option>' + years.map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`).join('');
+            classSelect.innerHTML = '<option value="all">Kelas</option>' + classes.map(c => `<option value="${c}" ${c === currentClass ? 'selected' : ''}>${c}</option>`).join('');
+            yearSelect.innerHTML = '<option value="all">Tahun</option>' + years.map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`).join('');
         }
 
         function handleSearchFilter() {
@@ -541,12 +547,14 @@
             if (btn) {
                 if (count > 0) {
                     btn.disabled = false;
-                    btn.className = 'btn-compact bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 shadow-xs transition';
-                    btn.innerHTML = `<i class="fa-solid fa-trash-can text-xs"></i> <span>Hapus Terpilih (${count})</span>`;
+                    btn.className = 'btn-icon bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition';
+                    btn.title = `Hapus Terpilih (${count})`;
+                    btn.innerHTML = `<i class="fa-solid fa-trash-can text-xs"></i>`;
                 } else {
                     btn.disabled = true;
-                    btn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1.5 cursor-not-allowed transition';
-                    btn.innerHTML = `<i class="fa-solid fa-trash-can text-xs"></i> <span>Hapus Terpilih</span>`;
+                    btn.className = 'btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition';
+                    btn.title = 'Hapus Siswa Terpilih';
+                    btn.innerHTML = `<i class="fa-solid fa-trash-can text-xs"></i>`;
                 }
             }
 
