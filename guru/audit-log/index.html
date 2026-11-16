@@ -60,21 +60,34 @@
 
                 <!-- Filters & Search Card -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div class="flex-1 min-w-[220px] relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
-                        <input id="audit-search-input" type="text" oninput="handleAuditSearch()" placeholder="Cari aksi, keterangan target, pengguna, atau IP..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
-                    </div>
-                    <div class="flex items-center gap-2 flex-wrap">
+                    <!-- Left: View -> Sort -> Search Group -->
+                    <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <!-- 1. View (Baris) default 20 -->
+                        <select id="audit-per-page" onchange="changeAuditPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="10">10 baris</option>
+                            <option value="20" selected>20 baris</option>
+                            <option value="50">50 baris</option>
+                            <option value="100">100 baris</option>
+                        </select>
+
+                        <!-- 2. Sort (Urutkan) -->
                         <select id="audit-sort" onchange="handleAuditSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                             <option value="desc">Urut: Terbaru</option>
                             <option value="asc">Terlama</option>
                         </select>
-                        <select id="audit-per-page" onchange="changeAuditPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="15">15 baris</option>
-                            <option value="30" selected>30 baris</option>
-                            <option value="50">50 baris</option>
-                            <option value="100">100 baris</option>
-                        </select>
+
+                        <!-- 3. Search -->
+                        <div class="relative min-w-[180px] sm:min-w-[220px] max-w-xs flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                            <input id="audit-search-input" type="text" oninput="handleAuditSearch()" placeholder="Cari aksi, keterangan target, pengguna, atau IP..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                        </div>
+                    </div>
+
+                    <!-- Right: Toolbar Action Buttons -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" onclick="loadAuditData()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
+                        </button>
                     </div>
                 </div>
 
@@ -124,7 +137,7 @@
         let allAuditLogs = [];
         let filteredAuditLogs = [];
         let auditPage = 1;
-        let auditPerPage = 30;
+        let auditPerPage = 20;
 
         window.onDataLoaded = async () => {
             await loadAuditData();
@@ -168,7 +181,7 @@
         }
 
         function changeAuditPerPage(val) {
-            auditPerPage = parseInt(val) || 30;
+            auditPerPage = parseInt(val) || 20;
             auditPage = 1;
             renderAuditTable();
         }

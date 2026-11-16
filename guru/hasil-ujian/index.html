@@ -99,26 +99,18 @@
                 </div>
 
                 <!-- Unified Filters, Sorting & Review Control Toolbar -->
-                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2.5 text-xs">
-                    <!-- Left: Search Box -->
-                    <div class="flex-1 min-w-[200px] relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
-                        <input id="results-search-input" type="text" oninput="handleResultsFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
-                    </div>
-
-                    <!-- Right Controls: Paket, Kelas, Urut, View Baris, Buka Pembahasan -->
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <!-- Filter Paket -->
-                        <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[170px]">
-                            <option value="all">Semua Paket Kuis</option>
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <!-- Left: View -> Sort -> Filter -> Search Group -->
+                    <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <!-- 1. View (Baris) default 20 -->
+                        <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="10">10 baris</option>
+                            <option value="20" selected>20 baris</option>
+                            <option value="50">50 baris</option>
+                            <option value="100">100 baris</option>
                         </select>
 
-                        <!-- Filter Kelas -->
-                        <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Kelas</option>
-                        </select>
-
-                        <!-- Sort Urut -->
+                        <!-- 2. Sort (Urutkan) -->
                         <select id="results-sort" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                             <option value="date_desc">Urut: Terbaru</option>
                             <option value="nis_asc">NIS (0 - 9)</option>
@@ -129,16 +121,26 @@
                             <option value="score_asc">Nilai Terendah</option>
                         </select>
 
-                        <!-- View Baris -->
-                        <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="10">10 baris</option>
-                            <option value="25" selected>25 baris</option>
-                            <option value="50">50 baris</option>
-                            <option value="100">100 baris</option>
+                        <!-- 3. Filter: Paket -->
+                        <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[170px]">
+                            <option value="all">Semua Paket Kuis</option>
                         </select>
 
-                        <!-- Kontrol Pembahasan (Sejajar dengan Tooltip) -->
-                        <div id="review-control-group" class="relative group flex items-center gap-1.5 pl-1.5 border-l border-slate-200" title="Pilih Soal Ujian terlebih dahulu">
+                        <!-- 3. Filter: Kelas -->
+                        <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Kelas</option>
+                        </select>
+
+                        <!-- 4. Search -->
+                        <div class="relative min-w-[180px] sm:min-w-[220px] max-w-xs flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                            <input id="results-search-input" type="text" oninput="handleResultsFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                        </div>
+                    </div>
+
+                    <!-- Right: Toolbar Action Buttons -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <div id="review-control-group" class="relative group flex items-center gap-1.5" title="Pilih Soal Ujian terlebih dahulu">
                             <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 transition font-bold shadow-2xs" title="Pilih Soal Ujian terlebih dahulu">
                                 <i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>
                             </button>
@@ -245,7 +247,7 @@
         let allResults = [];
         let filteredResults = [];
         let currentPage = 1;
-        let perPage = 25;
+        let perPage = 20;
         let selectedKeys = new Set();
         let reviewStates = {};
 
@@ -357,7 +359,7 @@
         }
 
         function changeResultsPerPage(val) {
-            perPage = parseInt(val) || 25;
+            perPage = parseInt(val) || 20;
             currentPage = 1;
             renderResultsTable();
         }

@@ -66,32 +66,46 @@
                 </div>
 
                 <!-- Search & Filters Card -->
-                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2.5 text-xs">
-                    <!-- Search Input -->
-                    <div class="flex-1 min-w-[200px] relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
-                        <input id="quiz-search-input" type="text" oninput="handleQuizSearch()" placeholder="Cari judul kuis, mapel, kelas, atau token..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
-                    </div>
-
-                    <!-- Filters Group -->
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <select id="quiz-filter-subject" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[160px]">
-                            <option value="all">Semua Mapel</option>
-                        </select>
-                        <select id="quiz-filter-class" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[150px]">
-                            <option value="all">Semua Kelas</option>
-                        </select>
-                        <select id="quiz-filter-status" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Status</option>
-                            <option value="ACTIVE">Aktif (ACTIVE)</option>
-                            <option value="DRAFT">Draf (DRAFT)</option>
-                        </select>
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <!-- Left: Sort -> Filter -> Search Group -->
+                    <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <!-- 1. Sort (Urutkan) -->
                         <select id="quiz-sort" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                             <option value="latest">Urut: Terbaru</option>
                             <option value="oldest">Terlama</option>
                             <option value="title_asc">Judul (A - Z)</option>
                             <option value="title_desc">Judul (Z - A)</option>
                         </select>
+
+                        <!-- 2. Filter: Mapel -->
+                        <select id="quiz-filter-subject" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[160px]">
+                            <option value="all">Semua Mapel</option>
+                        </select>
+
+                        <!-- 2. Filter: Kelas -->
+                        <select id="quiz-filter-class" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[150px]">
+                            <option value="all">Semua Kelas</option>
+                        </select>
+
+                        <!-- 2. Filter: Status -->
+                        <select id="quiz-filter-status" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Status</option>
+                            <option value="ACTIVE">Aktif (ACTIVE)</option>
+                            <option value="DRAFT">Draf (DRAFT)</option>
+                        </select>
+
+                        <!-- 3. Search -->
+                        <div class="relative min-w-[180px] sm:min-w-[220px] max-w-xs flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                            <input id="quiz-search-input" type="text" oninput="handleQuizSearch()" placeholder="Cari judul kuis, mapel, kelas, atau token..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                        </div>
+                    </div>
+
+                    <!-- Right: Toolbar Action Buttons -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" onclick="loadQuizzes()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
+                        </button>
                     </div>
                 </div>
 

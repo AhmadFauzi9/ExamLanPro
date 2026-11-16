@@ -98,17 +98,17 @@
 
                 <!-- Search & Filters Card -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div class="flex-1 min-w-[200px] relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
-                        <input id="student-search-input" type="text" oninput="handleSearchFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
-                    </div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <select id="student-filter-class" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Kelas</option>
+                    <!-- Left: View -> Sort -> Filter -> Search Group -->
+                    <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <!-- 1. View (Baris) default 20 -->
+                        <select id="student-per-page" onchange="changePerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="10">10 baris</option>
+                            <option value="20" selected>20 baris</option>
+                            <option value="50">50 baris</option>
+                            <option value="100">100 baris</option>
                         </select>
-                        <select id="student-filter-year" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Tahun</option>
-                        </select>
+
+                        <!-- 2. Sort (Urutkan) -->
                         <select id="student-sort" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                             <option value="nis_asc">Urut: NIS (0 - 9)</option>
                             <option value="nis_desc">NIS (9 - 0)</option>
@@ -116,12 +116,29 @@
                             <option value="name_desc">Nama (Z - A)</option>
                             <option value="class_asc">Kelas</option>
                         </select>
-                        <select id="student-per-page" onchange="changePerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="10">10 baris</option>
-                            <option value="25" selected>25 baris</option>
-                            <option value="50">50 baris</option>
-                            <option value="100">100 baris</option>
+
+                        <!-- 3. Filter: Kelas -->
+                        <select id="student-filter-class" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Kelas</option>
                         </select>
+
+                        <!-- 3. Filter: Tahun -->
+                        <select id="student-filter-year" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Tahun</option>
+                        </select>
+
+                        <!-- 4. Search -->
+                        <div class="relative min-w-[180px] sm:min-w-[220px] max-w-xs flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                            <input id="student-search-input" type="text" oninput="handleSearchFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                        </div>
+                    </div>
+
+                    <!-- Right: Toolbar Action Buttons -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" onclick="loadStudents()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
+                        </button>
                     </div>
                 </div>
 
@@ -265,7 +282,7 @@
         let filteredStudents = [];
         let selectedNisSet = new Set();
         let currentPage = 1;
-        let perPage = 25;
+        let perPage = 20;
         let revealedPasswords = new Set();
 
         window.onDataLoaded = function(data) {
@@ -381,7 +398,7 @@
         }
 
         function changePerPage(val) {
-            perPage = parseInt(val) || 25;
+            perPage = parseInt(val) || 20;
             currentPage = 1;
             renderStudentsTable();
         }
