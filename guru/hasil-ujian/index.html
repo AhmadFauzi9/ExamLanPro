@@ -68,15 +68,33 @@
 
                 <!-- Action Toolbar Card -->
                 <!-- Action Toolbar Card -->
-                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center text-lg font-bold shrink-0">
-                        <i class="fa-solid fa-chart-line"></i>
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center text-lg font-bold shrink-0">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Hasil Ujian Siswa</h2>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span id="results-total-badge" class="text-[11px] font-semibold text-slate-500">0 hasil terekam</span>
+                                <span id="results-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Hasil Ujian Siswa</h2>
-                        <div class="flex items-center gap-2 mt-0.5">
-                            <span id="results-total-badge" class="text-[11px] font-semibold text-slate-500">0 hasil terekam</span>
-                            <span id="results-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
+
+                    <!-- Tombol Tampilkan Pembahasan Sejajar Judul -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        <div id="review-control-group" class="relative group flex items-center gap-1.5" title="Pilih Soal Ujian terlebih dahulu">
+                            <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed flex items-center gap-1.5 font-bold transition shadow-2xs" title="Pilih Soal Ujian terlebih dahulu">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                                <span>Tampilkan Pembahasan</span>
+                            </button>
+                            <span id="teacher-review-status" class="hidden"></span>
+                            <!-- Visual Floating Tooltip -->
+                            <div id="teacher-review-tooltip" class="pointer-events-none absolute bottom-full mb-2 right-0 hidden group-hover:flex items-center gap-1.5 bg-slate-900 text-white text-[11px] font-semibold py-1.5 px-3 rounded-xl shadow-xl whitespace-nowrap z-50">
+                                <i class="fa-solid fa-circle-info text-amber-400 text-xs"></i>
+                                <span>Pilih Soal Ujian terlebih dahulu</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,19 +143,6 @@
 
                     <!-- Right: Toolbar Action Buttons (Icon Only with Tooltip) -->
                     <div class="flex items-center gap-1.5 shrink-0">
-                        <!-- Buka Pembahasan -->
-                        <div id="review-control-group" class="relative group" title="Pilih Soal Ujian terlebih dahulu">
-                            <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition shadow-2xs" title="Pilih Soal Ujian terlebih dahulu">
-                                <i class="fa-solid fa-eye text-xs"></i>
-                            </button>
-                            <span id="teacher-review-status" class="hidden"></span>
-                            <!-- Visual Floating Tooltip -->
-                            <div id="teacher-review-tooltip" class="pointer-events-none absolute bottom-full mb-2 right-0 hidden group-hover:flex items-center gap-1.5 bg-slate-900 text-white text-[11px] font-semibold py-1.5 px-3 rounded-xl shadow-xl whitespace-nowrap z-50">
-                                <i class="fa-solid fa-circle-info text-amber-400 text-xs"></i>
-                                <span>Pilih Soal Ujian terlebih dahulu</span>
-                            </div>
-                        </div>
-
                         <!-- Ekspor Excel -->
                         <button type="button" onclick="exportToCSV()" class="btn-icon bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition" title="Ekspor ke Excel (CSV)">
                             <i class="fa-solid fa-file-excel text-xs"></i>
@@ -627,8 +632,8 @@
             if (filterValue === 'all') {
                 statusEl.textContent = '';
                 toggleBtn.disabled = true;
-                toggleBtn.className = 'btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i>';
+                toggleBtn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed flex items-center gap-1.5 font-bold';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Tampilkan Pembahasan</span>';
                 const tipText = 'Pilih Soal Ujian terlebih dahulu';
                 toggleBtn.title = tipText;
                 if (groupEl) groupEl.title = tipText;
@@ -642,8 +647,8 @@
             const isOpen = !!reviewStates[filterValue];
             if (isOpen) {
                 statusEl.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Terbuka</span>';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i>';
-                toggleBtn.className = 'btn-icon bg-amber-600 hover:bg-amber-700 text-white transition shadow-2xs';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i> <span>Tutup Pembahasan</span>';
+                toggleBtn.className = 'btn-compact bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1.5 font-bold transition shadow-2xs';
                 const tipText = 'Klik untuk mengunci pembahasan siswa';
                 toggleBtn.title = tipText;
                 if (groupEl) groupEl.title = tipText;
@@ -652,8 +657,8 @@
                 }
             } else {
                 statusEl.innerHTML = '<span class="text-slate-500 font-semibold"><i class="fa-solid fa-lock"></i> Terkunci</span>';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i>';
-                toggleBtn.className = 'btn-icon bg-brand-600 hover:bg-brand-700 text-white transition shadow-2xs';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Tampilkan Pembahasan</span>';
+                toggleBtn.className = 'btn-compact bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5 font-bold transition shadow-2xs';
                 const tipText = 'Klik untuk membuka pembahasan untuk siswa';
                 toggleBtn.title = tipText;
                 if (groupEl) groupEl.title = tipText;
