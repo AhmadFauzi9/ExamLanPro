@@ -71,6 +71,31 @@
                     </div>
                 </div>
 
+                <!-- Security Setting Card: Toggle Password Siswa Saat Ujian -->
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold shrink-0">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-xs">Login Ujian Menggunakan Password</span>
+                                <span id="pwd-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Wajib Password
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">
+                                Aktifkan jika siswa harus memasukkan password acak saat login ujian, atau matikan agar siswa bisa login tanpa password.
+                            </p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input type="checkbox" id="require-student-password-toggle" onchange="toggleStudentPasswordRequirement(this.checked)" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                        <span class="ml-2 text-xs font-semibold text-slate-700 select-none" id="pwd-toggle-label">Wajib Password</span>
+                    </label>
+                </div>
+
                 <!-- Search & Filters Card -->
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div class="flex-1 min-w-[200px] relative">
@@ -261,11 +286,58 @@
                 const data = await res.json();
                 rawStudents = data.students || [];
                 selectedNisSet.clear();
+
+                // Update status wajib password
+                if (data.settings && data.settings.require_student_password !== undefined) {
+                    updatePwdBadge(data.settings.require_student_password !== false);
+                } else if (dbData && dbData.settings && dbData.settings.require_student_password !== undefined) {
+                    updatePwdBadge(dbData.settings.require_student_password !== false);
+                }
+
                 populateClassAndYearFilters();
                 handleSearchFilter();
             } catch (err) {
                 console.error(err);
                 appAlert('Gagal mengambil data siswa dari server.');
+            }
+        }
+
+        function updatePwdBadge(isReq) {
+            const badge = document.getElementById('pwd-status-badge');
+            const toggle = document.getElementById('require-student-password-toggle');
+            const label = document.getElementById('pwd-toggle-label');
+            if (toggle) toggle.checked = isReq;
+            if (label) label.innerText = isReq ? 'Wajib Password' : 'Bebas Password';
+            if (badge) {
+                if (isReq) {
+                    badge.innerText = 'Wajib Password';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+                } else {
+                    badge.innerText = 'Bebas / Tanpa Password';
+                    badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+                }
+            }
+        }
+
+        async function toggleStudentPasswordRequirement(isReq) {
+            updatePwdBadge(isReq);
+            try {
+                const res = await fetch(`${API_URL}?action=save_system_settings`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ require_student_password: isReq })
+                });
+                const data = await res.json();
+                if (!res.ok || data.status !== 'success') {
+                    appAlert(data.message || 'Gagal menyimpan pengaturan.', 'Gagal');
+                    updatePwdBadge(!isReq);
+                    return;
+                }
+                if (dbData && dbData.settings) dbData.settings.require_student_password = isReq;
+            } catch (err) {
+                appAlert('Gagal menghubungi server.', 'Gagal');
+                updatePwdBadge(!isReq);
             }
         }
 

@@ -66,18 +66,40 @@
                 </div>
 
                 <!-- Search & Filters Card -->
-                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                    <!-- Search Input -->
                     <div class="flex-1 min-w-[200px] relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
-                        <input id="quiz-search-input" type="text" oninput="handleQuizSearch()" placeholder="Cari nama kuis, mapel, atau kelas..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                        <input id="quiz-search-input" type="text" oninput="handleQuizSearch()" placeholder="Cari judul kuis, mapel, kelas, atau token..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-slate-500 font-medium text-[11px]">Status:</span>
-                        <select id="quiz-filter-status" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                            <option value="all">Semua Status</option>
-                            <option value="ACTIVE">Aktif (ACTIVE)</option>
-                            <option value="DRAFT">Draf (DRAFT)</option>
-                        </select>
+
+                    <!-- Filters Group -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Filter Mapel -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-book-open text-slate-400 mr-0.5"></i> Mapel:</span>
+                            <select id="quiz-filter-subject" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[160px]">
+                                <option value="all">Semua Mapel</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Kelas -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-school text-slate-400 mr-0.5"></i> Kelas:</span>
+                            <select id="quiz-filter-class" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[150px]">
+                                <option value="all">Semua Kelas</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Status -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-tag text-slate-400 mr-0.5"></i> Status:</span>
+                            <select id="quiz-filter-status" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                                <option value="all">Semua Status</option>
+                                <option value="ACTIVE">Aktif (ACTIVE)</option>
+                                <option value="DRAFT">Draf (DRAFT)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -349,25 +371,59 @@
         async function loadQuizzesData() {
             await fetchDataFromAPI();
             allQuizzes = dbData.questions || [];
+            populateSubjectAndClassFilters();
             handleQuizSearch();
+        }
+
+        // Populate Mapel & Kelas Filters Without Duplicates
+        function populateSubjectAndClassFilters() {
+            const subjectSelect = document.getElementById('quiz-filter-subject');
+            const classSelect = document.getElementById('quiz-filter-class');
+            if (!subjectSelect || !classSelect) return;
+
+            const curSubject = subjectSelect.value || 'all';
+            const curClass = classSelect.value || 'all';
+
+            // Ambil semua mapel yang terdaftar, hilangkan duplikat, abaikan kosong/null, urutkan abjad
+            const subjects = Array.from(new Set(
+                allQuizzes.map(q => (q.subject || '').trim()).filter(Boolean)
+            )).sort((a, b) => a.localeCompare(b));
+
+            // Ambil semua kelas yang terdaftar, hilangkan duplikat, abaikan kosong/null, urutkan abjad
+            const classes = Array.from(new Set(
+                allQuizzes.map(q => (q.class || '').trim()).filter(Boolean)
+            )).sort((a, b) => a.localeCompare(b));
+
+            subjectSelect.innerHTML = '<option value="all">Semua Mapel</option>' + subjects.map(s => `
+                <option value="${escapeHtml(s)}" ${s.toLowerCase() === curSubject.toLowerCase() ? 'selected' : ''}>${escapeHtml(s)}</option>
+            `).join('');
+
+            classSelect.innerHTML = '<option value="all">Semua Kelas</option>' + classes.map(c => `
+                <option value="${escapeHtml(c)}" ${c.toLowerCase() === curClass.toLowerCase() ? 'selected' : ''}>${escapeHtml(c)}</option>
+            `).join('');
         }
 
         // Search & Filter
         function handleQuizSearch() {
-            const query = (document.getElementById('quiz-search-input').value || '').trim().toLowerCase();
-            const filterStatus = document.getElementById('quiz-filter-status').value;
+            const query = (document.getElementById('quiz-search-input')?.value || '').trim().toLowerCase();
+            const filterSubject = document.getElementById('quiz-filter-subject')?.value || 'all';
+            const filterClass = document.getElementById('quiz-filter-class')?.value || 'all';
+            const filterStatus = document.getElementById('quiz-filter-status')?.value || 'all';
 
             filteredQuizzes = allQuizzes.filter(q => {
+                const matchSubject = (filterSubject === 'all' || (q.subject || '').trim().toLowerCase() === filterSubject.toLowerCase());
+                const matchClass = (filterClass === 'all' || (q.class || '').trim().toLowerCase() === filterClass.toLowerCase());
                 const matchStatus = (filterStatus === 'all' || (q.status || 'ACTIVE') === filterStatus);
                 const matchQuery = !query ||
                     (q.title && q.title.toLowerCase().includes(query)) ||
                     (q.subject && q.subject.toLowerCase().includes(query)) ||
                     (q.class && q.class.toLowerCase().includes(query)) ||
                     (q.pin && q.pin.toLowerCase().includes(query));
-                return matchStatus && matchQuery;
+                return matchSubject && matchClass && matchStatus && matchQuery;
             });
 
-            document.getElementById('quizzes-count-badge').innerText = `${allQuizzes.length} paket kuis terdaftar`;
+            const countBadge = document.getElementById('quizzes-count-badge');
+            if (countBadge) countBadge.innerText = `${allQuizzes.length} paket kuis terdaftar`;
             renderQuizCards();
         }
 

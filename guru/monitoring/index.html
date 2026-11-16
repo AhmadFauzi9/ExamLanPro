@@ -45,8 +45,8 @@
                             <i class="fa-solid fa-tower-broadcast"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Monitoring & Audit Log</h2>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Pemantauan peserta ujian aktif dan rekam jejak sistem.</p>
+                            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Monitoring Ujian</h2>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Pemantauan langsung peserta ujian yang sedang aktif dan diagnostik server.</p>
                         </div>
                     </div>
 
@@ -114,59 +114,6 @@
                     </div>
                 </div>
 
-                <!-- SECTION 3: AUDIT LOG DENGAN PAGINATION -->
-                <div class="space-y-2">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-shield-halved text-slate-600"></i> Rekam Jejak Sistem (Audit Log)
-                        </h3>
-                        <div class="flex items-center gap-2">
-                            <div class="relative">
-                                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-[10px]"></i>
-                                <input id="audit-search-input" type="text" oninput="handleAuditSearch()" placeholder="Cari log..." class="pl-7 pr-2.5 py-1 rounded-xl border border-slate-200 text-xs outline-none bg-white">
-                            </div>
-                            <select id="audit-per-page" onchange="changeAuditPerPage(this.value)" class="px-2 py-1 rounded-xl border border-slate-200 text-xs bg-white outline-none">
-                                <option value="15">15 baris</option>
-                                <option value="30" selected>30 baris</option>
-                                <option value="50">50 baris</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left text-xs border-collapse compact-table">
-                                <thead class="bg-slate-100 uppercase font-bold text-slate-600 tracking-wider">
-                                    <tr>
-                                        <th class="w-12 text-center">No</th>
-                                        <th>Waktu</th>
-                                        <th>Aksi</th>
-                                        <th>Target / Keterangan</th>
-                                        <th>IP / Host</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="audit-tbody" class="divide-y divide-slate-100">
-                                    <tr>
-                                        <td colspan="5" class="p-8 text-center text-slate-400">
-                                            <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat log audit...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Audit Pagination -->
-                        <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                            <div id="audit-pagination-info" class="text-slate-500">
-                                Menampilkan 0 dari 0 log
-                            </div>
-                            <div id="audit-pagination-buttons" class="flex items-center gap-1">
-                                <!-- Populated dynamically -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </main>
@@ -176,10 +123,6 @@
     <script src="../assets/js/guru-nav.js"></script>
     <script>
         let monitoringData = [];
-        let allAuditLogs = [];
-        let filteredAuditLogs = [];
-        let auditPage = 1;
-        let auditPerPage = 30;
         let autoRefreshTimer = null;
 
         window.onDataLoaded = async () => {
@@ -212,10 +155,7 @@
                 const d = await res.json();
 
                 monitoringData = d.monitoring || [];
-                allAuditLogs = d.audit_logs || [];
-
                 renderMonitoringTable();
-                handleAuditSearch();
             } catch (e) {
                 if (!silent) {
                     document.getElementById('monitoring-tbody').innerHTML = `
@@ -228,7 +168,7 @@
         function renderMonitoringTable() {
             const tbody = document.getElementById('monitoring-tbody');
             const badge = document.getElementById('active-count-badge');
-            badge.innerText = `${monitoringData.length} aktif`;
+            if (badge) badge.innerText = `${monitoringData.length} aktif`;
 
             if (!monitoringData.length) {
                 tbody.innerHTML = `
@@ -245,106 +185,15 @@
             tbody.innerHTML = monitoringData.map((m, idx) => `
                 <tr class="hover:bg-slate-50 transition">
                     <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
-                    <td class="p-3 font-mono font-bold text-brand-700">${m.nis || '-'}</td>
-                    <td class="p-3 font-bold text-slate-800">${m.name || '-'}</td>
-                    <td class="p-3 text-slate-600">${m.class || '-'}</td>
-                    <td class="p-3 font-medium text-slate-700">${m.quiz_id || '-'}</td>
+                    <td class="p-3 font-mono font-bold text-brand-700">${escapeHtml(m.nis || '-')}</td>
+                    <td class="p-3 font-bold text-slate-800">${escapeHtml(m.name || '-')}</td>
+                    <td class="p-3 text-slate-600">${escapeHtml(m.class || '-')}</td>
+                    <td class="p-3 font-medium text-slate-700">${escapeHtml(m.quiz_id || '-')}</td>
                     <td class="p-3 text-center font-bold text-brand-600">${m.question || 0}</td>
-                    <td class="p-3 text-slate-500">${m.ends_at || '-'}</td>
-                    <td class="p-3 text-slate-500 text-[11px]">${m.updated_at || '-'}</td>
+                    <td class="p-3 text-slate-500">${m.ends_at ? new Date(m.ends_at * 1000).toLocaleTimeString('id-ID') : '-'}</td>
+                    <td class="p-3 text-slate-500 text-[11px]">${m.updated_at ? new Date(m.updated_at * 1000).toLocaleTimeString('id-ID') : '-'}</td>
                 </tr>
             `).join('');
-        }
-
-        // Audit Log Filtering & Pagination
-        function handleAuditSearch() {
-            const query = (document.getElementById('audit-search-input').value || '').trim().toLowerCase();
-
-            filteredAuditLogs = allAuditLogs.filter(l => {
-                return !query ||
-                    (l.action && l.action.toLowerCase().includes(query)) ||
-                    (l.target && l.target.toLowerCase().includes(query)) ||
-                    (l.time && l.time.toLowerCase().includes(query)) ||
-                    (l.ip && l.ip.toLowerCase().includes(query));
-            });
-
-            auditPage = 1;
-            renderAuditTable();
-        }
-
-        function changeAuditPerPage(val) {
-            auditPerPage = parseInt(val) || 30;
-            auditPage = 1;
-            renderAuditTable();
-        }
-
-        function renderAuditTable() {
-            const tbody = document.getElementById('audit-tbody');
-            const total = filteredAuditLogs.length;
-            const totalPages = Math.ceil(total / auditPerPage) || 1;
-
-            if (auditPage > totalPages) auditPage = totalPages;
-            if (auditPage < 1) auditPage = 1;
-
-            const startIdx = (auditPage - 1) * auditPerPage;
-            const endIdx = Math.min(startIdx + auditPerPage, total);
-            const pageData = filteredAuditLogs.slice(startIdx, endIdx);
-
-            if (!total) {
-                tbody.innerHTML = `
-                    <tr><td colspan="5" class="p-6 text-center text-slate-400">Belum ada rekam log audit.</td></tr>
-                `;
-            } else {
-                tbody.innerHTML = pageData.map((l, idx) => `
-                    <tr class="hover:bg-slate-50 transition text-xs">
-                        <td class="p-2.5 text-center font-bold text-slate-400">${startIdx + idx + 1}</td>
-                        <td class="p-2.5 text-slate-500 font-mono text-[11px]">${l.time || '-'}</td>
-                        <td class="p-2.5 font-bold text-slate-800">${l.action || '-'}</td>
-                        <td class="p-2.5 text-slate-600 max-w-xs truncate" title="${l.target || '-'}">${l.target || '-'}</td>
-                        <td class="p-2.5 font-mono text-[11px] text-slate-400">${l.ip || '-'}</td>
-                    </tr>
-                `).join('');
-            }
-
-            // Pagination Controls
-            const info = document.getElementById('audit-pagination-info');
-            const btns = document.getElementById('audit-pagination-buttons');
-
-            if (!total) {
-                info.innerText = 'Menampilkan 0 log';
-                btns.innerHTML = '';
-                return;
-            }
-
-            info.innerText = `Menampilkan ${startIdx + 1} - ${endIdx} dari ${total} log`;
-
-            let html = `
-                <button onclick="goToAuditPage(${auditPage - 1})" ${auditPage <= 1 ? 'disabled class="px-2 py-0.5 rounded border border-slate-200 text-slate-300 cursor-not-allowed"' : 'class="px-2 py-0.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-100"'}>
-                    <i class="fa-solid fa-chevron-left text-[10px]"></i>
-                </button>
-            `;
-
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= auditPage - 1 && i <= auditPage + 1)) {
-                    const active = i === auditPage ? 'bg-brand-600 text-white font-bold' : 'border-slate-200 text-slate-600 hover:bg-slate-100';
-                    html += `<button onclick="goToAuditPage(${i})" class="px-2 py-0.5 rounded border text-xs transition ${active}">${i}</button>`;
-                } else if (i === auditPage - 2 || i === auditPage + 2) {
-                    html += `<span class="px-1 text-slate-400 text-xs">...</span>`;
-                }
-            }
-
-            html += `
-                <button onclick="goToAuditPage(${auditPage + 1})" ${auditPage >= totalPages ? 'disabled class="px-2 py-0.5 rounded border border-slate-200 text-slate-300 cursor-not-allowed"' : 'class="px-2 py-0.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-100"'}>
-                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                </button>
-            `;
-
-            btns.innerHTML = html;
-        }
-
-        function goToAuditPage(p) {
-            auditPage = p;
-            renderAuditTable();
         }
 
         // Server Diagnostics
@@ -358,8 +207,8 @@
                         <div class="p-2.5 rounded-xl border ${c.ok ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'} flex items-start gap-2">
                             <i class="fa-solid ${c.ok ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-600'} text-sm mt-0.5"></i>
                             <div>
-                                <p class="font-bold text-slate-800 text-[11px]">${c.name}</p>
-                                <p class="text-[10px] text-slate-500">${c.detail}</p>
+                                <p class="font-bold text-slate-800 text-[11px]">${escapeHtml(c.name)}</p>
+                                <p class="text-[10px] text-slate-500">${escapeHtml(c.detail)}</p>
                             </div>
                         </div>
                     `).join('');

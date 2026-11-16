@@ -1454,7 +1454,7 @@ if ($action === 'get_students') {
     }
     unset($st);
     if ($dirty) saveDb($file_db, $db);
-    echo json_encode(['students' => $db['students']]);
+    echo json_encode(['students' => $db['students'], 'settings' => $db['settings'] ?? []]);
     exit;
 }
 
@@ -1689,6 +1689,46 @@ if ($action === 'restore_trash' && $_SERVER['REQUEST_METHOD'] === 'POST') { teac
 
 if ($action === 'create_backup' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     teacherOnly(); $db=loadDb($file_db); backupDb($file_db,$db,'manual'); audit($db,'Backup manual'); saveDb($file_db,$db); echo json_encode(['status'=>'success','message'=>'Backup berhasil dibuat.','backups'=>$db['backups']]); exit;
+}
+
+if ($action === 'delete_backup' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    teacherOnly();
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
+    $filename = basename(trim((string)($input['file'] ?? '')));
+    if ($filename === '') {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Nama berkas cadangan tidak valid.']);
+        exit;
+    }
+    $db = loadDb($file_db);
+    $found = false;
+    $newBackups = [];
+    $backupsList = $db['backups'] ?? [];
+    foreach ($backupsList as $b) {
+        $curFile = (string)($b['file'] ?? $b['name'] ?? '');
+        if ($curFile === $filename) {
+            $found = true;
+            $filePath = __DIR__ . '/backups/' . $filename;
+            if (file_exists($filePath) && is_file($filePath)) {
+                @unlink($filePath);
+            }
+        } else {
+            $newBackups[] = $b;
+        }
+    }
+    if (!$found) {
+        // Coba periksa apakah berkas fisik ada di folder backups
+        $filePath = __DIR__ . '/backups/' . $filename;
+        if (file_exists($filePath) && is_file($filePath)) {
+            @unlink($filePath);
+            $found = true;
+        }
+    }
+    $db['backups'] = $newBackups;
+    audit($db, 'Hapus berkas cadangan', $filename);
+    saveDb($file_db, $db);
+    echo json_encode(['status' => 'success', 'message' => 'Berkas cadangan berhasil dihapus.', 'backups' => $db['backups']]);
+    exit;
 }
 
 if ($action === 'system_status') {

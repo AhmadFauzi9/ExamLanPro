@@ -98,43 +98,63 @@
                     </div>
                 </div>
 
-                <!-- Review Control Card -->
-                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-bold">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-xs">Kontrol Pembahasan Siswa</p>
-                            <p id="teacher-review-status" class="text-[11px] text-slate-500">Memuat status pembahasan...</p>
-                        </div>
-                    </div>
-                    <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>
-                    </button>
-                </div>
-
-                <!-- Search & Filters Card -->
-                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                <!-- Unified Filters, Sorting & Review Control Toolbar -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                    <!-- Left: Search Box -->
                     <div class="flex-1 min-w-[200px] relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
                         <input id="results-search-input" type="text" oninput="handleResultsFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
                     </div>
+
+                    <!-- Right Controls: Paket, Kelas, Urut, View Baris, Buka Pembahasan -->
                     <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Filter Paket -->
                         <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px]">Paket:</span>
-                            <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[180px]">
+                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-folder-open text-slate-400 mr-0.5"></i> Paket:</span>
+                            <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[170px]">
                                 <option value="all">Semua Paket Kuis</option>
                             </select>
                         </div>
+
+                        <!-- Filter Kelas -->
                         <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px]">Baris:</span>
+                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-school text-slate-400 mr-0.5"></i> Kelas:</span>
+                            <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                                <option value="all">Semua Kelas</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort Urut -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-arrow-down-short-wide text-slate-400 mr-0.5"></i> Urut:</span>
+                            <select id="results-sort" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                                <option value="date_desc">Terbaru</option>
+                                <option value="nis_asc">NIS (0 - 9)</option>
+                                <option value="nis_desc">NIS (9 - 0)</option>
+                                <option value="name_asc">Abjad (A - Z)</option>
+                                <option value="name_desc">Abjad (Z - A)</option>
+                                <option value="score_desc">Nilai Tertinggi</option>
+                                <option value="score_asc">Nilai Terendah</option>
+                            </select>
+                        </div>
+
+                        <!-- View Baris -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-table-list text-slate-400 mr-0.5"></i> Baris:</span>
                             <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                                 <option value="10">10</option>
                                 <option value="25" selected>25</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
+                        </div>
+
+                        <!-- Kontrol Pembahasan (Sejajar) -->
+                        <div class="flex items-center gap-1.5 pl-1.5 border-l border-slate-200">
+                            <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 transition font-bold shadow-2xs" title="Buka/Tutup Pembahasan untuk Siswa">
+                                <i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>
+                            </button>
+                            <span id="teacher-review-status" class="hidden xl:inline text-[11px] text-slate-500 truncate max-w-[120px]"></span>
                         </div>
                     </div>
                 </div>
@@ -249,8 +269,9 @@
             await fetchDataFromAPI();
             allResults = dbData.results || [];
             
-            // Populate Quiz Filter
+            // Populate Quiz & Class Filters
             populateQuizFilter();
+            populateClassFilter();
             
             // Update Summary Cards
             updateSummaryCards();
@@ -277,29 +298,65 @@
             document.getElementById('results-total-badge').innerText = `${allResults.length} hasil terekam`;
         }
 
-        // Filter Dropdown
+        // Filter Dropdowns
         function populateQuizFilter() {
             const select = document.getElementById('teacher-quiz-filter');
             const currentVal = select.value || 'all';
             const quizzes = dbData.questions || [];
 
             select.innerHTML = '<option value="all">Semua Paket Kuis</option>' + quizzes.map(q => `
-                <option value="${q.id}" ${q.id === currentVal ? 'selected' : ''}>${q.title || q.id}</option>
+                <option value="${q.id}" ${q.id === currentVal ? 'selected' : ''}>${escapeHtml(q.title || q.id)}</option>
             `).join('');
         }
 
-        // Filter Logic
+        function populateClassFilter() {
+            const select = document.getElementById('results-filter-class');
+            if (!select) return;
+            const currentVal = select.value || 'all';
+            const classes = Array.from(new Set(allResults.map(r => (r.class || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+
+            select.innerHTML = '<option value="all">Semua Kelas</option>' + classes.map(c => `
+                <option value="${escapeHtml(c)}" ${c === currentVal ? 'selected' : ''}>${escapeHtml(c)}</option>
+            `).join('');
+        }
+
+        // Filter Logic & Sorting
         function handleResultsFilter() {
-            const filterQuiz = document.getElementById('teacher-quiz-filter').value;
-            const query = (document.getElementById('results-search-input').value || '').trim().toLowerCase();
+            const filterQuiz = document.getElementById('teacher-quiz-filter')?.value || 'all';
+            const filterClass = document.getElementById('results-filter-class')?.value || 'all';
+            const sortMode = document.getElementById('results-sort')?.value || 'date_desc';
+            const query = (document.getElementById('results-search-input')?.value || '').trim().toLowerCase();
 
             filteredResults = allResults.filter(r => {
                 const matchQuiz = (filterQuiz === 'all' || r.code === filterQuiz || r.quiz_id === filterQuiz);
+                const matchClass = (filterClass === 'all' || (r.class || '').trim().toLowerCase() === filterClass.toLowerCase());
                 const matchQuery = !query ||
                     (r.name && r.name.toLowerCase().includes(query)) ||
                     (r.nis && String(r.nis).includes(query)) ||
                     (r.class && r.class.toLowerCase().includes(query));
-                return matchQuiz && matchQuery;
+                return matchQuiz && matchClass && matchQuery;
+            });
+
+            // Multi-criteria sorting
+            filteredResults.sort((a, b) => {
+                if (sortMode === 'nis_asc') {
+                    return String(a.nis || '').localeCompare(String(b.nis || ''), undefined, { numeric: true });
+                } else if (sortMode === 'nis_desc') {
+                    return String(b.nis || '').localeCompare(String(a.nis || ''), undefined, { numeric: true });
+                } else if (sortMode === 'name_asc') {
+                    return String(a.name || '').localeCompare(String(b.name || ''));
+                } else if (sortMode === 'name_desc') {
+                    return String(b.name || '').localeCompare(String(a.name || ''));
+                } else if (sortMode === 'score_desc') {
+                    return (Number(b.score) || 0) - (Number(a.score) || 0);
+                } else if (sortMode === 'score_asc') {
+                    return (Number(a.score) || 0) - (Number(b.score) || 0);
+                } else {
+                    // date_desc (default)
+                    const dateA = a.date ? new Date(a.date).getTime() : 0;
+                    const dateB = b.date ? new Date(b.date).getTime() : 0;
+                    return dateB - dateA;
+                }
             });
 
             currentPage = 1;
@@ -565,7 +622,7 @@
             const toggleBtn = document.getElementById('teacher-review-toggle');
 
             if (filterValue === 'all') {
-                statusEl.textContent = 'Pilih salah satu paket kuis di filter untuk mengatur buka/tutup pembahasan.';
+                statusEl.textContent = 'Pilih paket kuis';
                 toggleBtn.disabled = true;
                 toggleBtn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed';
                 return;
@@ -574,13 +631,13 @@
             toggleBtn.disabled = false;
             const isOpen = !!reviewStates[filterValue];
             if (isOpen) {
-                statusEl.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Pembahasan Terbuka</span> — Siswa dapat melihat nilai dan pembahasan.';
+                statusEl.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Terbuka</span>';
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i> <span>Kunci Pembahasan</span>';
-                toggleBtn.className = 'btn-compact bg-amber-600 hover:bg-amber-700 text-white transition';
+                toggleBtn.className = 'btn-compact bg-amber-600 hover:bg-amber-700 text-white font-bold transition shadow-2xs';
             } else {
-                statusEl.innerHTML = '<span class="text-slate-500 font-semibold"><i class="fa-solid fa-lock"></i> Pembahasan Terkunci</span> — Siswa hanya melihat skor akhir.';
+                statusEl.innerHTML = '<span class="text-slate-500 font-semibold"><i class="fa-solid fa-lock"></i> Terkunci</span>';
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>';
-                toggleBtn.className = 'btn-compact bg-slate-800 hover:bg-slate-700 text-white transition';
+                toggleBtn.className = 'btn-compact bg-slate-800 hover:bg-slate-700 text-white font-bold transition shadow-2xs';
             }
         }
 

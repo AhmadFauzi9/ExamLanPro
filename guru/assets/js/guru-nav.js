@@ -11,6 +11,7 @@
         let activeKey = 'hasil-ujian';
         if (path.includes('/bank-soal')) activeKey = 'bank-soal';
         else if (path.includes('/data-siswa')) activeKey = 'data-siswa';
+        else if (path.includes('/audit-log')) activeKey = 'audit-log';
         else if (path.includes('/monitoring')) activeKey = 'monitoring';
         else if (path.includes('/pengaturan')) activeKey = 'pengaturan';
         else if (path.includes('/hasil-ujian')) activeKey = 'hasil-ujian';
@@ -77,7 +78,8 @@
                 { key: 'hasil-ujian', title: 'Hasil Ujian', icon: 'fa-chart-line', url: `${GURU_BASE}hasil-ujian/` },
                 { key: 'bank-soal', title: 'Bank Soal', icon: 'fa-folder-plus', url: `${GURU_BASE}bank-soal/` },
                 { key: 'data-siswa', title: 'Data Siswa', icon: 'fa-users', url: `${GURU_BASE}data-siswa/` },
-                { key: 'monitoring', title: 'Monitoring & Audit', icon: 'fa-tower-broadcast', url: `${GURU_BASE}monitoring/` },
+                { key: 'monitoring', title: 'Monitoring Ujian', icon: 'fa-tower-broadcast', url: `${GURU_BASE}monitoring/` },
+                { key: 'audit-log', title: 'Audit Log', icon: 'fa-shield-halved', url: `${GURU_BASE}audit-log/` },
                 { key: 'pengaturan', title: 'Pengaturan', icon: 'fa-gear', url: `${GURU_BASE}pengaturan/` }
             ];
 

@@ -49,42 +49,25 @@
                     </div>
                 </div>
 
-                <!-- CARD 1: KEAMANAN LOGIN SISWA (FITUR TOGGLE PASSWORD SISWA) -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between border-b pb-3">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-sm font-bold">
-                                <i class="fa-solid fa-user-shield"></i>
-                            </div>
-                            <div>
+                <!-- CARD 1: KEAMANAN LOGIN SISWA (DIKELOLA DI DATA SISWA) -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-base font-bold shrink-0">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
                                 <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Keamanan Login Siswa</h3>
-                                <p class="text-[11px] text-slate-500">Atur kewajiban penggunaan password saat siswa masuk ke aplikasi ujian.</p>
+                                <span id="pwd-status-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Wajib Password
+                                </span>
                             </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Pengaturan login dengan atau tanpa password saat ujian kini dikelola langsung pada halaman Data Siswa.</p>
                         </div>
-                        <span id="pwd-status-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Wajib Password
-                        </span>
                     </div>
-
-                    <form id="setting-student-password-form" onsubmit="saveStudentPasswordSetting(event)" class="space-y-4 text-xs">
-                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                            <label class="flex items-start gap-3 cursor-pointer">
-                                <input type="checkbox" id="require-student-password-toggle" class="mt-0.5 w-4 h-4 rounded text-brand-600 focus:ring-brand-500 cursor-pointer">
-                                <div>
-                                    <span class="font-bold text-slate-800 block text-xs">Wajibkan Password Siswa saat Login Ujian</span>
-                                    <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                                        Jika diaktifkan, siswa harus memasukkan password 6 karakter (dilihat dari menu Data Siswa). Jika dinonaktifkan, siswa cukup menginput NIS dan nama/kelas tanpa memasukkan password.
-                                    </p>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="submit" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 shadow-xs transition">
-                                <i class="fa-solid fa-floppy-disk text-xs"></i> <span>Simpan</span>
-                            </button>
-                        </div>
-                    </form>
+                    <a href="../data-siswa/" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 shrink-0 transition shadow-xs">
+                        <span>Buka Data Siswa</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
                 </div>
 
                 <!-- CARD 2: GANTI PASSWORD GURU / ADMINISTRATOR -->
@@ -277,15 +260,24 @@
                 return;
             }
 
-            list.innerHTML = backups.slice().reverse().map(b => `
-                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-file-zipper text-brand-600"></i>
-                        <span class="font-mono font-bold text-slate-700">${b.file || b.name || 'backup.json'}</span>
+            list.innerHTML = backups.slice().reverse().map(b => {
+                const fileName = b.file || b.name || 'backup.json';
+                const timeStr = b.time ? new Date(b.time).toLocaleString('id-ID') : '-';
+                return `
+                    <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <i class="fa-solid fa-file-zipper text-brand-600 shrink-0"></i>
+                            <span class="font-mono font-bold text-slate-700 truncate" title="${fileName}">${fileName}</span>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-slate-500 font-mono text-[11px]">${timeStr}</span>
+                            <button type="button" onclick="deleteBackup('${fileName}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Berkas Cadangan">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
                     </div>
-                    <span class="text-slate-500 font-mono text-[11px]">${b.time || '-'}</span>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         async function createBackup() {
@@ -300,6 +292,31 @@
                 appAlert(d.message || 'Backup berhasil dibuat.', 'Cadangan Dibuat');
             } catch (e) {
                 appAlert('Gagal membuat backup database.');
+            }
+        }
+
+        async function deleteBackup(fileName) {
+            if (!fileName) return;
+            const ok = await appConfirm(`Hapus berkas cadangan "${fileName}"? Tindakan ini tidak dapat dibatalkan.`, 'Hapus Backup', 'Batal', 'Hapus');
+            if (!ok) return;
+
+            try {
+                const res = await fetch(`${API_URL}?action=delete_backup`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: fileName })
+                });
+                const d = await res.json();
+                if (!res.ok || d.status !== 'success') {
+                    appAlert(d.message || 'Gagal menghapus berkas cadangan.', 'Gagal');
+                    return;
+                }
+                if (d.backups) dbData.backups = d.backups;
+                renderBackupList();
+                appAlert('Berkas cadangan berhasil dihapus.', 'Berhasil');
+            } catch (e) {
+                appAlert('Gagal menghubungi server.', 'Gagal');
             }
         }
     </script>
