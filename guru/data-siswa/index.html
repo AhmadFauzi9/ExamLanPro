@@ -537,12 +537,14 @@
                 if (count > 0) {
                     btn.disabled = false;
                     btn.className = 'btn-icon bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition';
-                    btn.title = `Hapus Terpilih (${count})`;
+                    btn.setAttribute('data-tooltip', `Hapus Terpilih (${count})`);
+                    btn.removeAttribute('title');
                     btn.innerHTML = `<i class="fa-solid fa-trash-can text-xs"></i>`;
                 } else {
                     btn.disabled = true;
                     btn.className = 'btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition';
-                    btn.title = 'Hapus Siswa Terpilih';
+                    btn.setAttribute('data-tooltip', 'Hapus Siswa Terpilih');
+                    btn.removeAttribute('title');
                     btn.innerHTML = `<i class="fa-solid fa-trash-can text-xs"></i>`;
                 }
             }
