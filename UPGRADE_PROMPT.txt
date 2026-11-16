@@ -1,0 +1,1270 @@
+Saya ingin melakukan upgrade besar pada aplikasi ujian sekolah "ExamLAN Pro".
+
+GUNAKAN FILE/PACKAGE YANG SAYA LAMPIRKAN SEBAGAI BASE UTAMA.
+
+PENTING:
+- Jangan membuat aplikasi baru dari awal.
+- Jangan mengganti arsitektur yang sudah berjalan tanpa alasan teknis yang kuat.
+- Gunakan source code yang saya lampirkan sebagai source of truth.
+- Pertahankan seluruh fitur yang sudah berjalan.
+- Pertahankan tampilan visual yang sudah ada kecuali bagian yang memang saya minta diubah.
+- Jangan menghilangkan fungsi lama hanya karena menambahkan fitur baru.
+- Jangan membuat halaman/component/API duplikat jika fungsi yang sama sudah tersedia.
+- Lakukan perubahan seminimal mungkin pada bagian yang tidak berhubungan.
+- Sebelum mengubah kode, pahami terlebih dahulu struktur file, alur data, autentikasi, session, API, database/data storage, dan hubungan antara mode siswa dan mode guru.
+- Jika ada konflik antara fitur lama dan fitur baru, prioritaskan keamanan, integritas data, dan fitur yang secara eksplisit saya minta.
+- Jangan mengarang nama file, endpoint, function, variable, atau struktur yang belum ada. Periksa source code terlebih dahulu.
+- Setelah selesai, lakukan pemeriksaan sintaks dan alur setiap fitur yang diubah.
+- Jangan mengubah desain yang sudah benar hanya demi terlihat berbeda.
+
+==================================================
+A. ARSITEKTUR MODE SISWA DAN GURU
+==================================================
+
+Pertahankan pemisahan alamat antara mode siswa dan mode guru.
+
+Contoh:
+
+/kuis/siswa/
+/kuis/guru/
+
+atau gunakan struktur yang sudah terdapat pada source code.
+
+Siswa TIDAK BOLEH dapat mengakses dashboard guru hanya dengan membuka URL guru.
+
+Mode guru harus memiliki autentikasi server/session tersendiri.
+
+HILANGKAN SEPENUHNYA FITUR "KUNCI SERVER" / "SERVER KEY"
+karena mekanisme tersebut sudah tidak digunakan.
+
+Yang harus dihapus:
+- tombol Kunci Server
+- input server key
+- validasi server key
+- penyimpanan server key
+- modal server key
+- endpoint server key yang tidak lagi digunakan
+- kode JavaScript yang hanya digunakan untuk server key
+- teks UI yang masih menyebut server key
+
+JANGAN menghapus autentikasi session guru.
+
+Gunakan:
+- PHP session/server session
+- teacher login
+- teacher logout
+- password hash
+- authorization berdasarkan session
+- pengecekan session pada setiap endpoint guru
+
+Pastikan setelah tombol "Kunci Server" dihapus, tidak ada fitur lain yang bergantung padanya.
+
+==================================================
+B. KEAMANAN SERVER
+==================================================
+
+Prioritas pertama adalah keamanan.
+
+1. Jangan pernah mempercayai nilai berikut yang dikirim browser siswa:
+   - nilai akhir
+   - jumlah benar
+   - jumlah salah
+   - status lulus
+   - kunci jawaban
+
+2. Server harus menghitung hasil ujian.
+
+Browser siswa cukup mengirim:
+- quiz ID
+- session ujian
+- jawaban siswa
+
+Server:
+- mengambil soal
+- mengambil kunci jawaban
+- memvalidasi jawaban
+- menghitung benar
+- menghitung salah
+- menghitung nilai
+- menyimpan hasil
+
+3. Kunci jawaban tidak boleh dikirim kepada siswa sebelum guru membuka fitur:
+"Tampilkan Jawaban & Pembahasan".
+
+4. Endpoint guru wajib memeriksa session guru.
+
+5. Endpoint siswa tidak boleh dapat menjalankan:
+- delete result
+- reset result
+- allow retake
+- reveal answer
+- edit quiz
+- delete quiz
+- import siswa
+- import soal
+- perubahan konfigurasi guru
+
+6. Jangan menggunakan hidden input, localStorage, atau JavaScript sebagai satu-satunya mekanisme keamanan.
+
+Keamanan harus berada di server.
+
+==================================================
+C. SISTEM SESSION GURU
+==================================================
+
+Pertahankan mekanisme login guru yang sudah ada.
+
+Alur:
+
+Buka:
+
+/guru/
+
+↓
+
+Tampilkan halaman Login Guru
+
+↓
+
+Login password
+
+↓
+
+Jika menggunakan password default:
+
+WAJIB:
+"Anda harus mengganti password sebelum melanjutkan."
+
+↓
+
+Buat password baru
+
+↓
+
+Password disimpan menggunakan password_hash()
+
+↓
+
+Login berikutnya menggunakan password baru.
+
+Tambahkan:
+- Logout
+- session timeout
+- pengecekan session
+- perlindungan endpoint guru
+- rate limit sederhana untuk percobaan login jika memungkinkan
+
+Jangan membuat password atau kunci baru secara hardcode di JavaScript.
+
+==================================================
+D. SIDEBAR DASHBOARD GURU
+==================================================
+
+UBAH NAVIGASI DASHBOARD GURU MENJADI SIDEBAR.
+
+Jangan lagi menggunakan kumpulan tombol/tab horizontal sebagai navigasi utama jika struktur sekarang memungkinkan sidebar.
+
+Buat layout:
+
+------------------------------------------------
+| Logo ExamLAN Pro                            |
+|                                              |
+| SIDEBAR                | KONTEN UTAMA       |
+|                       |                    |
+| Dashboard             |                    |
+| Hasil Ujian           |                    |
+| Data Siswa             |                    |
+| Bank Soal              |                    |
+| Paket Kuis             |                    |
+| Jadwal Ujian           |                    |
+| Monitoring             |                    |
+| Analisis Soal          |                    |
+| Pengaturan             |                    |
+| Audit Log              |                    |
+| Backup                 |                    |
+| Profil Guru             |                    |
+|                       |                    |
+| Logout                |                    |
+------------------------------------------------
+
+Gunakan icon yang konsisten.
+
+Sidebar harus:
+- aktif berdasarkan halaman/menu
+- dapat collapse di desktop
+- menjadi drawer di mobile
+- tidak merusak responsive layout
+- tetap mempertahankan gaya visual ExamLAN Pro yang sudah ada
+
+Jika aplikasi masih menggunakan satu index.html dengan sistem view/section,
+gunakan struktur view yang sudah ada dan ubah navigasinya menjadi sidebar.
+
+JANGAN membuat halaman terpisah secara tidak perlu.
+
+==================================================
+E. DASHBOARD UTAMA
+==================================================
+
+Tambahkan dashboard ringkasan:
+
+┌─────────────────┐
+│ Total Siswa     │
+│ 320             │
+└─────────────────┘
+
+┌─────────────────┐
+│ Total Kuis      │
+│ 25              │
+└─────────────────┘
+
+┌─────────────────┐
+│ Ujian Hari Ini  │
+│ 3               │
+└─────────────────┘
+
+┌─────────────────┐
+│ Peserta Aktif   │
+│ 78              │
+└─────────────────┘
+
+Tambahkan ringkasan:
+- ujian aktif
+- jumlah peserta
+- rata-rata nilai
+- jumlah hasil ujian
+- server status
+
+==================================================
+F. MANAJEMEN HASIL UJIAN
+==================================================
+
+Tabel hasil ujian HARUS mempunyai struktur:
+
+CHECKBOX
+No
+NIS
+NAMA SISWA
+KELAS & BAGIAN
+NAMA KUIS
+BENAR
+SALAH
+NILAI AKHIR
+AKSI
+
+Pada kolom AKSI setiap baris:
+
+[ Izinkan Ujian Ulang ]
+[ Hapus ]
+
+Jangan menaruh tombol "Izinkan Ujian Ulang" dan "Hapus"
+sebagai tombol global di atas tabel.
+
+Tombol global yang boleh berada di toolbar:
+
+[ Refresh Data ]
+[ Export ]
+[ Hapus Dipilih ]
+[ Hapus Semua / Reset Hasil ]
+
+"Hapus Semua / Reset Hasil" harus berada di bagian atas tabel
+dan sejajar dengan Refresh Data dan Export jika ukuran layar memungkinkan.
+
+Tambahkan:
+- checkbox select all
+- checkbox per hasil
+- konfirmasi modal sebelum delete
+- loading state
+- success state
+- error state
+
+Jangan gunakan alert() atau confirm() browser.
+
+==================================================
+G. UJIAN ULANG
+==================================================
+
+Pertahankan:
+
+[Izinkan Ujian Ulang]
+
+Tetapi upgrade menjadi:
+
+Klik:
+[Izinkan Ujian Ulang]
+
+↓
+
+Modal:
+
+Nama siswa:
+NIS:
+Kuis:
+
+Alasan:
+[......................]
+
+Jumlah kesempatan:
+[1]
+
+Berlaku sampai:
+[......................]
+
+[ Batal ]
+[ Berikan Izin ]
+
+Simpan riwayat izin.
+
+Guru dapat melihat:
+- siapa yang memberikan izin
+- kapan izin diberikan
+- alasan
+- berapa kali kesempatan
+
+==================================================
+H. NAVIGASI SOAL SISWA
+==================================================
+
+Tambahkan sidebar/panel navigasi nomor soal.
+
+Contoh:
+
+1  2  3  4  5
+6  7  8  9 10
+11 12 13 14 15
+
+Status:
+- aktif
+- sudah dijawab
+- belum dijawab
+
+Klik nomor → langsung menuju soal.
+
+Tetap pertahankan:
+- pengacakan soal
+- pengacakan opsi jika sudah tersedia
+- jawaban siswa
+
+==================================================
+I. PENGUMPULAN UJIAN
+==================================================
+
+Jika masih ada jawaban kosong:
+
+JANGAN izinkan submit.
+
+Tampilkan modal:
+
+"Masih ada X soal yang belum dijawab."
+
+Tampilkan nomor soal yang kosong.
+
+Contoh:
+
+Soal belum dijawab:
+3, 8, 14, 21
+
+Tombol:
+
+[Kembali ke Soal]
+
+Setelah semua terisi:
+
+"Semua soal telah dijawab.
+Apakah Anda yakin ingin menyelesaikan ujian?"
+
+[Batal]
+[Kirim Jawaban]
+
+Jangan gunakan alert() atau confirm().
+
+==================================================
+J. AUTO-SAVE JAWABAN
+==================================================
+
+Tambahkan penyimpanan otomatis.
+
+Setiap beberapa detik:
+
+jawaban siswa
+↓
+server
+
+Tampilkan indikator:
+
+✓ Jawaban tersimpan
+
+atau:
+
+⟳ Menyimpan...
+
+atau:
+
+⚠ Koneksi terputus
+
+Jangan mengganggu siswa dengan modal untuk setiap autosave.
+
+Jika koneksi LAN terputus:
+- jangan langsung mengakhiri ujian
+- simpan sementara secara lokal
+- coba reconnect otomatis
+- sinkronkan ketika server kembali
+
+==================================================
+K. TIMER UJIAN
+==================================================
+
+Timer harus menggunakan waktu server.
+
+Jangan menjadikan JavaScript browser sebagai sumber waktu utama.
+
+Server menentukan:
+- start time
+- end time
+- remaining time
+
+Jika browser refresh:
+timer harus tetap benar.
+
+Jika waktu habis:
+server tetap menolak jawaban setelah batas waktu.
+
+==================================================
+L. PENGACAKAN SOAL DAN OPSI
+==================================================
+
+Pertahankan pengacakan soal yang sudah ada.
+
+Upgrade menjadi:
+
+1. Random order questions
+2. Random order options
+
+Setiap siswa dapat memiliki urutan soal berbeda.
+
+Kunci jawaban harus mengikuti ID opsi,
+bukan sekadar posisi A/B/C/D.
+
+Randomisasi harus konsisten selama satu sesi ujian.
+
+Jika siswa refresh:
+urutan soal TIDAK boleh berubah.
+
+==================================================
+M. KONTROL JAWABAN DAN PEMBAHASAN
+==================================================
+
+Tombol:
+
+"Tampilkan Jawaban & Pembahasan"
+
+HANYA BOLEH dikontrol oleh guru.
+
+Siswa tidak boleh mengaktifkannya sendiri.
+
+Jika guru membuka:
+
+Server menyimpan status:
+
+review_enabled = true
+
+Siswa:
+- refresh halaman
+- tetap berada pada hasil ujian
+- TIDAK kembali ke halaman identitas
+- langsung menampilkan hasil ujian
+- kemudian pembahasan
+
+Jika guru belum membuka:
+hasil hanya menampilkan nilai/statistik yang diizinkan.
+
+==================================================
+N. PERSISTENSI HASIL SISWA
+==================================================
+
+Setelah ujian selesai:
+
+Simpan session/result identifier.
+
+Jika siswa refresh:
+
+JANGAN kembali ke halaman identitas.
+
+Alur:
+
+Refresh
+↓
+cek result/session
+↓
+hasil ujian ditemukan
+↓
+tampilkan hasil
+
+Bukan:
+
+Refresh
+↓
+identitas siswa
+↓
+hasil ujian double
+
+Pastikan tidak terjadi duplikasi:
+- form identitas
+- hasil ujian
+- pembahasan
+
+Hanya tampil satu halaman hasil.
+
+==================================================
+O. DATA SISWA
+==================================================
+
+Buat menu:
+
+DATA SISWA
+
+Kolom:
+
+Foto
+NIS
+Nama
+Kelas & Bagian
+Wali Kelas
+
+Tambahkan:
+
+[ Tambah Siswa ]
+[ Import ]
+[ Download Template ]
+[ Export ]
+
+Import mendukung template.
+
+Validasi:
+- NIS wajib
+- NIS unik
+- nama wajib
+- kelas wajib
+- format foto valid
+
+Tambahkan edit dan hapus.
+
+==================================================
+P. MASTER DATA
+==================================================
+
+Jika memungkinkan berdasarkan struktur aplikasi:
+
+Data Master:
+
+- Tahun Pelajaran
+- Kelas
+- Bagian
+- Wali Kelas
+- Guru
+- Mata Pelajaran
+- Siswa
+
+Gunakan data master tersebut pada pembuatan kuis.
+
+==================================================
+Q. BANK SOAL
+==================================================
+
+Upgrade bank soal.
+
+Setiap soal dapat memiliki:
+
+- mata pelajaran
+- kelas
+- materi
+- bab
+- tingkat kesulitan
+- pertanyaan
+- opsi jawaban
+- kunci
+- pembahasan
+
+Tingkat kesulitan:
+
+Mudah
+Sedang
+Sulit
+
+Tambahkan filter dan pencarian.
+
+==================================================
+R. PAKET KUIS
+==================================================
+
+Tambahkan status:
+
+DRAFT
+SIAP
+AKTIF
+SELESAI
+DIARSIPKAN
+
+Guru tidak dapat mengaktifkan kuis yang belum valid.
+
+Sebelum aktif:
+
+Validasi:
+
+✓ Judul
+✓ Mata pelajaran
+✓ Kelas
+✓ Durasi
+✓ Minimal soal
+✓ Semua opsi tersedia
+✓ Semua soal memiliki kunci
+✓ Tidak ada soal duplikat
+
+==================================================
+S. JADWAL UJIAN
+==================================================
+
+Tambahkan:
+
+Tanggal mulai
+Jam mulai
+Tanggal selesai
+Jam selesai
+
+Contoh:
+
+20 September 2026
+08:00 - 10:00
+
+Siswa hanya dapat mengakses ujian pada periode yang ditentukan.
+
+==================================================
+T. TOKEN / PIN UJIAN
+==================================================
+
+Opsional per kuis.
+
+Contoh:
+
+Kode Ujian:
+739281
+
+Guru dapat:
+- melihat
+- regenerate
+- menonaktifkan
+
+Siswa harus memasukkan PIN jika fitur tersebut diaktifkan.
+
+==================================================
+U. MONITORING LIVE
+==================================================
+
+Tambahkan menu:
+
+MONITORING
+
+Status:
+
+🟢 Sedang mengerjakan
+🔵 Sudah selesai
+🟡 Koneksi bermasalah
+⚪ Belum mulai
+
+Detail:
+
+Nama
+NIS
+Kelas
+Kuis
+Soal ke-X
+Waktu tersisa
+Status koneksi
+
+Jangan tampilkan informasi yang tidak diperlukan.
+
+==================================================
+V. ANTI-CHEATING DASAR
+==================================================
+
+Tambahkan secara hati-hati:
+
+- deteksi pindah tab
+- deteksi keluar fullscreen
+- pencatatan event
+- peringatan
+
+Contoh:
+
+Pindah tab ke-1
+Pindah tab ke-2
+Pindah tab ke-3
+
+Simpan event ke server.
+
+Jangan otomatis memberikan hukuman atau menghapus jawaban hanya karena event tersebut.
+
+Guru yang menentukan tindakan.
+
+==================================================
+W. ANALISIS SOAL
+==================================================
+
+Tambahkan menu:
+
+ANALISIS SOAL
+
+Contoh:
+
+Soal 1
+Benar 95%
+Salah 5%
+
+Soal 2
+Benar 40%
+Salah 60%
+
+Soal 3
+Benar 12%
+Salah 88%
+
+Tambahkan analisis pilihan:
+
+A: 2 siswa
+B: 5 siswa
+C: 27 siswa
+D: 1 siswa
+
+Kunci: C
+
+==================================================
+X. ANALISIS NILAI
+==================================================
+
+Dashboard dapat menampilkan:
+
+Jumlah peserta
+Rata-rata
+Nilai tertinggi
+Nilai terendah
+
+Distribusi:
+
+0–59
+60–69
+70–79
+80–89
+90–100
+
+Filter berdasarkan:
+- kuis
+- kelas
+- mata pelajaran
+- tanggal
+
+==================================================
+Y. EXPORT DAN CETAK
+==================================================
+
+Tambahkan:
+
+Export:
+- CSV
+- Excel jika library tersedia
+- PDF jika library tersedia
+
+Cetak:
+- daftar nilai
+- hasil siswa
+- analisis soal
+- berita acara
+
+==================================================
+Z. BERITA ACARA UJIAN
+==================================================
+
+Tambahkan generator:
+
+BERITA ACARA PELAKSANAAN UJIAN
+
+Mata Pelajaran:
+Kelas:
+Tanggal:
+Waktu:
+Jumlah peserta:
+Hadir:
+Tidak hadir:
+Guru:
+Pengawas:
+
+Sediakan:
+[ Preview ]
+[ Cetak ]
+[ Export PDF ]
+
+==================================================
+AA. AUDIT LOG
+==================================================
+
+Tambahkan menu:
+
+AUDIT LOG
+
+Catat:
+
+Login guru
+Logout guru
+Buat kuis
+Edit kuis
+Hapus kuis
+Import siswa
+Hapus siswa
+Memberikan izin ujian ulang
+Membuka jawaban
+Menghapus hasil
+Reset hasil
+Perubahan password
+
+Data:
+- waktu
+- user
+- tindakan
+- target
+- detail
+
+==================================================
+AB. BACKUP
+==================================================
+
+Tambahkan menu:
+
+BACKUP
+
+Fitur:
+
+[ Backup Sekarang ]
+
+dan jika memungkinkan:
+
+Backup otomatis.
+
+Simpan versi backup berdasarkan timestamp.
+
+Jangan menghapus backup lama secara otomatis tanpa konfigurasi.
+
+Jika masih menggunakan JSON,
+pastikan backup dilakukan sebelum operasi besar seperti:
+- reset hasil
+- import massal
+- migrasi
+- perubahan struktur
+
+==================================================
+AC. TRASH / RECYCLE BIN
+==================================================
+
+Jangan langsung menghapus data penting.
+
+Untuk:
+- hasil
+- siswa
+- kuis
+- bank soal
+
+gunakan:
+
+Delete
+↓
+Trash
+↓
+Restore
+↓
+Permanent Delete
+
+Jika implementasinya terlalu besar untuk tahap pertama,
+buat struktur yang siap dikembangkan tanpa merusak fungsi delete sekarang.
+
+==================================================
+AD. SYSTEM STATUS
+==================================================
+
+Tambahkan menu:
+
+STATUS SERVER
+
+Tampilkan:
+
+Apache       🟢
+PHP          🟢
+API Siswa    🟢
+API Guru     🟢
+Session      🟢
+Storage      🟢
+Database     🟢
+
+Jika gagal:
+
+🔴 API Guru
+"Endpoint tidak dapat dihubungi."
+
+Jangan hanya menampilkan:
+"Server error."
+
+Berikan informasi teknis yang aman untuk membantu admin.
+
+==================================================
+AE. DATABASE
+==================================================
+
+Jika aplikasi saat ini masih menggunakan JSON,
+JANGAN langsung menghapus JSON.
+
+Buat struktur kode agar dapat dimigrasikan ke database.
+
+Target jangka panjang:
+
+users
+teachers
+students
+classes
+subjects
+quizzes
+questions
+options
+quiz_questions
+exam_sessions
+answers
+results
+retake_permissions
+review_permissions
+audit_logs
+settings
+backups
+
+Untuk tahap sekarang:
+pertahankan storage yang digunakan aplikasi jika migrasi database belum diminta.
+
+==================================================
+AF. ERROR HANDLING
+==================================================
+
+HAPUS penggunaan:
+
+alert()
+confirm()
+
+dari aplikasi.
+
+Gunakan modal aplikasi.
+
+Kategori:
+
+SUCCESS
+ERROR
+WARNING
+INFO
+CONFIRMATION
+
+Setiap request API harus menangani:
+
+HTTP 200
+HTTP 400
+HTTP 401
+HTTP 403
+HTTP 404
+HTTP 500
+network error
+invalid JSON
+session expired
+
+Jangan menampilkan dashboard guru jika autentikasi gagal.
+
+Jangan menganggap request berhasil hanya karena fetch() tidak throw error.
+
+Periksa:
+- HTTP status
+- response JSON
+- status aplikasi
+
+==================================================
+AG. RESPONSIVE
+==================================================
+
+Pastikan:
+
+Desktop:
+Sidebar tetap terlihat.
+
+Tablet:
+Sidebar dapat collapse.
+
+Mobile:
+Sidebar menjadi drawer.
+
+Tabel:
+tidak menyebabkan halaman rusak secara horizontal.
+
+==================================================
+AH. UI/UX
+==================================================
+
+Pertahankan identitas visual ExamLAN Pro.
+
+Jangan melakukan redesign total.
+
+Gunakan:
+- modal
+- loading
+- skeleton jika diperlukan
+- empty state
+- error state
+- success state
+- tooltip
+- badge
+- progress
+- status indicator
+
+Jangan menggunakan browser alert/confirm.
+
+==================================================
+AI. PRIORITAS IMPLEMENTASI
+==================================================
+
+JANGAN mengerjakan semuanya secara acak.
+
+Kerjakan dengan urutan:
+
+FASE 1 — KEAMANAN & STABILITAS
+
+1. Hapus Server Key
+2. Pastikan session guru
+3. Pastikan authorization endpoint
+4. Server-side grading
+5. Persistensi hasil
+6. Perbaikan error handling
+7. Backup dasar
+
+FASE 2 — SISTEM UJIAN
+
+8. Auto-save
+9. Reconnect LAN
+10. Server timer
+11. Random soal
+12. Random opsi
+13. Navigasi soal
+14. Validasi submit
+
+FASE 3 — DASHBOARD GURU
+
+15. Sidebar
+16. Dashboard statistik
+17. Hasil ujian
+18. Ujian ulang
+19. Data siswa
+20. Bank soal
+21. Paket kuis
+22. Jadwal
+
+FASE 4 — MONITORING & ANALISIS
+
+23. Monitoring live
+24. Audit log
+25. Analisis soal
+26. Analisis nilai
+27. Export
+28. Berita acara
+
+FASE 5 — INFRASTRUKTUR
+
+29. Backup lanjutan
+30. Trash
+31. System status
+32. Persiapan migrasi database
+
+==================================================
+AJ. ATURAN PENTING SAAT CODING
+==================================================
+
+SEBELUM MODIFIKASI:
+
+1. Baca seluruh file yang relevan.
+2. Petakan:
+   - file siswa
+   - file guru
+   - API
+   - storage
+   - autentikasi
+   - fungsi kuis
+   - fungsi hasil
+3. Identifikasi dependency antar fungsi.
+
+SETELAH MODIFIKASI:
+
+1. Periksa syntax PHP.
+2. Periksa syntax JavaScript.
+3. Periksa semua endpoint.
+4. Periksa session login.
+5. Periksa logout.
+6. Periksa akses siswa ke endpoint guru.
+7. Periksa akses tanpa login.
+8. Periksa refresh halaman hasil siswa.
+9. Periksa submit ujian.
+10. Periksa ujian ulang.
+11. Periksa delete hasil.
+12. Periksa reset hasil.
+13. Periksa import siswa.
+14. Periksa pembuatan kuis.
+15. Periksa export.
+16. Periksa responsive sidebar.
+
+==================================================
+AK. TEST CASE MINIMAL
+==================================================
+
+TEST 1
+Buka /guru/
+→ harus Login Guru.
+
+TEST 2
+Refresh /guru/
+→ tidak boleh langsung membuka dashboard.
+
+TEST 3
+Login admin123
+→ jika password default, wajib ganti password.
+
+TEST 4
+Logout
+→ dashboard tidak dapat diakses kembali tanpa login.
+
+TEST 5
+Siswa membuka URL guru
+→ ditolak.
+
+TEST 6
+Siswa mencoba endpoint teacher API
+→ HTTP 401/403.
+
+TEST 7
+Guru membuat kuis
+→ tersimpan.
+
+TEST 8
+Siswa mengikuti kuis
+→ soal teracak.
+
+TEST 9
+Siswa refresh saat mengerjakan
+→ sesi tetap ada dan urutan soal tidak berubah.
+
+TEST 10
+Siswa mencoba submit dengan soal kosong
+→ ditolak dan modal menampilkan soal kosong.
+
+TEST 11
+Siswa selesai ujian
+→ hasil tersimpan.
+
+TEST 12
+Siswa refresh halaman hasil
+→ tetap halaman hasil, bukan identitas.
+
+TEST 13
+Guru belum membuka pembahasan
+→ siswa tidak melihat jawaban/pembahasan.
+
+TEST 14
+Guru membuka pembahasan
+→ siswa refresh
+→ hasil + pembahasan tampil.
+
+TEST 15
+Guru klik Izinkan Ujian Ulang
+→ hanya siswa/NIS tersebut yang mendapatkan izin.
+
+TEST 16
+Guru klik Hapus pada satu baris
+→ hanya hasil tersebut yang terhapus.
+
+TEST 17
+Guru menggunakan Hapus Semua/Reset Hasil
+→ semua hasil sesuai scope dihapus/reset setelah konfirmasi.
+
+TEST 18
+Refresh data
+→ data tidak hilang.
+
+TEST 19
+Export
+→ file berisi data yang benar.
+
+TEST 20
+Server/API mati
+→ aplikasi menampilkan modal error yang jelas dan tidak membuka dashboard guru secara ilegal.
+
+==================================================
+AL. HASIL AKHIR YANG SAYA INGINKAN
+==================================================
+
+Saya ingin ExamLAN Pro menjadi aplikasi ujian LAN sekolah yang:
+
+- aman
+- stabil
+- mudah digunakan guru
+- mudah digunakan siswa
+- tidak bergantung pada Server Key
+- menggunakan session guru
+- memiliki dashboard guru dengan sidebar
+- memiliki manajemen siswa
+- memiliki bank soal
+- memiliki paket kuis
+- memiliki jadwal ujian
+- memiliki random soal
+- memiliki random opsi
+- memiliki auto-save
+- tahan terhadap koneksi LAN yang terputus
+- memiliki server-side grading
+- memiliki monitoring
+- memiliki analisis hasil
+- memiliki audit log
+- memiliki backup
+- memiliki export
+- memiliki sistem ujian ulang
+- memiliki kontrol jawaban dan pembahasan dari guru
+- memiliki modal notification
+- responsive desktop/tablet/mobile
+
+TETAPI:
+
+JANGAN merusak fitur yang sudah berjalan.
+
+JANGAN mengubah tampilan lama yang tidak perlu.
+
+JANGAN menghapus data lama.
+
+JANGAN membuat endpoint duplikat.
+
+JANGAN membuat dashboard guru dapat dibuka tanpa autentikasi.
+
+JANGAN mengirim kunci jawaban ke browser siswa sebelum diizinkan guru.
+
+JANGAN mempercayai nilai yang dikirim browser siswa.
+
+JANGAN menggunakan Server Key lagi.
+
+Setelah selesai, berikan laporan:
+
+1. File yang diubah
+2. Fungsi yang ditambahkan
+3. Fungsi yang diperbaiki
+4. Fungsi yang dihapus
+5. Endpoint API yang berubah
+6. Struktur storage/database yang berubah
+7. Fitur keamanan yang ditambahkan
+8. Test yang sudah dilakukan
+9. Hal yang belum dapat diuji
+10. Cara instalasi/update tanpa menghapus data lama
+
+Jika sebuah fitur terlalu besar untuk dikerjakan dengan aman sekaligus,
+jangan membuat implementasi setengah jadi.
+
+Kerjakan berdasarkan fase dan pastikan setiap fase tetap dapat dijalankan sebelum melanjutkan ke fase berikutnya.

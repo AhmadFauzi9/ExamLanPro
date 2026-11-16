@@ -1,0 +1,7 @@
+# Sesi & temporary files
+sessions/*
+!sessions/.gitkeep
+backups/*
+!backups/.gitkeep
+*.log
+*.tmp
