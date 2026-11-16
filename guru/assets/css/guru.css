@@ -38,3 +38,20 @@
     border-radius: 0.6rem;
     font-weight: 600;
 }
+
+/* Modal Stacking Order Guarantee */
+#core-app-alert-modal,
+#core-app-confirm-modal {
+    z-index: 99999 !important;
+}
+#question-modal {
+    z-index: 70 !important;
+}
+#quiz-modal,
+#modal-mass-import {
+    z-index: 60 !important;
+}
+#qm-dialog {
+    z-index: 50 !important;
+}
+

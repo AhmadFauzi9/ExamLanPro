@@ -203,7 +203,7 @@
                     </div>
                     <h3 id="question-modal-title" class="font-bold text-slate-800 text-sm">Tambah Soal Baru</h3>
                 </div>
-                <button type="button" onclick="toggleModal('question-modal', false)" class="text-slate-400 hover:text-slate-600 p-1">
+                <button type="button" onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600 p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -261,7 +261,7 @@
                 </div>
 
                 <div class="pt-3 flex justify-end gap-2 border-t">
-                    <button type="button" onclick="toggleModal('question-modal', false)" class="btn-compact border border-slate-300 text-slate-600 hover:bg-slate-50">Batal</button>
+                    <button type="button" onclick="closeQuestionModal()" class="btn-compact border border-slate-300 text-slate-600 hover:bg-slate-50">Batal</button>
                     <button type="submit" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold">Simpan</button>
                 </div>
             </form>
@@ -579,51 +579,53 @@
             }
         }
 
+        // Helper: Build Question List HTML (DRY)
+        function buildQuestionsListHtml(quiz) {
+            if (!quiz || !Array.isArray(quiz.questions) || !quiz.questions.length) {
+                return '<p class="text-xs text-slate-400 text-center py-6">Belum ada soal dalam kuis ini. Klik "Tambah Soal".</p>';
+            }
+            return quiz.questions.map((q, idx) => `
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
+                    <div class="space-y-1 min-w-0">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="font-bold text-slate-800">Soal ${idx + 1}</span>
+                            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono uppercase">${escapeHtml(q.type || 'mc')}</span>
+                            ${q.image ? '<span class="inline-flex items-center gap-1 text-[10px] bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded-full border border-sky-200 font-medium"><i class="fa-solid fa-image"></i> Gambar</span>' : ''}
+                        </div>
+                        <p class="text-slate-600 line-clamp-1 truncate">${escapeHtml(q.question || q.statement || 'Analisis Kasus')}</p>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" onclick="openQuestionModal('${quiz.id}', ${idx})" class="btn-compact bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold"><i class="fa-solid fa-pen text-[10px] mr-1"></i> Edit</button>
+                        <button type="button" onclick="deleteQuestion('${quiz.id}', ${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         // Question Manager Modal
         function openQuestionManager(quizId) {
             activeQuizId = quizId;
             const quiz = allQuizzes.find(q => q.id === quizId);
             if (!quiz) return;
 
-            let questionsListHtml = (quiz.questions || []).map((q, idx) => `
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
-                    <div class="space-y-1 min-w-0">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <span class="font-bold text-slate-800">Soal ${idx + 1}</span>
-                            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono uppercase">${(q.type || 'mc')}</span>
-                            ${q.image ? '<span class="inline-flex items-center gap-1 text-[10px] bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded-full border border-sky-200 font-medium"><i class="fa-solid fa-image"></i> Gambar</span>' : ''}
-                        </div>
-                        <p class="text-slate-600 line-clamp-1 truncate">${q.question || q.statement || 'Analisis Kasus'}</p>
-                    </div>
-                    <div class="flex items-center gap-1 shrink-0">
-                        <button onclick="openQuestionModal('${quiz.id}', ${idx})" class="btn-compact bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold"><i class="fa-solid fa-pen text-[10px] mr-1"></i> Edit</button>
-                        <button onclick="deleteQuestion('${quiz.id}', ${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                    </div>
-                </div>
-            `).join('');
-
-            if (!quiz.questions || !quiz.questions.length) {
-                questionsListHtml = '<p class="text-xs text-slate-400 text-center py-6">Belum ada soal dalam kuis ini. Klik "Tambah Soal".</p>';
-            }
-
             const modalHtml = `
                 <div id="qm-dialog" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
                     <div class="bg-white rounded-2xl max-w-xl w-full p-5 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                         <div class="flex justify-between items-center border-b pb-3">
                             <div>
-                                <h3 class="font-bold text-slate-800 text-sm leading-tight">${quiz.title}</h3>
+                                <h3 class="font-bold text-slate-800 text-sm leading-tight">${escapeHtml(quiz.title)}</h3>
                                 <p id="qm-count" class="text-xs text-slate-500 mt-0.5">${(quiz.questions || []).length} soal terdaftar</p>
                             </div>
-                            <button onclick="document.getElementById('qm-dialog').remove()" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+                            <button type="button" onclick="document.getElementById('qm-dialog').remove()" class="text-slate-400 hover:text-slate-600 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
                         </div>
                         <div id="qm-questions-list" class="max-h-80 overflow-y-auto space-y-2 custom-scrollbar">
-                            ${questionsListHtml}
+                            ${buildQuestionsListHtml(quiz)}
                         </div>
                         <div class="pt-2 flex justify-between items-center border-t">
-                            <button onclick="openQuestionModal('${quiz.id}')" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 shadow-xs">
+                            <button type="button" onclick="openQuestionModal('${quiz.id}')" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 shadow-xs">
                                 <i class="fa-solid fa-plus text-xs"></i> <span>Tambah Soal</span>
                             </button>
-                            <button onclick="document.getElementById('qm-dialog').remove()" class="btn-compact border border-slate-300 text-slate-600 hover:bg-slate-50">Selesai</button>
+                            <button type="button" onclick="document.getElementById('qm-dialog').remove()" class="btn-compact border border-slate-300 text-slate-600 hover:bg-slate-50">Selesai</button>
                         </div>
                     </div>
                 </div>
@@ -641,54 +643,47 @@
             const countEl = document.getElementById('qm-count');
             if (container) {
                 if (countEl) countEl.innerText = `${(quiz.questions || []).length} soal terdaftar`;
-                let questionsListHtml = (quiz.questions || []).map((q, idx) => `
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs">
-                        <div class="space-y-1 min-w-0">
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="font-bold text-slate-800">Soal ${idx + 1}</span>
-                                <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono uppercase">${(q.type || 'mc')}</span>
-                                ${q.image ? '<span class="inline-flex items-center gap-1 text-[10px] bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded-full border border-sky-200 font-medium"><i class="fa-solid fa-image"></i> Gambar</span>' : ''}
-                            </div>
-                            <p class="text-slate-600 line-clamp-1 truncate">${q.question || q.statement || 'Analisis Kasus'}</p>
-                        </div>
-                        <div class="flex items-center gap-1 shrink-0">
-                            <button onclick="openQuestionModal('${quiz.id}', ${idx})" class="btn-compact bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold"><i class="fa-solid fa-pen text-[10px] mr-1"></i> Edit</button>
-                            <button onclick="deleteQuestion('${quiz.id}', ${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                        </div>
-                    </div>
-                `).join('');
-
-                if (!quiz.questions || !quiz.questions.length) {
-                    questionsListHtml = '<p class="text-xs text-slate-400 text-center py-6">Belum ada soal dalam kuis ini. Klik "Tambah Soal".</p>';
-                }
-                container.innerHTML = questionsListHtml;
+                container.innerHTML = buildQuestionsListHtml(quiz);
             } else {
                 openQuestionManager(quizId);
             }
         }
 
         async function deleteQuestion(quizId, idx) {
-            if (await appConfirm('Hapus butir soal ini?', 'Hapus Soal', 'Batal', 'Hapus')) {
-                let updatedQuestions = [...allQuizzes];
-                const quiz = updatedQuestions.find(q => q.id === quizId);
-                if (quiz && quiz.questions) {
-                    quiz.questions.splice(idx, 1);
-                    await saveQuestionsToAPI(updatedQuestions);
-                    renderQuestionsList(quizId);
+            const confirmed = await appConfirm('Hapus butir soal ini?', 'Hapus Soal', 'Batal', 'Hapus');
+            if (!confirmed) return;
+
+            let updatedQuestions = JSON.parse(JSON.stringify(allQuizzes));
+            const quiz = updatedQuestions.find(q => q.id === quizId);
+            if (quiz && Array.isArray(quiz.questions)) {
+                const index = parseInt(idx, 10);
+                if (index >= 0 && index < quiz.questions.length) {
+                    quiz.questions.splice(index, 1);
+                    const ok = await saveQuestionsToAPI(updatedQuestions);
+                    if (ok) {
+                        renderQuestionsList(quizId);
+                    }
                 }
             }
+        }
+
+        // Close Question Editor Modal
+        function closeQuestionModal() {
+            toggleModal('question-modal', false);
+            const qm = document.getElementById('qm-dialog');
+            if (qm) qm.classList.remove('hidden');
         }
 
         // Open Question Editor Modal
         function openQuestionModal(quizId, qIndex = null) {
             const form = document.getElementById('question-form');
-            form.reset();
+            if (form) form.reset();
 
             document.getElementById('q-quiz-id').value = quizId;
-            document.getElementById('q-index').value = qIndex !== null ? qIndex : '';
+            document.getElementById('q-index').value = (qIndex !== null && qIndex !== undefined) ? qIndex : '';
 
             const quiz = allQuizzes.find(q => q.id === quizId);
-            const existingImg = (qIndex !== null && quiz && quiz.questions && quiz.questions[qIndex]) ? (quiz.questions[qIndex].image || '') : '';
+            const existingImg = (qIndex !== null && qIndex !== undefined && quiz && quiz.questions && quiz.questions[qIndex]) ? (quiz.questions[qIndex].image || '') : '';
             document.getElementById('q-existing-image').value = existingImg;
             document.getElementById('q-image-input').value = '';
             document.getElementById('q-image-action').value = '';
@@ -702,7 +697,7 @@
                 document.getElementById('q-image-preview-container').classList.add('hidden');
             }
 
-            if (qIndex !== null && quiz && quiz.questions && quiz.questions[qIndex]) {
+            if (qIndex !== null && qIndex !== undefined && quiz && quiz.questions && quiz.questions[qIndex]) {
                 const q = quiz.questions[qIndex];
                 document.getElementById('q-type-select').value = q.type || 'mc';
                 document.getElementById('q-text-input').value = (q.type === 'cause_effect' && q.question === q.statement) ? '' : (q.question || '');
@@ -713,6 +708,10 @@
                 document.getElementById('question-modal-title').innerText = "Tambah Soal Baru";
                 renderQuestionEditorFields();
             }
+
+            // Hide Question Manager while Question Editor is open
+            const qm = document.getElementById('qm-dialog');
+            if (qm) qm.classList.add('hidden');
 
             toggleModal('question-modal', true);
         }
@@ -746,12 +745,12 @@
                 const opts = existingData && existingData.options ? existingData.options : ['', '', '', ''];
                 html += `<label class="block font-semibold text-slate-700 mb-1">Pilihan Jawaban (Opsi A - D)</label>`;
                 opts.forEach((optVal, i) => {
-                    const isCorrectMC = existingData && existingData.answer === i;
-                    const isCorrectComplex = existingData && existingData.answers && existingData.answers.includes(i);
+                    const isCorrectMC = existingData && (existingData.answer === i || String(existingData.answer) === String(i));
+                    const isCorrectComplex = existingData && Array.isArray(existingData.answers) && (existingData.answers.includes(i) || existingData.answers.map(String).includes(String(i)));
                     html += `
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-slate-500 text-xs w-4">${String.fromCharCode(65 + i)}.</span>
-                            <input type="text" class="opt-input w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none bg-white" value="${optVal}" required placeholder="Opsi ${String.fromCharCode(65 + i)}">
+                            <input type="text" class="opt-input w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none bg-white" value="${escapeHtml(optVal)}" required placeholder="Opsi ${String.fromCharCode(65 + i)}">
                             ${type === 'mc' ? `
                                 <input type="radio" name="correct_mc" value="${i}" ${isCorrectMC ? 'checked' : ''} required title="Tandai Kunci Jawaban" class="text-brand-600 focus:ring-brand-500 cursor-pointer">
                             ` : `
@@ -781,9 +780,9 @@
                     html += `
                         <div class="matching-row flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
                             <span class="font-bold text-slate-500 text-xs w-5 text-center">${i + 1}.</span>
-                            <input type="text" class="match-premise-input flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none" placeholder="Premis Kiri" value="${premVal}" required>
+                            <input type="text" class="match-premise-input flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none" placeholder="Premis Kiri" value="${escapeHtml(premVal)}" required>
                             <span class="text-slate-400 font-bold"><i class="fa-solid fa-arrows-left-right text-xs"></i></span>
-                            <input type="text" class="match-target-input flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none" placeholder="Target Kanan (Benar)" value="${targVal}" required>
+                            <input type="text" class="match-target-input flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none" placeholder="Target Kanan (Benar)" value="${escapeHtml(targVal)}" required>
                             <button type="button" onclick="removeMatchingEditorRow(this)" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
                         </div>
                     `;
@@ -794,7 +793,7 @@
                 html += `
                     <div class="space-y-1.5">
                         <label class="block font-semibold text-slate-700">Kunci Jawaban Isian Singkat</label>
-                        <input type="text" id="q-sa-answer" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white" placeholder="Contoh: Jakarta|DKI Jakarta" value="${ans}" required>
+                        <input type="text" id="q-sa-answer" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white" placeholder="Contoh: Jakarta|DKI Jakarta" value="${escapeHtml(ans)}" required>
                         <p class="text-[10px] text-slate-500">Gunakan tanda pipa <code>|</code> untuk beberapa variasi jawaban (tidak sensitif huruf besar/kecil).</p>
                     </div>
                 `;
@@ -803,7 +802,7 @@
                 html += `
                     <div class="space-y-1.5">
                         <label class="block font-semibold text-slate-700">Pedoman / Rubrik Penilaian (Opsional)</label>
-                        <textarea id="q-essay-guideline" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white" placeholder="Poin jawaban yang diharapkan atau pedoman penskoran...">${ans}</textarea>
+                        <textarea id="q-essay-guideline" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white" placeholder="Poin jawaban yang diharapkan atau pedoman penskoran...">${escapeHtml(ans)}</textarea>
                     </div>
                 `;
             } else if (type === 'cause_effect') {
@@ -840,11 +839,11 @@
                 `;
                 const opts = existingData && existingData.options ? existingData.options : ['', '', '', ''];
                 opts.forEach((optVal, i) => {
-                    const isCorrect = existingData && existingData.answer === i;
+                    const isCorrect = existingData && (existingData.answer === i || String(existingData.answer) === String(i));
                     html += `
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-slate-500 text-xs w-4">${String.fromCharCode(65 + i)}.</span>
-                            <input type="text" class="opt-input w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none bg-white" value="${optVal}" required placeholder="Opsi ${String.fromCharCode(65 + i)}">
+                            <input type="text" class="opt-input w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none bg-white" value="${escapeHtml(optVal)}" required placeholder="Opsi ${String.fromCharCode(65 + i)}">
                             <input type="radio" name="correct_mc" value="${i}" ${isCorrect ? 'checked' : ''} required class="text-brand-600">
                         </div>
                     `;
@@ -966,7 +965,7 @@
             const text = document.getElementById('q-text-input').value.trim();
             const explanation = document.getElementById('q-explanation-input').value.trim();
 
-            let updatedQuestions = [...allQuizzes];
+            let updatedQuestions = JSON.parse(JSON.stringify(allQuizzes));
             const quiz = updatedQuestions.find(q => q.id === quizId);
             if (!quiz) return;
 
@@ -1090,7 +1089,7 @@
 
             const ok = await saveQuestionsToAPI(updatedQuestions);
             if (ok) {
-                toggleModal('question-modal', false);
+                closeQuestionModal();
                 if (document.getElementById('qm-dialog')) {
                     renderQuestionsList(quizId);
                 }

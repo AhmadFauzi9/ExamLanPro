@@ -33,13 +33,25 @@ function toggleModal(modalId, show) {
     }
 }
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+window.escapeHtml = escapeHtml;
+
 function appAlert(message, title = 'Informasi') {
     return new Promise((resolve) => {
         let alertModal = document.getElementById('core-app-alert-modal');
         if (!alertModal) {
             alertModal = document.createElement('div');
             alertModal.id = 'core-app-alert-modal';
-            alertModal.className = 'fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-[999] flex items-center justify-center p-4';
+            alertModal.className = 'fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4';
+            alertModal.style.zIndex = '99999';
             alertModal.innerHTML = `
                 <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 border border-slate-200">
                     <div class="flex items-start gap-3">
@@ -60,6 +72,7 @@ function appAlert(message, title = 'Informasi') {
         }
         document.getElementById('core-alert-title').innerText = title;
         document.getElementById('core-alert-message').innerText = message;
+        alertModal.style.zIndex = '99999';
         alertModal.classList.remove('hidden');
 
         const okBtn = document.getElementById('core-alert-ok-btn');
@@ -78,7 +91,8 @@ function appConfirm(message, title = 'Konfirmasi', cancelText = 'Batal', okText 
         if (!confirmModal) {
             confirmModal = document.createElement('div');
             confirmModal.id = 'core-app-confirm-modal';
-            confirmModal.className = 'fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-[999] flex items-center justify-center p-4';
+            confirmModal.className = 'fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4';
+            confirmModal.style.zIndex = '99999';
             confirmModal.innerHTML = `
                 <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 border border-slate-200">
                     <div class="flex items-start gap-3">
@@ -104,6 +118,7 @@ function appConfirm(message, title = 'Konfirmasi', cancelText = 'Batal', okText 
         const okBtn = document.getElementById('core-confirm-ok-btn');
         cancelBtn.innerText = cancelText;
         okBtn.innerText = okText;
+        confirmModal.style.zIndex = '99999';
         confirmModal.classList.remove('hidden');
 
         const onCancel = () => {
@@ -228,8 +243,6 @@ async function fetchDataFromAPI(onSuccessCallback = null) {
 
         if (typeof onSuccessCallback === 'function') {
             onSuccessCallback(dbData);
-        } else if (typeof window.onDataLoaded === 'function') {
-            window.onDataLoaded(dbData);
         }
     } catch (err) {
         console.error('Gagal memuat data dari server:', err);
