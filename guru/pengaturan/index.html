@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan Sistem - ExamLAN Pro</title>
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/guru.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+                            500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col m-0 p-0 overflow-x-hidden">
+
+    <!-- Injected Global Header -->
+    <div id="guru-header-placeholder"></div>
+
+    <!-- Main Container -->
+    <main class="flex-grow w-full px-4 sm:px-6 lg:px-8 py-5">
+        <div class="grid grid-cols-1 md:grid-cols-[230px_minmax(0,1fr)] gap-5 items-start">
+            
+            <!-- Injected Sidebar Navigation -->
+            <div id="guru-sidebar-placeholder" class="sticky top-16 z-20"></div>
+
+            <!-- Content Area: PENGATURAN -->
+            <div class="space-y-4 min-w-0 max-w-4xl">
+                
+                <!-- Page Title Card -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-gear"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Pengaturan Sistem Ujian</h2>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Konfigurasi keamanan login siswa, akun administrator, dan backup data.</p>
+                    </div>
+                </div>
+
+                <!-- CARD 1: KEAMANAN LOGIN SISWA (FITUR TOGGLE PASSWORD SISWA) -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Keamanan Login Siswa</h3>
+                                <p class="text-[11px] text-slate-500">Atur kewajiban penggunaan password saat siswa masuk ke aplikasi ujian.</p>
+                            </div>
+                        </div>
+                        <span id="pwd-status-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Wajib Password
+                        </span>
+                    </div>
+
+                    <form id="setting-student-password-form" onsubmit="saveStudentPasswordSetting(event)" class="space-y-4 text-xs">
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" id="require-student-password-toggle" class="mt-0.5 w-4 h-4 rounded text-brand-600 focus:ring-brand-500 cursor-pointer">
+                                <div>
+                                    <span class="font-bold text-slate-800 block text-xs">Wajibkan Password Siswa saat Login Ujian</span>
+                                    <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                                        Jika diaktifkan, siswa harus memasukkan password 6 karakter (dilihat dari menu Data Siswa). Jika dinonaktifkan, siswa cukup menginput NIS dan nama/kelas tanpa memasukkan password.
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 shadow-xs transition">
+                                <i class="fa-solid fa-floppy-disk text-xs"></i> <span>Simpan</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- CARD 2: GANTI PASSWORD GURU / ADMINISTRATOR -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div class="flex items-center gap-2.5 border-b pb-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Ganti Password Guru</h3>
+                            <p class="text-[11px] text-slate-500">Perbarui kata sandi untuk mengakses dashboard guru ExamLAN Pro.</p>
+                        </div>
+                    </div>
+
+                    <form id="change-pwd-form" onsubmit="handleChangeTeacherPassword(event)" class="space-y-3 text-xs max-w-md">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Password Baru (Minimal 8 Karakter)</label>
+                            <div class="relative">
+                                <input type="password" id="new-teacher-password" minlength="8" required placeholder="Masukkan kata sandi baru..." class="w-full pl-3 pr-9 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
+                                <button type="button" onclick="togglePasswordVisibility('new-teacher-password', this)" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600">
+                                    <i class="fa-regular fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Konfirmasi Password Baru</label>
+                            <div class="relative">
+                                <input type="password" id="confirm-teacher-password" minlength="8" required placeholder="Ulangi kata sandi baru..." class="w-full pl-3 pr-9 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
+                                <button type="button" onclick="togglePasswordVisibility('confirm-teacher-password', this)" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600">
+                                    <i class="fa-regular fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex justify-start">
+                            <button type="submit" class="btn-compact bg-amber-600 hover:bg-amber-700 text-white font-bold flex items-center gap-1.5 shadow-xs transition">
+                                <i class="fa-solid fa-lock text-xs"></i> <span>Ganti Password</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- CARD 3: BACKUP DATABASE SERVER -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-database"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Cadangan Database (Backup)</h3>
+                                <p class="text-[11px] text-slate-500">Amankan seluruh data paket soal, data siswa, dan rekap nilai ke arsip server.</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="createBackup()" class="btn-compact bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1.5 shadow-xs transition">
+                            <i class="fa-solid fa-cloud-arrow-down text-xs"></i> <span>Buat Backup</span>
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <p class="text-xs font-bold text-slate-700">Riwayat Berkas Cadangan:</p>
+                        <div id="backup-history-list" class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar text-xs">
+                            <p class="text-slate-400 text-xs py-2">Memuat daftar cadangan...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../assets/js/guru-core.js"></script>
+    <script src="../assets/js/guru-nav.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkServerSession();
+            await loadSettingsData();
+        });
+
+        async function loadSettingsData() {
+            await fetchDataFromAPI();
+            const settings = (dbData && dbData.settings) ? dbData.settings : { require_student_password: true };
+            const isReq = settings.require_student_password !== false;
+
+            const toggle = document.getElementById('require-student-password-toggle');
+            const badge = document.getElementById('pwd-status-badge');
+
+            if (toggle) toggle.checked = isReq;
+            updatePwdBadge(isReq);
+
+            renderBackupList();
+        }
+
+        function updatePwdBadge(isReq) {
+            const badge = document.getElementById('pwd-status-badge');
+            if (!badge) return;
+            if (isReq) {
+                badge.innerText = 'Wajib Password';
+                badge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+            } else {
+                badge.innerText = 'Bebas / Tanpa Password';
+                badge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+            }
+        }
+
+        async function saveStudentPasswordSetting(e) {
+            e.preventDefault();
+            const isReq = document.getElementById('require-student-password-toggle').checked;
+
+            try {
+                const res = await fetch(`${API_URL}?action=save_system_settings`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ require_student_password: isReq })
+                });
+
+                const data = await res.json();
+                if (!res.ok || data.status !== 'success') {
+                    appAlert(data.message || 'Gagal menyimpan pengaturan.', 'Gagal');
+                    return;
+                }
+
+                updatePwdBadge(isReq);
+                appAlert(
+                    isReq
+                        ? 'Pengaturan tersimpan: Siswa sekarang WAJIB menggunakan password saat login ujian.'
+                        : 'Pengaturan tersimpan: Siswa sekarang DAPAT LOGIN TANPA PASSWORD.',
+                    'Pengaturan Disimpan'
+                );
+            } catch (err) {
+                appAlert('Gagal menghubungi server.', 'Gagal');
+            }
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isText = input.type === 'text';
+            input.type = isText ? 'password' : 'text';
+            btn.innerHTML = isText ? '<i class="fa-regular fa-eye text-xs"></i>' : '<i class="fa-regular fa-eye-slash text-xs"></i>';
+        }
+
+        async function handleChangeTeacherPassword(e) {
+            e.preventDefault();
+            const p1 = document.getElementById('new-teacher-password').value;
+            const p2 = document.getElementById('confirm-teacher-password').value;
+
+            if (p1 !== p2) {
+                appAlert('Konfirmasi kata sandi tidak cocok. Silakan periksa kembali.', 'Validasi Gagal');
+                return;
+            }
+
+            if (p1.length < 8) {
+                appAlert('Password baru minimal 8 karakter.', 'Validasi Gagal');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}?action=change_teacher_password`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ new_password: p1 })
+                });
+
+                const data = await res.json();
+                if (!res.ok || data.status !== 'success') {
+                    appAlert(data.message || 'Gagal mengganti password.', 'Gagal');
+                    return;
+                }
+
+                document.getElementById('change-pwd-form').reset();
+                appAlert('Password guru berhasil diperbarui. Harap catat kata sandi baru Anda.', 'Berhasil');
+            } catch (err) {
+                appAlert('Terjadi kesalahan jaringan.', 'Gagal');
+            }
+        }
+
+        function renderBackupList() {
+            const list = document.getElementById('backup-history-list');
+            const backups = (dbData && dbData.backups) ? dbData.backups : [];
+
+            if (!backups.length) {
+                list.innerHTML = '<p class="text-slate-400 text-xs py-2">Belum ada riwayat berkas cadangan.</p>';
+                return;
+            }
+
+            list.innerHTML = backups.slice().reverse().map(b => `
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-file-zipper text-brand-600"></i>
+                        <span class="font-mono font-bold text-slate-700">${b.file || b.name || 'backup.json'}</span>
+                    </div>
+                    <span class="text-slate-500 font-mono text-[11px]">${b.time || '-'}</span>
+                </div>
+            `).join('');
+        }
+
+        async function createBackup() {
+            try {
+                const res = await fetch(`${API_URL}?action=create_backup`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+                const d = await res.json();
+                if (d.backups) dbData.backups = d.backups;
+                renderBackupList();
+                appAlert(d.message || 'Backup berhasil dibuat.', 'Cadangan Dibuat');
+            } catch (e) {
+                appAlert('Gagal membuat backup database.');
+            }
+        }
+    </script>
+</body>
+</html>

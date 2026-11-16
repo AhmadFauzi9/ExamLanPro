@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Ujian - ExamLAN Pro</title>
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/guru.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+                            500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col m-0 p-0 overflow-x-hidden">
+
+    <!-- Injected Global Header -->
+    <div id="guru-header-placeholder"></div>
+
+    <!-- Main Container -->
+    <main class="flex-grow w-full px-4 sm:px-6 lg:px-8 py-5">
+        <div class="grid grid-cols-1 md:grid-cols-[230px_minmax(0,1fr)] gap-5 items-start">
+            
+            <!-- Injected Sidebar Navigation -->
+            <div id="guru-sidebar-placeholder" class="sticky top-16 z-20"></div>
+
+            <!-- Content Area: HASIL UJIAN -->
+            <div class="space-y-4 min-w-0">
+                
+                <!-- Summary Cards Grid -->
+                <div id="dashboard-summary" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-users text-brand-600"></i> Total Siswa
+                        </p>
+                        <p id="sum-students" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-lines text-brand-600"></i> Total Kuis
+                        </p>
+                        <p id="sum-quizzes" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-calendar-day text-brand-600"></i> Ujian Hari Ini
+                        </p>
+                        <p id="sum-today" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-chart-simple text-brand-600"></i> Rata-rata Nilai
+                        </p>
+                        <p id="sum-avg" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Action Toolbar Card -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Hasil Ujian Siswa</h2>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span id="results-total-badge" class="text-[11px] font-semibold text-slate-500">0 hasil terekam</span>
+                                <span id="results-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compact Action Buttons -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="loadResultsData()" class="btn-compact border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate text-xs"></i> <span>Refresh</span>
+                        </button>
+                        <button type="button" onclick="exportToCSV()" class="btn-compact bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-xs transition">
+                            <i class="fa-solid fa-file-excel text-xs"></i> <span>Ekspor Excel</span>
+                        </button>
+                        <button type="button" id="btn-delete-selected-res" onclick="deleteSelectedResults()" disabled class="btn-compact bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1.5 cursor-not-allowed transition">
+                            <i class="fa-solid fa-trash-can text-xs"></i> <span>Hapus Terpilih</span>
+                        </button>
+                        <button type="button" onclick="clearSubmissions()" class="btn-compact bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate-left text-xs"></i> <span>Reset Semua</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Review Control Card -->
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 text-xs">Kontrol Pembahasan Siswa</p>
+                            <p id="teacher-review-status" class="text-[11px] text-slate-500">Memuat status pembahasan...</p>
+                        </div>
+                    </div>
+                    <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>
+                    </button>
+                </div>
+
+                <!-- Search & Filters Card -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex-1 min-w-[200px] relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                        <input id="results-search-input" type="text" oninput="handleResultsFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-500 font-medium text-[11px]">Paket:</span>
+                            <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[180px]">
+                                <option value="all">Semua Paket Kuis</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-slate-500 font-medium text-[11px]">Baris:</span>
+                            <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                                <option value="10">10</option>
+                                <option value="25" selected>25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submissions Table with Nomor Urut & Pagination -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs border-collapse compact-table">
+                            <thead class="bg-slate-100 uppercase font-bold text-slate-600 tracking-wider">
+                                <tr>
+                                    <th class="w-10 text-center">
+                                        <input id="select-all-results" type="checkbox" onchange="toggleSelectAllResultRows(this.checked)" class="w-3.5 h-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer">
+                                    </th>
+                                    <th class="w-12 text-center">No</th>
+                                    <th>NIS</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>Paket Kuis</th>
+                                    <th class="text-center">Benar</th>
+                                    <th class="text-center">Salah</th>
+                                    <th class="text-center">Nilai</th>
+                                    <th class="text-center w-28">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacher-results-tbody" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td colspan="10" class="p-8 text-center text-slate-400">
+                                        <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat data hasil ujian...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                        <div id="results-pagination-info" class="text-slate-500">
+                            Menampilkan 0 dari 0 hasil
+                        </div>
+                        <div id="results-pagination-buttons" class="flex items-center gap-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Izinkan Ulang (Retake) -->
+    <div id="retake-modal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[95] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div class="flex items-center justify-between border-b pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-rotate-left text-sm"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-sm">Izinkan Ujian Ulang</h3>
+                </div>
+                <button type="button" onclick="toggleModal('retake-modal', false)" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+            <p id="retake-student-info" class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-medium"></p>
+            <form id="retake-form" onsubmit="submitRetake(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="retake-nis">
+                <input type="hidden" id="retake-quiz">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Alasan Pemberian Izin:</label>
+                    <input type="text" id="retake-reason" placeholder="Contoh: Kendala perangkat / browser tertutup" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Maks Percobaan:</label>
+                        <input type="number" id="retake-attempts" min="1" max="5" value="1" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Batas Waktu (Opsional):</label>
+                        <input type="datetime-local" id="retake-until" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                </div>
+                <div class="pt-2 flex justify-end gap-2 border-t">
+                    <button type="button" onclick="toggleModal('retake-modal', false)" class="btn-compact border border-slate-300 text-slate-600 hover:bg-slate-50">Batal</button>
+                    <button type="submit" class="btn-compact bg-amber-600 hover:bg-amber-700 text-white font-bold">Simpan Izin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/guru-core.js"></script>
+    <script src="../assets/js/guru-nav.js"></script>
+    <script>
+        // State Management
+        let allResults = [];
+        let filteredResults = [];
+        let currentPage = 1;
+        let perPage = 25;
+        let selectedKeys = new Set();
+        let reviewStates = {};
+
+        // Inisialisasi Halaman
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkServerSession();
+            await loadResultsData();
+        });
+
+        // Load Data dari API
+        async function loadResultsData() {
+            await fetchDataFromAPI();
+            allResults = dbData.results || [];
+            
+            // Populate Quiz Filter
+            populateQuizFilter();
+            
+            // Update Summary Cards
+            updateSummaryCards();
+
+            // Load Review States
+            await loadReviewStates();
+
+            // Render Table
+            handleResultsFilter();
+        }
+
+        // Summary Cards
+        function updateSummaryCards() {
+            const studentsCount = (dbData.students || []).length;
+            const quizzesCount = (dbData.questions || []).length;
+            const today = new Date().toLocaleDateString('id-ID');
+            const todayCount = allResults.filter(x => String(x.date || '').includes(today)).length;
+            const avg = allResults.length ? Math.round(allResults.reduce((n, x) => n + Number(x.score || 0), 0) / allResults.length) : 0;
+
+            document.getElementById('sum-students').innerText = studentsCount;
+            document.getElementById('sum-quizzes').innerText = quizzesCount;
+            document.getElementById('sum-today').innerText = todayCount;
+            document.getElementById('sum-avg').innerText = avg;
+            document.getElementById('results-total-badge').innerText = `${allResults.length} hasil terekam`;
+        }
+
+        // Filter Dropdown
+        function populateQuizFilter() {
+            const select = document.getElementById('teacher-quiz-filter');
+            const currentVal = select.value || 'all';
+            const quizzes = dbData.questions || [];
+
+            select.innerHTML = '<option value="all">Semua Paket Kuis</option>' + quizzes.map(q => `
+                <option value="${q.id}" ${q.id === currentVal ? 'selected' : ''}>${q.title || q.id}</option>
+            `).join('');
+        }
+
+        // Filter Logic
+        function handleResultsFilter() {
+            const filterQuiz = document.getElementById('teacher-quiz-filter').value;
+            const query = (document.getElementById('results-search-input').value || '').trim().toLowerCase();
+
+            filteredResults = allResults.filter(r => {
+                const matchQuiz = (filterQuiz === 'all' || r.code === filterQuiz || r.quiz_id === filterQuiz);
+                const matchQuery = !query ||
+                    (r.name && r.name.toLowerCase().includes(query)) ||
+                    (r.nis && String(r.nis).includes(query)) ||
+                    (r.class && r.class.toLowerCase().includes(query));
+                return matchQuiz && matchQuery;
+            });
+
+            currentPage = 1;
+            renderResultsTable();
+        }
+
+        function changeResultsPerPage(val) {
+            perPage = parseInt(val) || 25;
+            currentPage = 1;
+            renderResultsTable();
+        }
+
+        // Render Table with Pagination & Nomor Urut
+        function renderResultsTable() {
+            const tbody = document.getElementById('teacher-results-tbody');
+            const total = filteredResults.length;
+            const totalPages = Math.ceil(total / perPage) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIdx = (currentPage - 1) * perPage;
+            const endIdx = Math.min(startIdx + perPage, total);
+            const pageData = filteredResults.slice(startIdx, endIdx);
+
+            if (total === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="p-8 text-center text-slate-400">
+                            <i class="fa-regular fa-folder-open text-2xl mb-1 text-slate-300"></i>
+                            <p class="text-xs">Tidak ada data hasil ujian yang cocok.</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = pageData.map((s, idx) => {
+                    const rowNumber = startIdx + idx + 1;
+                    const itemKey = `${s.nis || ''}|${s.code || ''}`;
+                    const isChecked = selectedKeys.has(itemKey);
+                    const score = Number(s.score ?? 0);
+                    const scoreBadge = score >= 70
+                        ? '<span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800">' + score + '</span>'
+                        : '<span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-black bg-amber-100 text-amber-800">' + score + '</span>';
+
+                    return `
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="p-3 text-center">
+                                <input type="checkbox" class="result-row-check w-3.5 h-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer" data-result-key="${encodeURIComponent(s.nis || '')}|${encodeURIComponent(s.code || '')}" ${isChecked ? 'checked' : ''} onchange="toggleResultSelection('${encodeURIComponent(s.nis || '')}|${encodeURIComponent(s.code || '')}', this.checked)">
+                            </td>
+                            <td class="p-3 text-center font-bold text-slate-400">${rowNumber}</td>
+                            <td class="p-3 font-mono font-bold text-brand-700">${s.nis || '-'}</td>
+                            <td class="p-3 font-bold text-slate-800">${s.name || '-'}</td>
+                            <td class="p-3 text-slate-600">${s.class || '-'}</td>
+                            <td class="p-3 font-medium text-slate-700 max-w-[200px] truncate" title="${s.title || s.code || '-'}">${s.title || s.code || '-'}</td>
+                            <td class="p-3 text-center font-bold text-emerald-600">${s.correct ?? 0}</td>
+                            <td class="p-3 text-center font-bold text-rose-600">${s.wrong ?? 0}</td>
+                            <td class="p-3 text-center">${scoreBadge}</td>
+                            <td class="p-3 text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <button onclick="allowRetake('${String(s.nis || '').replace(/'/g, "\\'")}', '${String(s.code || '').replace(/'/g, "\\'")}')" title="Izinkan Ujian Ulang" class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-lg font-bold text-[11px] transition flex items-center gap-1">
+                                        <i class="fa-solid fa-rotate-left text-[10px]"></i> Ulang
+                                    </button>
+                                    <button onclick="deleteResult('${String(s.nis || '').replace(/'/g, "\\'")}', '${String(s.code || '').replace(/'/g, "\\'")}')" title="Hapus Hasil" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
+                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            renderPaginationControls(total, totalPages, startIdx, endIdx);
+            updateSelectionBar();
+        }
+
+        // Pagination Controls
+        function renderPaginationControls(total, totalPages, startIdx, endIdx) {
+            const info = document.getElementById('results-pagination-info');
+            const btns = document.getElementById('results-pagination-buttons');
+
+            if (total === 0) {
+                info.innerText = 'Menampilkan 0 hasil';
+                btns.innerHTML = '';
+                return;
+            }
+
+            info.innerText = `Menampilkan ${startIdx + 1} - ${endIdx} dari ${total} hasil`;
+
+            let html = `
+                <button onclick="goToPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled class="px-2 py-1 rounded-lg border border-slate-200 text-slate-300 cursor-not-allowed"' : 'class="px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"'} title="Sebelumnya">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const activeClass = i === currentPage ? 'bg-brand-600 text-white font-bold border-brand-600 shadow-2xs' : 'border-slate-200 text-slate-600 hover:bg-slate-100';
+                    html += `<button onclick="goToPage(${i})" class="px-2.5 py-1 rounded-lg border text-xs transition ${activeClass}">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span class="px-1 text-slate-400">...</span>`;
+                }
+            }
+
+            html += `
+                <button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled class="px-2 py-1 rounded-lg border border-slate-200 text-slate-300 cursor-not-allowed"' : 'class="px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"'} title="Selanjutnya">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            `;
+
+            btns.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderResultsTable();
+        }
+
+        // Selection Handlers
+        function toggleResultSelection(encodedKey, checked) {
+            const key = decodeURIComponent(encodedKey);
+            if (checked) selectedKeys.add(key);
+            else selectedKeys.delete(key);
+            updateSelectionBar();
+        }
+
+        function toggleSelectAllResultRows(checked) {
+            const checkboxes = document.querySelectorAll('.result-row-check');
+            checkboxes.forEach(cb => {
+                cb.checked = checked;
+                const key = decodeURIComponent(cb.dataset.resultKey);
+                if (checked) selectedKeys.add(key);
+                else selectedKeys.delete(key);
+            });
+            updateSelectionBar();
+        }
+
+        function updateSelectionBar() {
+            const count = selectedKeys.size;
+            const badge = document.getElementById('results-selected-badge');
+            const btnDelete = document.getElementById('btn-delete-selected-res');
+            const selectAllCb = document.getElementById('select-all-results');
+
+            if (count > 0) {
+                badge.innerText = `${count} dipilih`;
+                badge.classList.remove('hidden');
+                btnDelete.disabled = false;
+                btnDelete.className = 'btn-compact bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 shadow-xs transition';
+            } else {
+                badge.classList.add('hidden');
+                btnDelete.disabled = true;
+                btnDelete.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 flex items-center gap-1.5 cursor-not-allowed transition';
+                if (selectAllCb) selectAllCb.checked = false;
+            }
+        }
+
+        // Delete Result Actions
+        async function deleteResult(nis, quizCode) {
+            if (!await appConfirm(`Hapus hasil ujian NIS ${nis} dari paket ini? Data akan dihapus secara permanen.`, 'Hapus Hasil Ujian', 'Batal', 'Hapus')) return;
+            try {
+                const res = await fetch(`${API_URL}?action=delete_result`, {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nis, quiz_id: quizCode })
+                });
+                const data = await res.json();
+                appAlert(data.message || 'Hasil berhasil dihapus.', 'Hapus Hasil');
+                await loadResultsData();
+            } catch (err) {
+                appAlert('Gagal menghapus hasil ujian.', 'Gagal');
+            }
+        }
+
+        async function deleteSelectedResults() {
+            if (!selectedKeys.size) return;
+            if (!await appConfirm(`Hapus ${selectedKeys.size} hasil ujian yang dipilih?`, 'Hapus Hasil Terpilih', 'Batal', 'Hapus')) return;
+            
+            const items = Array.from(selectedKeys).map(k => {
+                const parts = k.split('|');
+                return { nis: parts[0], quiz_id: parts[1] };
+            });
+
+            try {
+                const res = await fetch(`${API_URL}?action=delete_results`, {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items })
+                });
+                const data = await res.json();
+                selectedKeys.clear();
+                appAlert(data.message || 'Hasil terpilih berhasil dihapus.', 'Hapus Hasil');
+                await loadResultsData();
+            } catch (err) {
+                appAlert('Gagal menghapus hasil terpilih.', 'Gagal');
+            }
+        }
+
+        async function clearSubmissions() {
+            if (!await appConfirm('Hapus seluruh rekap hasil pengerjaan siswa dari database server? Tindakan ini tidak dapat dibatalkan.', 'Reset Semua Hasil', 'Batal', 'Reset Semua')) return;
+            try {
+                const res = await fetch(`${API_URL}?action=clear_results`, { method: 'POST', credentials: 'same-origin' });
+                const data = await res.json();
+                selectedKeys.clear();
+                appAlert(data.message || 'Hasil berhasil direset.', 'Reset Hasil');
+                await loadResultsData();
+            } catch (err) {
+                appAlert('Gagal mereset hasil dari server.', 'Gagal');
+            }
+        }
+
+        // Export to CSV / Excel
+        function exportToCSV() {
+            if (!allResults.length) {
+                appAlert("Belum ada data hasil ujian untuk diekspor!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No,NIS,Nama Siswa,Kelas,Paket Kuis,Benar,Salah,Nilai Akhir,Waktu Selesai\r\n";
+
+            filteredResults.forEach((s, idx) => {
+                const clean = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
+                const row = [
+                    idx + 1,
+                    clean(s.nis),
+                    clean(s.name),
+                    clean(s.class),
+                    clean(s.title || s.code),
+                    s.correct ?? 0,
+                    s.wrong ?? 0,
+                    s.score ?? 0,
+                    clean(s.date || '-')
+                ];
+                csvContent += row.join(",") + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Hasil_Ujian_ExamLAN_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Review States
+        async function loadReviewStates() {
+            try {
+                const res = await fetch(`${API_URL}?action=get_review_states`, { credentials: 'same-origin', cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    reviewStates = data.review_states || {};
+                    updateTeacherReviewControl();
+                }
+            } catch (e) {
+                console.error('loadReviewStates:', e);
+            }
+        }
+
+        function updateTeacherReviewControl() {
+            const filterValue = document.getElementById('teacher-quiz-filter').value;
+            const statusEl = document.getElementById('teacher-review-status');
+            const toggleBtn = document.getElementById('teacher-review-toggle');
+
+            if (filterValue === 'all') {
+                statusEl.textContent = 'Pilih salah satu paket kuis di filter untuk mengatur buka/tutup pembahasan.';
+                toggleBtn.disabled = true;
+                toggleBtn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed';
+                return;
+            }
+
+            toggleBtn.disabled = false;
+            const isOpen = !!reviewStates[filterValue];
+            if (isOpen) {
+                statusEl.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Pembahasan Terbuka</span> — Siswa dapat melihat nilai dan pembahasan.';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i> <span>Kunci Pembahasan</span>';
+                toggleBtn.className = 'btn-compact bg-amber-600 hover:bg-amber-700 text-white transition';
+            } else {
+                statusEl.innerHTML = '<span class="text-slate-500 font-semibold"><i class="fa-solid fa-lock"></i> Pembahasan Terkunci</span> — Siswa hanya melihat skor akhir.';
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>';
+                toggleBtn.className = 'btn-compact bg-slate-800 hover:bg-slate-700 text-white transition';
+            }
+        }
+
+        async function toggleTeacherReview() {
+            const filterValue = document.getElementById('teacher-quiz-filter').value;
+            if (filterValue === 'all') return;
+
+            const currentState = !!reviewStates[filterValue];
+            const newState = !currentState;
+
+            try {
+                const res = await fetch(`${API_URL}?action=set_review_state`, {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quiz_id: filterValue, enabled: newState })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    appAlert(data.message || 'Gagal mengubah status pembahasan.');
+                    return;
+                }
+                reviewStates[filterValue] = newState;
+                updateTeacherReviewControl();
+                appAlert(newState ? 'Pembahasan paket ini sekarang DIBUKA untuk siswa.' : 'Pembahasan paket ini sekarang DIKUNCI.', 'Status Pembahasan');
+            } catch (e) {
+                appAlert('Gagal mengubah status pembahasan.');
+            }
+        }
+
+        // Retake Modal
+        function allowRetake(nis, quizCode) {
+            if (!nis || nis === '-') { appAlert('Data NIS tidak valid.'); return; }
+            const r = allResults.find(x => x.nis === nis && x.code === quizCode);
+            document.getElementById('retake-nis').value = nis;
+            document.getElementById('retake-quiz').value = quizCode;
+            document.getElementById('retake-reason').value = '';
+            document.getElementById('retake-attempts').value = 1;
+            document.getElementById('retake-until').value = '';
+            document.getElementById('retake-student-info').textContent = `${r?.name || 'Siswa'} • NIS ${nis} • ${r?.title || quizCode}`;
+            toggleModal('retake-modal', true);
+        }
+
+        async function submitRetake(e) {
+            e.preventDefault();
+            const payload = {
+                nis: document.getElementById('retake-nis').value,
+                quiz_id: document.getElementById('retake-quiz').value,
+                reason: document.getElementById('retake-reason').value.trim(),
+                attempts: Number(document.getElementById('retake-attempts').value),
+                valid_until: document.getElementById('retake-until').value
+            };
+            try {
+                const res = await fetch(`${API_URL}?action=allow_retake`, {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const d = await res.json();
+                if (!res.ok) {
+                    appAlert(d.message || 'Gagal memberikan izin.');
+                    return;
+                }
+                toggleModal('retake-modal', false);
+                appAlert(d.message, 'Izin Ujian Ulang');
+                await loadResultsData();
+            } catch (e) {
+                appAlert('Gagal memberikan izin ujian ulang.');
+            }
+        }
+    </script>
+</body>
+</html>

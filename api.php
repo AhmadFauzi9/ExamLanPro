@@ -83,7 +83,11 @@ function loadDb($file_db) {
     $db['audit_logs'] = $db['audit_logs'] ?? [];
     $db['backups'] = $db['backups'] ?? [];
     $db['time_extension_requests'] = $db['time_extension_requests'] ?? [];
-    $db['trash'] = $db['trash'] ?? ['results' => [], 'students' => [], 'quizzes' => []];
+    $db['settings'] = $db['settings'] ?? [];
+    if (!isset($db['settings']['require_student_password'])) {
+        $db['settings']['require_student_password'] = true;
+        $dirty = true;
+    }
     $db['teacher_password_hash'] = $db['teacher_password_hash'] ?? $TEACHER_PASSWORD_HASH;
     $db['teacher_password_changed'] = $db['teacher_password_changed'] ?? false;
     if ($dirty) saveDb($file_db, $db);
@@ -430,7 +434,42 @@ if ($action === 'get_student_data' || ($action === 'get_data' && empty($_SESSION
             'tahun_ajaran' => (string)($st['tahun_ajaran'] ?? $st['academic_year'] ?? '')
         ];
     }, $db['students'] ?? []);
-    echo json_encode(['questions' => $studentQuizzes, 'results' => [], 'students' => $publicStudents]);
+    $requirePassword = (bool)($db['settings']['require_student_password'] ?? true);
+    echo json_encode([
+        'questions' => $studentQuizzes,
+        'results' => [],
+        'students' => $publicStudents,
+        'settings' => [
+            'require_student_password' => $requirePassword
+        ]
+    ]);
+    exit;
+}
+
+if ($action === 'get_public_settings') {
+    $db = loadDb($file_db);
+    echo json_encode([
+        'status' => 'success',
+        'require_student_password' => (bool)($db['settings']['require_student_password'] ?? true)
+    ]);
+    exit;
+}
+
+if ($action === 'save_system_settings' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    teacherOnly();
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
+    $db = loadDb($file_db);
+    $db['settings'] = $db['settings'] ?? [];
+    if (isset($input['require_student_password'])) {
+        $db['settings']['require_student_password'] = (bool)$input['require_student_password'];
+    }
+    audit($db, 'Ubah pengaturan ujian', 'Sistem', 'Wajib Password = ' . ($db['settings']['require_student_password'] ? 'Ya' : 'Tidak'));
+    saveDb($file_db, $db);
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Pengaturan sistem berhasil disimpan.',
+        'settings' => $db['settings']
+    ]);
     exit;
 }
 
@@ -478,13 +517,21 @@ if ($action === 'student_login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $nis = trim((string)($input['nis'] ?? ''));
     $password = strtoupper(trim((string)($input['password'] ?? '')));
 
-    if ($nis === '' || $password === '') {
+    $db = loadDb($file_db);
+    $requirePassword = (bool)($db['settings']['require_student_password'] ?? true);
+
+    if ($nis === '') {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'NIS dan Password login wajib diisi.']);
+        echo json_encode(['status' => 'error', 'message' => 'Nomor Induk Siswa (NIS) wajib diisi.']);
         exit;
     }
 
-    $db = loadDb($file_db);
+    if ($requirePassword && $password === '') {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Password login siswa wajib diisi.']);
+        exit;
+    }
+
     $matched = null;
     foreach ($db['students'] as $st) {
         if (trim((string)($st['nis'] ?? '')) === $nis) {
@@ -494,16 +541,28 @@ if ($action === 'student_login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$matched) {
-        http_response_code(404);
-        echo json_encode(['status' => 'error', 'message' => "NIS '{$nis}' tidak ditemukan dalam database siswa. Pastikan NIS benar atau hubungi guru."]);
-        exit;
+        // Jika password dinonaktifkan dan ada identitas nama & kelas pada payload
+        if (!$requirePassword && !empty($input['name']) && !empty($input['class'])) {
+            $matched = [
+                'nis' => $nis,
+                'name' => trim((string)$input['name']),
+                'class' => trim((string)$input['class']),
+                'tahun_ajaran' => trim((string)($input['tahun_ajaran'] ?? ''))
+            ];
+        } else {
+            http_response_code(404);
+            echo json_encode(['status' => 'error', 'message' => "NIS '{$nis}' tidak ditemukan dalam database siswa. Pastikan NIS benar atau hubungi guru."]);
+            exit;
+        }
     }
 
-    $stPassword = strtoupper(trim((string)($matched['password'] ?? '')));
-    if ($stPassword === '' || !hash_equals($stPassword, $password)) {
-        http_response_code(401);
-        echo json_encode(['status' => 'error', 'message' => 'Password login salah! Silakan tanyakan password login Anda kepada guru pengawas.']);
-        exit;
+    if ($requirePassword) {
+        $stPassword = strtoupper(trim((string)($matched['password'] ?? '')));
+        if ($stPassword === '' || !hash_equals($stPassword, $password)) {
+            http_response_code(401);
+            echo json_encode(['status' => 'error', 'message' => 'Password login salah! Silakan tanyakan password login Anda kepada guru pengawas.']);
+            exit;
+        }
     }
 
     echo json_encode([

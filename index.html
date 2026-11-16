@@ -105,7 +105,7 @@
                         <input type="text" id="student-class" required placeholder="Contoh: 7A" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm">
                     </div>
 
-                    <div>
+                    <div id="student-password-container">
                         <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Password Siswa</label>
                         <div class="relative">
                             <input type="password" id="student-password" required placeholder="Masukkan password acak dari guru" maxlength="12" autocomplete="current-password" class="w-full px-4 py-2.5 pr-11 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm font-mono tracking-wider">
@@ -484,6 +484,21 @@
                 if (!dbData.questions) dbData.questions = [];
                 dbData.results = [];
                 window.registeredStudents = data.students || [];
+
+                // Cek pengaturan apakah login siswa mewajibkan password
+                const reqPassword = dbData.settings?.require_student_password !== false;
+                const passContainer = document.getElementById('student-password-container');
+                const passInput = document.getElementById('student-password');
+                if (passContainer && passInput) {
+                    if (!reqPassword) {
+                        passContainer.classList.add('hidden');
+                        passInput.removeAttribute('required');
+                    } else {
+                        passContainer.classList.remove('hidden');
+                        passInput.setAttribute('required', 'required');
+                    }
+                }
+
                 const nisEl = document.getElementById('student-nis');
                 if (nisEl && nisEl.value) handleNisInput(nisEl);
                 populateQuizDropdowns();
@@ -520,6 +535,7 @@
             const name = document.getElementById('student-name').value.trim();
             const classId = document.getElementById('student-class').value.trim();
             const password = document.getElementById('student-password').value.trim();
+            const reqPassword = dbData.settings?.require_student_password !== false;
 
             if (nis.length > 6) {
                 appAlert("NIS maksimal terdiri dari 6 digit angka!");
@@ -529,7 +545,7 @@
                 appAlert("Harap lengkapi semua data identitas peserta!");
                 return;
             }
-            if (!password) {
+            if (reqPassword && !password) {
                 appAlert("Harap masukkan password login siswa!\nPassword acak diberikan oleh guru pengawas ruang.", "Password Diperlukan");
                 document.getElementById('student-password')?.focus();
                 return;

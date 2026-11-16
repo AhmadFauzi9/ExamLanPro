@@ -1202,7 +1202,505 @@
             ]
         }
     ],
-    "results": [],
+    "results": [
+        {
+            "nis": "250031",
+            "name": "AHMAD GHALI WARNA",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "code": "quiz-1791169015921",
+            "title": "Soal STS Ganjil 2026-2027",
+            "score": 16,
+            "correct": 4,
+            "wrong": 21,
+            "date": "16\/11\/2026 05:15:54",
+            "review_token": "7349f71e42a6e362e0831c9c4dfbf5fe447cb556999e2f483807228518baa675",
+            "question_order": [
+                5,
+                8,
+                0,
+                10,
+                23,
+                16,
+                1,
+                3,
+                12,
+                14,
+                19,
+                18,
+                7,
+                13,
+                6,
+                17,
+                4,
+                20,
+                9,
+                15,
+                22,
+                11,
+                21,
+                24,
+                2
+            ],
+            "answers": [
+                2,
+                2,
+                1,
+                1
+            ],
+            "breakdowns": [
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Microsoft PowerPoint 2007 merupakan aplikasi yang dirancang khusus untuk membantu pengguna dalam membuat ...",
+                        "explanation": "PowerPoint digunakan khusus untuk membuat media presentasi dalam bentuk lembaran slide.",
+                        "options": [
+                            "Laporan keuangan dan grafik (Spreadsheet)",
+                            "Surat-menyurat dan dokumen teks (Word Processor)",
+                            "Media presentasi berupa slide interaktif (Presentation)",
+                            "Pengolahan basis data skala besar (Database)"
+                        ],
+                        "answer": 2
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Media presentasi berupa slide interaktif (Presentation)",
+                    "correctAnswerText": "C. Media presentasi berupa slide interaktif (Presentation)"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Tombol utama berbentuk bulat yang terletak di pojok kiri atas jendela Microsoft PowerPoint 2007 dinamakan ...",
+                        "explanation": "Tombol Office (Office Button) adalah tombol bulat besar di sudut kiri atas pada antarmuka Office 2007.",
+                        "options": [
+                            "Menu Bar",
+                            "Quick Access Toolbar",
+                            "Tombol Microsoft Office (Office Button)",
+                            "Title Bar"
+                        ],
+                        "answer": 2
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Tombol Microsoft Office (Office Button)",
+                    "correctAnswerText": "C. Tombol Microsoft Office (Office Button)"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Komponen fisik komputer yang dapat disentuh dan dilihat secara langsung oleh penggunanya dinamakan...",
+                        "explanation": "Hardware (perangkat keras) adalah komponen fisik komputer yang berwujud nyata dan bisa disentuh.",
+                        "options": [
+                            "Software",
+                            "Hardware",
+                            "Brainware",
+                            "Malware"
+                        ],
+                        "answer": 1
+                    },
+                    "studentAnswer": 1,
+                    "isCorrect": true,
+                    "studentAnswerText": "B. Hardware",
+                    "correctAnswerText": "B. Hardware"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perintah New, Open, Save, dan Print dapat diakses secara langsung melalui...",
+                        "explanation": "Semua perintah dasar manajemen file (baru, buka, simpan, cetak) dikumpulkan di dalam Office Button.",
+                        "options": [
+                            "Ribbon Tab View",
+                            "Tombol Microsoft Office (Office Button)",
+                            "Status Bar",
+                            "Dialog Box Launcher"
+                        ],
+                        "answer": 1
+                    },
+                    "studentAnswer": 1,
+                    "isCorrect": true,
+                    "studentAnswerText": "B. Tombol Microsoft Office (Office Button)",
+                    "correctAnswerText": "B. Tombol Microsoft Office (Office Button)"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perangkat lunak seperti Microsoft Word, Microsoft Excel, dan Microsoft PowerPoint dikelompokkan ke dalam jenis...",
+                        "explanation": "Aplikasi perkantoran (Microsoft Office) merupakan contoh konkret dari Application Software (perangkat lunak aplikasi) untuk membantu tugas spesifik.",
+                        "options": [
+                            "Software Sistem Operasi",
+                            "Software Aplikasi (Application Software)",
+                            "Firmware",
+                            "Software Bahasa Pemrograman"
+                        ],
+                        "answer": 1
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "B. Software Aplikasi (Application Software)"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Fungsi utama dari Ribbon Tab Insert pada Microsoft PowerPoint 2007 adalah...",
+                        "explanation": "Insert berfungsi untuk menyisipkan objek-objek seperti gambar, bentuk (shape), tabel, atau video ke dalam slide.",
+                        "options": [
+                            "Mengatur tata letak halaman dan warna latar belakang",
+                            "Memasukkan\/menyisipkan objek external ke dalam slide",
+                            "Mengatur animasi transisi slide",
+                            "Memeriksa ejaan dan tata bahasa"
+                        ],
+                        "answer": 1
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "B. Memasukkan\/menyisipkan objek external ke dalam slide"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perhatikan tabel jenis perangkat keras berikut: (1) Keyboard, (2) Monitor, (3) Scanner, (4) Speaker, (5) Mouse. Berdasarkan daftar tersebut, kelompok perangkat yang seluruhnya berfungsi sebagai perangkat masukan (input device) ditunjukkan oleh nomor ...",
+                        "explanation": "Keyboard, Scanner, dan Mouse digunakan untuk memasukkan data atau perintah ke dalam sistem komputer. Monitor dan Speaker adalah perangkat keluaran.",
+                        "options": [
+                            "1, 2, dan 3",
+                            "2, 3, dan 4",
+                            "1, 3, dan 5",
+                            "3, 4, dan 5"
+                        ],
+                        "answer": 2
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "C. 1, 3, dan 5"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Karakteristik utama dari memori RAM (Random Access Memory) yang membedakannya dengan media penyimpanan HDD (harddisk) adalah ...",
+                        "explanation": "RAM bersifat volatile, yang artinya hanya berfungsi untuk menyimpan data sementara selama komputer dialiri listrik (hidup).",
+                        "options": [
+                            "Menyimpan data secara permanen meski komputer dimatikan",
+                            "Berfungsi khusus mencetak dokumen ke media kertas",
+                            "Hanya bisa dibaca dan tidak dapat diubah isi datanya",
+                            "Menyimpan data sementara saat komputer hidup (volatile)"
+                        ],
+                        "answer": 3
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "D. Menyimpan data sementara saat komputer hidup (volatile)"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Kombinasi tombol pintas (shortcut) keyboard yang berfungsi untuk menyimpan file presentasi yang sedang diubah adalah ...",
+                        "explanation": "Ctrl + S merupakan jalan pintas atau shortcut untuk perintah Save (menyimpan).",
+                        "options": [
+                            "Ctrl + C",
+                            "Ctrl + P",
+                            "Ctrl + S",
+                            "Ctrl + O"
+                        ],
+                        "answer": 2
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "C. Ctrl + S"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Roni ingin menambah slide baru dengan tata letak (layout) tertentu pada lembar kerjanya. Grup tool yang harus dipilh Roni pada Ribbon Tab Home adalah ...",
+                        "explanation": "Penambahan slide baru (New Slide) beserta pengaturannya berada pada grup Slides di tab Home.",
+                        "options": [
+                            "Slides",
+                            "Paragraph",
+                            "Editing",
+                            "Tables"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Slides"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Bagian di pojok kanan bawah jendela Microsoft PowerPoint 2007 yang berfungsi untuk mengatur perbesaran dan pengecilan tampilan slide dinamakan ...",
+                        "explanation": "Zoom Slider (penggeser perbesaran) memudahkan pengguna memperbesar atau memperkecil tampilan lembar kerja.",
+                        "options": [
+                            "Zoom Slider",
+                            "Status Bar",
+                            "Scroll Bar",
+                            "Quick Access Toolbar"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Zoom Slider"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Ketika suatu kata atau kalimat diblok lalu ditekan ikon Bold (B) pada grup Font, maka perubahan yang terjadi pada teks tersebut adalah ...",
+                        "explanation": "Fungsi B (Bold) adalah untuk menebalkan teks yang dipilih.",
+                        "options": [
+                            "Teks menjadi lebih tebal",
+                            "Teks menjadi bergaris bawah",
+                            "Warna teks berubah menjadi merah",
+                            "Ukuran teks bertambah besar"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Teks menjadi lebih tebal"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Hardware yang berfungsi untuk memasukkan data atau perintah ke dalam sistem komputer dinamakan ...",
+                        "explanation": "Input device (perangkat masukan) berfungsi untuk memasukkan data agar dapat diproses oleh komputer.",
+                        "options": [
+                            "Input device",
+                            "Output device",
+                            "Processing device",
+                            "Storage device"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Input device"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Hardware yang berfungsi untuk menyimpan data atau informasi secara permanen maupun sementara pada komputer dinamakan ...",
+                        "explanation": "Storage device adalah perangkat penyimpanan yang bertugas menyimpan data.",
+                        "options": [
+                            "Input device",
+                            "Output device",
+                            "Processing device",
+                            "Storage device"
+                        ],
+                        "answer": 3
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "D. Storage device"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Urutan langkah standar untuk membuka Microsoft PowerPoint 2007 melalui tombol Start adalah...",
+                        "explanation": "Langkah standar pada Windows versi lama untuk membuka aplikasi Office adalah melalui Start > All Programs > Folder Microsoft Office.",
+                        "options": [
+                            "Start > All Programs > Microsoft Office > PowerPoint 2007",
+                            "Start > Control Panel > Microsoft Office > PowerPoint 2007",
+                            "Start > Accessories > PowerPoint 2007",
+                            "Start > Documents > Microsoft Office > PowerPoint 2007"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Start > All Programs > Microsoft Office > PowerPoint 2007"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perhatikan pernyataan berikut: (1) Membuat teks rata kiri, (2) Membuat teks rata tengah, (3) Membuat teks rata kanan dan kiri secara seimbang. Pernyataan yang menjelaskan fungsi dari ikon Justify pada grup Paragraph adalah nomor ...",
+                        "explanation": "Justify digunakan untuk meratakan paragraf pada kedua sisinya, yaitu kanan dan kiri.",
+                        "options": [
+                            "3",
+                            "2",
+                            "1",
+                            "1 dan 2"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. 3"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perhatikan beberapa nama perangkat lunak berikut: (1) Microsoft Windows, (2) Linux, (3) Microsoft PowerPoint 2007, (4) macOS. Perangkat lunak yang dikelompokkan ke dalam jenis Sistem Operasi (Operating System) adalah ...",
+                        "explanation": "Windows, Linux, dan macOS adalah contoh dari Sistem Operasi. PowerPoint merupakan software aplikasi.",
+                        "options": [
+                            "1, 2, dan 4",
+                            "1, 2, dan 3",
+                            "2, 3, dan 4",
+                            "Hanya 3 saja"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. 1, 2, dan 4"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Sekumpulan tombol menu jalan pintas berbentuk tab menu dan ikon di bagian atas PowerPoint 2007 (seperti Home, Insert, Design) dinamakan ...",
+                        "explanation": "Sistem menu dengan wujud memanjang di bagian atas aplikasi Office disebut Ribbon Tab.",
+                        "options": [
+                            "Ribbon Tab",
+                            "Menu Bar",
+                            "Status Bar",
+                            "Taskbar"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Ribbon Tab"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Di bawah ini yang bukan merupakan contoh perangkat keras masukan (input device) adalah ...",
+                        "explanation": "Monitor adalah perangkat keluaran (output device) yang berfungsi menampilkan visual.",
+                        "options": [
+                            "Keyboard",
+                            "Mouse",
+                            "Monitor",
+                            "Scanner"
+                        ],
+                        "answer": 2
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "C. Monitor"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Pada Microsoft PowerPoint 2007, ikon\/tombol yang berfungsi untuk miringkan teks (Italic) ditandai dengan simbol ...",
+                        "explanation": "Huruf \"I\" (Italic) adalah ikon pemformatan font untuk memiringkan teks.",
+                        "options": [
+                            "B",
+                            "I",
+                            "U",
+                            "S"
+                        ],
+                        "answer": 1
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "B. I"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Menu pada Ribbon Tab yang didalamnya berisi perintah untuk menambahkan tabel, menyisipkan gambar, shapes, dan chart adalah...",
+                        "explanation": "Menyisipkan segala macam elemen dilakukan melalui Ribbon Tab Insert.",
+                        "options": [
+                            "Tab Home",
+                            "Tab Insert",
+                            "Tab Design",
+                            "Tab View"
+                        ],
+                        "answer": 1
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "B. Tab Insert"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Pak Guru ingin membuat dokumen presentasi baru, membuka file yang sudah ada, dan mencetak slide ke kertas. Fitur pada PowerPoint 2007 yang memuat seluruh fungsi dasar tersebut adalah ...",
+                        "explanation": "Kumpulan fungsi dasar manajemen berkas seperti New, Open, dan Print berada di Office Button.",
+                        "options": [
+                            "Ribbon Tab",
+                            "Tombol Microsoft Office (Office Button)",
+                            "Quick Access Toolbar",
+                            "Dialog Box Launcher"
+                        ],
+                        "answer": 1
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "B. Tombol Microsoft Office (Office Button)"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Rina ingin mewarnai bagian dalam bentuk (shape) yang baru saja ia buat di slide presentasi, serta mengubah warna garis tepi dari bentuk tersebut. Fitur yang digunakan Rina secara berurutan pada tab Format (atau grup Drawing) adalah ...",
+                        "explanation": "Shape Fill berguna untuk mengisi warna bidang pada bentuk, sedangkan Shape Outline untuk warna garis luar\/tepinya.",
+                        "options": [
+                            "Font Color dan Text Highlight",
+                            "Picture Border dan Crop",
+                            "Shape Fill dan Shape Outline",
+                            "Shape Styles dan WordArt"
+                        ],
+                        "answer": 2
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "C. Shape Fill dan Shape Outline"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perhatikan dua perangkat berikut: (1) Monitor: Menampilkan visual hasil olahan sistem. (2) Printer: Mencetak dokumen dari komputer ke kertas. Kedua perangkat keras di atas digolongkan ke dalam jenis ...",
+                        "explanation": "Keduanya merupakan perangkat yang mengeluarkan atau menampilkan hasil proses komputer, sehingga disebut Output Device.",
+                        "options": [
+                            "Input Device",
+                            "Process Device",
+                            "Storage Device",
+                            "Output Device"
+                        ],
+                        "answer": 3
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "D. Output Device"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perangkat keras yang berfungsi sebagai pusat pemroses utama data atau \"otak\" komputer adalah...",
+                        "explanation": "CPU (Central Processing Unit) berperan sebagai otak komputer yang memproses semua instruksi dan data.",
+                        "options": [
+                            "Processor\/CPU (Central Processing Unit)",
+                            "Power Supply",
+                            "RAM",
+                            "Motherboard"
+                        ],
+                        "answer": 0
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Processor\/CPU (Central Processing Unit)"
+                }
+            ]
+        }
+    ],
     "review_settings": {
         "quiz-1789790671156": false
     },
@@ -7043,7 +7541,9 @@
             ],
             "started_at": 1794797098,
             "ends_at": 1794799798,
-            "updated_at": 1794799797
+            "updated_at": 1794799797,
+            "finished": true,
+            "result_token": "7349f71e42a6e362e0831c9c4dfbf5fe447cb556999e2f483807228518baa675"
         },
         "231a17900b1cc3640d38b0389d1df0214666a6026680c65cb9e8a305109a1539": {
             "token_hash": "231a17900b1cc3640d38b0389d1df0214666a6026680c65cb9e8a305109a1539",
@@ -9814,5 +10314,8 @@
             "added_minutes": 20,
             "new_ends_at": 1791176329
         }
-    ]
+    ],
+    "settings": {
+        "require_student_password": true
+    }
 }
