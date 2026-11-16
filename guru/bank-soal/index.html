@@ -86,6 +86,12 @@
                             <option value="ACTIVE">Aktif (ACTIVE)</option>
                             <option value="DRAFT">Draf (DRAFT)</option>
                         </select>
+                        <select id="quiz-sort" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="latest">Urut: Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                            <option value="title_asc">Judul (A - Z)</option>
+                            <option value="title_desc">Judul (Z - A)</option>
+                        </select>
                     </div>
                 </div>
 
@@ -406,6 +412,15 @@
                     (q.class && q.class.toLowerCase().includes(query)) ||
                     (q.pin && q.pin.toLowerCase().includes(query));
                 return matchSubject && matchClass && matchStatus && matchQuery;
+            });
+
+            const sortMode = document.getElementById('quiz-sort')?.value || 'latest';
+            filteredQuizzes.sort((a, b) => {
+                if (sortMode === 'latest') return (b.created_at || b.id || '').localeCompare(a.created_at || a.id || '');
+                if (sortMode === 'oldest') return (a.created_at || a.id || '').localeCompare(b.created_at || b.id || '');
+                if (sortMode === 'title_asc') return (a.title || '').localeCompare(b.title || '');
+                if (sortMode === 'title_desc') return (b.title || '').localeCompare(a.title || '');
+                return 0;
             });
 
             const countBadge = document.getElementById('quizzes-count-badge');

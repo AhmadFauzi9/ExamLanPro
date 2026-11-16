@@ -109,6 +109,13 @@
                         <select id="student-filter-year" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                             <option value="all">Semua Tahun</option>
                         </select>
+                        <select id="student-sort" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="nis_asc">Urut: NIS (0 - 9)</option>
+                            <option value="nis_desc">NIS (9 - 0)</option>
+                            <option value="name_asc">Nama (A - Z)</option>
+                            <option value="name_desc">Nama (Z - A)</option>
+                            <option value="class_asc">Kelas</option>
+                        </select>
                         <select id="student-per-page" onchange="changePerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                             <option value="10">10 baris</option>
                             <option value="25" selected>25 baris</option>
@@ -357,6 +364,16 @@
                 const matchClass = fClass === 'all' || (st.class || '').trim() === fClass;
                 const matchYear = fYear === 'all' || (st.tahun_ajaran || '').trim() === fYear;
                 return matchQ && matchClass && matchYear;
+            });
+
+            const sortMode = document.getElementById('student-sort')?.value || 'nis_asc';
+            filteredStudents.sort((a, b) => {
+                if (sortMode === 'nis_asc') return (a.nis || '').localeCompare(b.nis || '', undefined, { numeric: true });
+                if (sortMode === 'nis_desc') return (b.nis || '').localeCompare(a.nis || '', undefined, { numeric: true });
+                if (sortMode === 'name_asc') return (a.name || '').localeCompare(b.name || '');
+                if (sortMode === 'name_desc') return (b.name || '').localeCompare(a.name || '');
+                if (sortMode === 'class_asc') return (a.class || '').localeCompare(b.class || '') || (a.name || '').localeCompare(b.name || '');
+                return 0;
             });
 
             currentPage = 1;

@@ -64,7 +64,11 @@
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
                         <input id="audit-search-input" type="text" oninput="handleAuditSearch()" placeholder="Cari aksi, keterangan target, pengguna, atau IP..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <select id="audit-sort" onchange="handleAuditSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="desc">Urut: Terbaru</option>
+                            <option value="asc">Terlama</option>
+                        </select>
                         <select id="audit-per-page" onchange="changeAuditPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
                             <option value="15">15 baris</option>
                             <option value="30" selected>30 baris</option>
@@ -150,6 +154,13 @@
                     (l.ip && l.ip.toLowerCase().includes(q)) ||
                     (l.detail && String(l.detail).toLowerCase().includes(q))
                 );
+            });
+
+            const sortMode = document.getElementById('audit-sort')?.value || 'desc';
+            filteredAuditLogs.sort((a, b) => {
+                const tA = new Date(a.time || 0).getTime();
+                const tB = new Date(b.time || 0).getTime();
+                return sortMode === 'asc' ? tA - tB : tB - tA;
             });
 
             auditPage = 1;
