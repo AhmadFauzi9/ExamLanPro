@@ -75,31 +75,17 @@
 
                     <!-- Filters Group -->
                     <div class="flex items-center gap-2 flex-wrap">
-                        <!-- Filter Mapel -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-book-open text-slate-400 mr-0.5"></i> Mapel:</span>
-                            <select id="quiz-filter-subject" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[160px]">
-                                <option value="all">Semua Mapel</option>
-                            </select>
-                        </div>
-
-                        <!-- Filter Kelas -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-school text-slate-400 mr-0.5"></i> Kelas:</span>
-                            <select id="quiz-filter-class" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[150px]">
-                                <option value="all">Semua Kelas</option>
-                            </select>
-                        </div>
-
-                        <!-- Filter Status -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-tag text-slate-400 mr-0.5"></i> Status:</span>
-                            <select id="quiz-filter-status" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                                <option value="all">Semua Status</option>
-                                <option value="ACTIVE">Aktif (ACTIVE)</option>
-                                <option value="DRAFT">Draf (DRAFT)</option>
-                            </select>
-                        </div>
+                        <select id="quiz-filter-subject" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[160px]">
+                            <option value="all">Semua Mapel</option>
+                        </select>
+                        <select id="quiz-filter-class" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[150px]">
+                            <option value="all">Semua Kelas</option>
+                        </select>
+                        <select id="quiz-filter-status" onchange="handleQuizSearch()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Status</option>
+                            <option value="ACTIVE">Aktif (ACTIVE)</option>
+                            <option value="DRAFT">Draf (DRAFT)</option>
+                        </select>
                     </div>
                 </div>
 

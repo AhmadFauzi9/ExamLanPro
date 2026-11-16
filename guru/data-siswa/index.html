@@ -103,27 +103,18 @@
                         <input id="student-search-input" type="text" oninput="handleSearchFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px]">Kelas:</span>
-                            <select id="student-filter-class" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                                <option value="all">Semua Kelas</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px]">Tahun:</span>
-                            <select id="student-filter-year" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                                <option value="all">Semua Tahun</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px]">Baris:</span>
-                            <select id="student-per-page" onchange="changePerPage(this.value)" class="px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                                <option value="10">10</option>
-                                <option value="25" selected>25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
+                        <select id="student-filter-class" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Kelas</option>
+                        </select>
+                        <select id="student-filter-year" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Tahun</option>
+                        </select>
+                        <select id="student-per-page" onchange="changePerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="10">10 baris</option>
+                            <option value="25" selected>25 baris</option>
+                            <option value="50">50 baris</option>
+                            <option value="100">100 baris</option>
+                        </select>
                     </div>
                 </div>
 

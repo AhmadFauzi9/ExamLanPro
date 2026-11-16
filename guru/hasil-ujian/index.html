@@ -109,45 +109,33 @@
                     <!-- Right Controls: Paket, Kelas, Urut, View Baris, Buka Pembahasan -->
                     <div class="flex items-center gap-2 flex-wrap">
                         <!-- Filter Paket -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-folder-open text-slate-400 mr-0.5"></i> Paket:</span>
-                            <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[170px]">
-                                <option value="all">Semua Paket Kuis</option>
-                            </select>
-                        </div>
+                        <select id="teacher-quiz-filter" onchange="handleResultsFilter(); updateTeacherReviewControl();" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[170px]">
+                            <option value="all">Semua Paket Kuis</option>
+                        </select>
 
                         <!-- Filter Kelas -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-school text-slate-400 mr-0.5"></i> Kelas:</span>
-                            <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                                <option value="all">Semua Kelas</option>
-                            </select>
-                        </div>
+                        <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="all">Semua Kelas</option>
+                        </select>
 
                         <!-- Sort Urut -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-arrow-down-short-wide text-slate-400 mr-0.5"></i> Urut:</span>
-                            <select id="results-sort" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                                <option value="date_desc">Terbaru</option>
-                                <option value="nis_asc">NIS (0 - 9)</option>
-                                <option value="nis_desc">NIS (9 - 0)</option>
-                                <option value="name_asc">Abjad (A - Z)</option>
-                                <option value="name_desc">Abjad (Z - A)</option>
-                                <option value="score_desc">Nilai Tertinggi</option>
-                                <option value="score_asc">Nilai Terendah</option>
-                            </select>
-                        </div>
+                        <select id="results-sort" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="date_desc">Urut: Terbaru</option>
+                            <option value="nis_asc">NIS (0 - 9)</option>
+                            <option value="nis_desc">NIS (9 - 0)</option>
+                            <option value="name_asc">Nama (A - Z)</option>
+                            <option value="name_desc">Nama (Z - A)</option>
+                            <option value="score_desc">Nilai Tertinggi</option>
+                            <option value="score_asc">Nilai Terendah</option>
+                        </select>
 
                         <!-- View Baris -->
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap"><i class="fa-solid fa-table-list text-slate-400 mr-0.5"></i> Baris:</span>
-                            <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
-                                <option value="10">10</option>
-                                <option value="25" selected>25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
+                        <select id="results-per-page" onchange="changeResultsPerPage(this.value)" class="px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="10">10 baris</option>
+                            <option value="25" selected>25 baris</option>
+                            <option value="50">50 baris</option>
+                            <option value="100">100 baris</option>
+                        </select>
 
                         <!-- Kontrol Pembahasan (Sejajar dengan Tooltip) -->
                         <div id="review-control-group" class="relative group flex items-center gap-1.5 pl-1.5 border-l border-slate-200" title="Pilih Soal Ujian terlebih dahulu">
