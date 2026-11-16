@@ -182,11 +182,18 @@
         let auditPerPage = 30;
         let autoRefreshTimer = null;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await checkServerSession();
+        window.onDataLoaded = async () => {
             await loadMonitoringData();
             await loadSystemStatus();
-            toggleAutoRefresh(true);
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ok = await checkServerSession(window.onDataLoaded);
+            if (ok) {
+                await loadMonitoringData();
+                await loadSystemStatus();
+                toggleAutoRefresh(true);
+            }
         });
 
         function toggleAutoRefresh(enabled) {

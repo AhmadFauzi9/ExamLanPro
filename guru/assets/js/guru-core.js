@@ -188,6 +188,13 @@ async function verifyServerPassword(e, onSuccessCallback = null) {
         if (authModal) authModal.classList.add('hidden');
         startAdminExtensionPolling();
         await fetchDataFromAPI(onSuccessCallback);
+        if (typeof onSuccessCallback === 'function') {
+            onSuccessCallback(dbData);
+        } else if (typeof window.onDataLoaded === 'function') {
+            window.onDataLoaded(dbData);
+        } else {
+            window.location.reload();
+        }
     } catch (err) {
         appAlert('Gagal menghubungi server.', 'Koneksi Terputus');
     }

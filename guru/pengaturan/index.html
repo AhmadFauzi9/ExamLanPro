@@ -161,9 +161,11 @@
     <script src="../assets/js/guru-core.js"></script>
     <script src="../assets/js/guru-nav.js"></script>
     <script>
+        window.onDataLoaded = loadSettingsData;
+
         document.addEventListener('DOMContentLoaded', async () => {
-            await checkServerSession();
-            await loadSettingsData();
+            const ok = await checkServerSession(loadSettingsData);
+            if (ok) await loadSettingsData();
         });
 
         async function loadSettingsData() {

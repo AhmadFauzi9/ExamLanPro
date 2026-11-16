@@ -245,13 +245,14 @@
         let perPage = 25;
         let revealedPasswords = new Set();
 
-        window.onload = function() {
-            checkServerSession(loadStudents);
-        };
-
         window.onDataLoaded = function(data) {
             loadStudents();
         };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ok = await checkServerSession(loadStudents);
+            if (ok) await loadStudents();
+        });
 
         async function loadStudents() {
             try {

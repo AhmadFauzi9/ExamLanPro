@@ -236,10 +236,12 @@
         let selectedKeys = new Set();
         let reviewStates = {};
 
+        window.onDataLoaded = loadResultsData;
+
         // Inisialisasi Halaman
         document.addEventListener('DOMContentLoaded', async () => {
-            await checkServerSession();
-            await loadResultsData();
+            const ok = await checkServerSession(loadResultsData);
+            if (ok) await loadResultsData();
         });
 
         // Load Data dari API

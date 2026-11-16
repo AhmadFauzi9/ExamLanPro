@@ -108,7 +108,7 @@
         if (!document.getElementById('server-auth-modal')) {
             const authDiv = document.createElement('div');
             authDiv.id = 'server-auth-modal';
-            authDiv.className = 'fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4';
+            authDiv.className = 'hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4';
             authDiv.innerHTML = `
                 <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-200 space-y-4">
                     <div class="text-center space-y-1.5">

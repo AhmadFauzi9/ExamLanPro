@@ -404,8 +404,28 @@ if ($action === 'teacher_logout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-if ($action === 'teacher_status') {
-    if (!empty($_SESSION['teacher_authenticated'])) { $db=loadDb($file_db); echo json_encode(['authenticated'=>true,'must_change_password'=>empty($db['teacher_password_changed'])]); } else { echo json_encode(['authenticated'=>false,'must_change_password'=>false]); }
+if ($action === 'teacher_status' || $action === 'check_session') {
+    $timeout = 1800; // 30 menit masa aktif sesi guru
+    $isAuthenticated = !empty($_SESSION['teacher_authenticated']) 
+        && !empty($_SESSION['teacher_last_activity']) 
+        && (time() - (int)$_SESSION['teacher_last_activity'] <= $timeout);
+
+    if ($isAuthenticated) {
+        $_SESSION['teacher_last_activity'] = time();
+        $db = loadDb($file_db);
+        echo json_encode([
+            'status' => 'success',
+            'authenticated' => true,
+            'must_change_password' => empty($db['teacher_password_changed'])
+        ]);
+    } else {
+        $_SESSION['teacher_authenticated'] = false;
+        echo json_encode([
+            'status' => 'success',
+            'authenticated' => false,
+            'must_change_password' => false
+        ]);
+    }
     exit;
 }
 

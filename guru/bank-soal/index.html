@@ -337,10 +337,12 @@
         let filteredQuizzes = [];
         let activeQuizId = null;
 
+        window.onDataLoaded = loadQuizzesData;
+
         // Inisialisasi Halaman
         document.addEventListener('DOMContentLoaded', async () => {
-            await checkServerSession();
-            await loadQuizzesData();
+            const ok = await checkServerSession(loadQuizzesData);
+            if (ok) await loadQuizzesData();
         });
 
         // Load Data dari API
