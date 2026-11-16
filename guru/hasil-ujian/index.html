@@ -149,12 +149,17 @@
                             </select>
                         </div>
 
-                        <!-- Kontrol Pembahasan (Sejajar) -->
-                        <div class="flex items-center gap-1.5 pl-1.5 border-l border-slate-200">
-                            <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 transition font-bold shadow-2xs" title="Buka/Tutup Pembahasan untuk Siswa">
+                        <!-- Kontrol Pembahasan (Sejajar dengan Tooltip) -->
+                        <div id="review-control-group" class="relative group flex items-center gap-1.5 pl-1.5 border-l border-slate-200" title="Pilih Soal Ujian terlebih dahulu">
+                            <button id="teacher-review-toggle" type="button" onclick="toggleTeacherReview()" class="btn-compact bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 transition font-bold shadow-2xs" title="Pilih Soal Ujian terlebih dahulu">
                                 <i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>
                             </button>
                             <span id="teacher-review-status" class="hidden xl:inline text-[11px] text-slate-500 truncate max-w-[120px]"></span>
+                            <!-- Visual Floating Tooltip -->
+                            <div id="teacher-review-tooltip" class="pointer-events-none absolute bottom-full mb-2 right-0 hidden group-hover:flex items-center gap-1.5 bg-slate-900 text-white text-[11px] font-semibold py-1.5 px-3 rounded-xl shadow-xl whitespace-nowrap z-50">
+                                <i class="fa-solid fa-circle-info text-amber-400 text-xs"></i>
+                                <span>Pilih Soal Ujian terlebih dahulu</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -620,11 +625,19 @@
             const filterValue = document.getElementById('teacher-quiz-filter').value;
             const statusEl = document.getElementById('teacher-review-status');
             const toggleBtn = document.getElementById('teacher-review-toggle');
+            const tooltipEl = document.getElementById('teacher-review-tooltip');
+            const groupEl = document.getElementById('review-control-group');
 
             if (filterValue === 'all') {
                 statusEl.textContent = 'Pilih paket kuis';
                 toggleBtn.disabled = true;
                 toggleBtn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed';
+                const tipText = 'Pilih Soal Ujian terlebih dahulu';
+                toggleBtn.title = tipText;
+                if (groupEl) groupEl.title = tipText;
+                if (tooltipEl) {
+                    tooltipEl.innerHTML = '<i class="fa-solid fa-circle-info text-amber-400 text-xs"></i> <span>' + tipText + '</span>';
+                }
                 return;
             }
 
@@ -634,10 +647,22 @@
                 statusEl.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Terbuka</span>';
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i> <span>Kunci Pembahasan</span>';
                 toggleBtn.className = 'btn-compact bg-amber-600 hover:bg-amber-700 text-white font-bold transition shadow-2xs';
+                const tipText = 'Klik untuk mengunci pembahasan siswa';
+                toggleBtn.title = tipText;
+                if (groupEl) groupEl.title = tipText;
+                if (tooltipEl) {
+                    tooltipEl.innerHTML = '<i class="fa-solid fa-lock text-amber-300 text-xs"></i> <span>' + tipText + '</span>';
+                }
             } else {
                 statusEl.innerHTML = '<span class="text-slate-500 font-semibold"><i class="fa-solid fa-lock"></i> Terkunci</span>';
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Buka Pembahasan</span>';
                 toggleBtn.className = 'btn-compact bg-slate-800 hover:bg-slate-700 text-white font-bold transition shadow-2xs';
+                const tipText = 'Klik untuk membuka pembahasan untuk siswa';
+                toggleBtn.title = tipText;
+                if (groupEl) groupEl.title = tipText;
+                if (tooltipEl) {
+                    tooltipEl.innerHTML = '<i class="fa-solid fa-eye text-emerald-400 text-xs"></i> <span>' + tipText + '</span>';
+                }
             }
         }
 
