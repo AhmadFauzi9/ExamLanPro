@@ -4,7 +4,7 @@
             "id": "quiz-1794921157572",
             "title": "UB Informatika Semester Ganjil 2026-2027",
             "duration": 5,
-            "max_questions": 10,
+            "max_questions": 0,
             "quiz_type": "mixed",
             "description": "Jaawablah soal dengan benar!",
             "subject": "Informatika",
@@ -12,10 +12,10 @@
             "start_at": "",
             "end_at": "",
             "status": "ACTIVE",
-            "pin": "9YSBXN",
+            "pin": "DQ87N3",
             "pin_enabled": true,
             "pin_auto_refresh": true,
-            "pin_updated_at": 1794954841,
+            "pin_updated_at": 1794955497,
             "questions": [
                 {
                     "type": "mc",
@@ -10336,12 +10336,31 @@
                 27
             ],
             "option_order": {
-                "14": [],
+                "3": [
+                    1,
+                    2,
+                    3,
+                    0
+                ],
+                "6": [],
                 "12": [
                     3,
                     2,
                     0,
                     1
+                ],
+                "14": [],
+                "16": [
+                    2,
+                    3,
+                    1,
+                    0
+                ],
+                "27": [
+                    0,
+                    1,
+                    3,
+                    2
                 ],
                 "34": [],
                 "36": [
@@ -10356,29 +10375,10 @@
                     0,
                     2
                 ],
-                "6": [],
                 "49": [
                     1,
                     3,
                     0,
-                    2
-                ],
-                "3": [
-                    1,
-                    2,
-                    3,
-                    0
-                ],
-                "16": [
-                    2,
-                    3,
-                    1,
-                    0
-                ],
-                "27": [
-                    0,
-                    1,
-                    3,
                     2
                 ]
             },
@@ -10423,13 +10423,6 @@
                     1,
                     0
                 ],
-                "40": [
-                    2,
-                    0,
-                    3,
-                    1
-                ],
-                "38": [],
                 "6": [],
                 "8": [
                     1,
@@ -10438,28 +10431,35 @@
                     2
                 ],
                 "10": [],
-                "39": [
-                    0,
-                    2,
-                    3,
-                    1
-                ],
                 "17": [
                     1,
                     3,
                     2,
                     0
                 ],
-                "49": [
-                    1,
-                    0,
-                    2,
-                    3
-                ],
                 "35": [
                     2,
                     0,
                     1,
+                    3
+                ],
+                "38": [],
+                "39": [
+                    0,
+                    2,
+                    3,
+                    1
+                ],
+                "40": [
+                    2,
+                    0,
+                    3,
+                    1
+                ],
+                "49": [
+                    1,
+                    0,
+                    2,
                     3
                 ]
             },
@@ -10496,37 +10496,38 @@
                 21
             ],
             "option_order": {
-                "14": [],
                 "7": [
                     0,
                     2,
                     1,
                     3
                 ],
-                "35": [
-                    1,
+                "14": [],
+                "21": [
                     2,
+                    1,
                     0,
                     3
                 ],
-                "44": [
-                    1,
-                    0,
-                    2,
-                    3
-                ],
+                "26": [],
                 "32": [
                     0,
                     1,
                     3,
                     2
                 ],
-                "34": [],
                 "33": [
                     1,
                     0,
                     3,
                     2
+                ],
+                "34": [],
+                "35": [
+                    1,
+                    2,
+                    0,
+                    3
                 ],
                 "41": [
                     3,
@@ -10534,11 +10535,10 @@
                     1,
                     2
                 ],
-                "26": [],
-                "21": [
-                    2,
+                "44": [
                     1,
                     0,
+                    2,
                     3
                 ]
             },
@@ -10551,8 +10551,8 @@
             "started_at": 1794953884,
             "ends_at": 1794954184,
             "updated_at": 1794954181,
-            "violations_count": 28,
-            "last_violation_at": 1794954856,
+            "violations_count": 32,
+            "last_violation_at": 1794955302,
             "last_violation_type": "tab_switch"
         }
     },
@@ -10595,8 +10595,8 @@
             "attempt_token_hash": "4b29a8371f2d4078fecfadf5f76bf458a5a4a31dbf7c09c40ec31b185552685d",
             "started_at": 1794953884,
             "ends_at": 1794954184,
-            "violations_count": 28,
-            "last_violation_at": 1794954856,
+            "violations_count": 32,
+            "last_violation_at": 1794955302,
             "last_violation_type": "tab_switch"
         }
     },
@@ -10942,6 +10942,34 @@
             "user": "guru",
             "action": "Peringatan Kecurangan",
             "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-28)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:36:44+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-29)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:41:35+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-30)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:41:37+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-31)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:41:42+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-32)",
             "detail": ""
         }
     ],
