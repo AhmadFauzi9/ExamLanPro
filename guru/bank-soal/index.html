@@ -85,9 +85,6 @@
                         <button type="button" onclick="openQuizModal()" class="btn-icon bg-brand-600 hover:bg-brand-700 text-white shadow-2xs transition" title="Tambah Paket Kuis">
                             <i class="fa-solid fa-plus text-xs"></i>
                         </button>
-                        <button type="button" onclick="openMassImportModal()" class="btn-icon bg-amber-600 hover:bg-amber-700 text-white shadow-2xs transition" title="Import Soal (Word / Excel)">
-                            <i class="fa-solid fa-file-import text-xs"></i>
-                        </button>
                         <button type="button" onclick="loadQuizzesData()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" title="Muat Ulang Paket Kuis">
                             <i class="fa-solid fa-rotate text-xs"></i>
                         </button>
@@ -108,7 +105,7 @@
 
     <!-- MODAL 1: Buat / Edit Paket Kuis -->
     <div id="quiz-modal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-150">
+        <div class="bg-white rounded-2xl max-w-2xl sm:max-w-3xl w-full p-6 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-150">
             <div class="flex items-center justify-between border-b pb-3">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-lg font-bold">
@@ -129,29 +126,25 @@
                     <input type="text" id="quiz-title-input" required placeholder="Contoh: Asesmen Sumatif Akhir Semester Informatika" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Durasi (Menit) <span class="text-rose-500">*</span></label>
                         <input type="number" id="quiz-duration-input" required min="1" max="360" value="60" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1" title="Berapa soal yang diacak & aktif dikerjakan siswa">Soal Dikerjakan</label>
-                        <input type="number" id="quiz-max-questions-input" min="0" placeholder="0 = Semua Soal" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs" title="Jumlah soal yang akan diacak dan dikerjakan siswa (misal 25 dari 50). Kosongkan atau isi 0 jika seluruh soal dikerjakan.">
-                    </div>
-                    <div>
                         <label class="block font-semibold text-slate-700 mb-1">Jenis Soal <span class="text-rose-500">*</span></label>
                         <select id="quiz-type-input" required class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs bg-white">
                             <option value="">-- Pilih Jenis Soal --</option>
-                            <option value="mc">1. Pilihan Ganda (PG)</option>
-                            <option value="complex">2. Pilihan Ganda Kompleks (PGK)</option>
-                            <option value="matching">3. Menjodohkan (Matching)</option>
-                            <option value="short_answer">4. Isian Singkat</option>
-                            <option value="essay">5. Uraian / Esai</option>
-                            <option value="mixed">Campuran (Multi Bentuk)</option>
+                            <option value="mc">1. Pilihan Ganda (mc)</option>
+                            <option value="complex">2. Pilihan Ganda Kompleks (complex)</option>
+                            <option value="cause_effect">3. Sebab Akibat (cause_effect)</option>
+                            <option value="case_analysis">4. Analisis Kasus (case_analysis)</option>
+                            <option value="matching">5. Menjodohkan (matching)</option>
+                            <option value="mixed">Campuran (5 Bentuk Soal)</option>
                         </select>
                     </div>
                 </div>
-                <p class="text-[10px] text-slate-500 -mt-2"><b>Tips Soal Acak:</b> Isi 'Soal Dikerjakan' (misal <b>25</b>) jika hanya ingin 25 soal diacak dari total 50 soal di bank soal. Kosongkan atau isi 0 untuk mengerjakan seluruh soal.</p>
+                <input type="hidden" id="quiz-max-questions-input" value="0">
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -175,10 +168,23 @@
                     <div class="flex items-center gap-2">
                         <input type="text" id="quiz-pin-input" maxlength="6" placeholder="KOSONG = Tanpa Token" class="w-full px-3 py-1.5 rounded-lg border border-amber-300 font-mono font-bold tracking-widest text-slate-800 uppercase focus:ring-2 focus:ring-amber-500 outline-none text-xs bg-white">
                     </div>
-                    <p class="text-[10px] text-amber-700">Jika diisi, siswa wajib memasukkan token ini saat akan mengerjakan ujian.</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[10px] text-amber-800">
+                        <p>Jika diisi, siswa wajib memasukkan token ini saat akan mengerjakan ujian.</p>
+                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold select-none text-amber-900 shrink-0" title="Token otomatis berganti tiap 10 menit dengan toleransi waktu">
+                            <input type="checkbox" id="quiz-pin-auto-refresh-input" checked class="rounded border-amber-300 text-amber-600 focus:ring-amber-500">
+                            <span>Otomatis ganti tiap 10 menit</span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Status Publikasi</label>
+                        <select id="quiz-status-input" class="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none text-xs bg-white">
+                            <option value="ACTIVE">Aktif (Tampil ke Siswa)</option>
+                            <option value="DRAFT">Draf (Disembunyikan)</option>
+                        </select>
+                    </div>
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Waktu Mulai</label>
                         <input type="datetime-local" id="quiz-start-input" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 outline-none text-xs">
@@ -189,23 +195,33 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Status Publikasi</label>
-                        <select id="quiz-status-input" class="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none text-xs bg-white">
-                            <option value="ACTIVE">Aktif (Tampil ke Siswa)</option>
-                            <option value="DRAFT">Draf (Disembunyikan)</option>
-                        </select>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Deskripsi / Petunjuk Pengerjaan</label>
+                    <textarea id="quiz-desc-input" rows="3" placeholder="Tuliskan petunjuk pengerjaan ujian, ketentuan, atau catatan tambahan bagi siswa (opsional)..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-xs custom-scrollbar resize-y"></textarea>
+                </div>
+
+                <!-- Bagian Import Soal Massal -->
+                <div class="p-3.5 bg-amber-50/80 border border-amber-200 rounded-xl space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="block font-bold text-amber-950 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-import text-amber-600"></i> Import Soal (Word / Excel)
+                        </label>
+                        <button type="button" onclick="openGuideFromQuizForm()" class="btn-compact py-1.5 px-3 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-1.5 rounded-lg shadow-2xs transition" title="Buka dialog unduh template resmi Word & Excel">
+                            <i class="fa-solid fa-download text-xs"></i> <span>Download Template Soal</span>
+                        </button>
                     </div>
+
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Deskripsi Singkat</label>
-                        <input type="text" id="quiz-desc-input" placeholder="Opsional" class="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none text-xs">
+                        <p class="text-[10px] text-amber-900 font-medium mb-1">
+                            Pilih berkas soal (.docx, .doc, .xlsx, .txt) jika ingin langsung mengimpor butir soal saat paket disimpan:
+                        </p>
+                        <input type="file" id="quiz-file-import-input" accept=".docx, .doc, .xlsx, .xls, .csv, .txt" class="w-full text-xs text-slate-500 file:mr-2.5 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 border border-amber-200 rounded-xl p-1 bg-white">
                     </div>
                 </div>
 
-                <div class="pt-3 flex justify-end gap-2 border-t">
+                <div class="pt-3 flex items-center justify-end gap-2 border-t">
                     <button type="button" onclick="toggleModal('quiz-modal', false)" class="btn-compact border border-slate-300 text-slate-600 hover:bg-slate-50">Batal</button>
-                    <button type="submit" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold">Simpan</button>
+                    <button type="submit" id="btn-save-quiz" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold">Simpan</button>
                 </div>
             </form>
         </div>
@@ -236,13 +252,13 @@
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Bentuk / Tipe Soal <span class="text-rose-500">*</span></label>
                         <select id="q-type-select" onchange="renderQuestionEditorFields()" class="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none text-xs bg-white font-bold text-slate-800">
-                            <option value="mc">1. Pilihan Ganda (PG)</option>
-                            <option value="complex">2. Pilihan Ganda Kompleks (PGK)</option>
-                            <option value="matching">3. Menjodohkan (Matching)</option>
-                            <option value="short_answer">4. Isian Singkat</option>
-                            <option value="essay">5. Uraian / Esai</option>
-                            <option value="cause_effect">Sebab-Akibat (Asosiasi)</option>
-                            <option value="case_analysis">Analisis Kasus</option>
+                            <option value="mc">1. Pilihan Ganda (mc)</option>
+                            <option value="complex">2. Pilihan Ganda Kompleks (complex)</option>
+                            <option value="cause_effect">3. Sebab Akibat (cause_effect)</option>
+                            <option value="case_analysis">4. Analisis Kasus (case_analysis)</option>
+                            <option value="matching">5. Menjodohkan (matching)</option>
+                            <option value="short_answer">Isian Singkat</option>
+                            <option value="essay">Uraian / Esai</option>
                             <option value="scaled">Skala Likert</option>
                         </select>
                     </div>
@@ -286,17 +302,17 @@
         </div>
     </div>
 
-    <!-- MODAL 3: Import Soal Massal -->
+    <!-- MODAL 3: Download Template Soal & Panduan Format -->
     <div id="modal-mass-import" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-[95] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-150">
             <div class="flex items-center justify-between border-b pb-3">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg font-bold">
-                        <i class="fa-solid fa-file-import"></i>
+                        <i class="fa-solid fa-file-arrow-down"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Import Soal Massal</h3>
-                        <p class="text-[11px] text-slate-500">Mendukung Word (.docx, .doc), Excel (.xlsx), atau Teks (.txt)</p>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Download Template Soal & Panduan Format</h3>
+                        <p class="text-[11px] text-slate-500">Mendukung Microsoft Word (.docx, .doc) dan Microsoft Excel (.xlsx)</p>
                     </div>
                 </div>
                 <button type="button" onclick="closeMassImportModal()" class="text-slate-400 hover:text-slate-600 p-1">
@@ -305,43 +321,30 @@
             </div>
 
             <!-- Download Templates -->
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
-                <p class="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
-                    <i class="fa-solid fa-download text-brand-600"></i> Unduh Format Template Resmi:
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <p class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-download text-amber-600"></i> Pilih Berkas Template Resmi untuk Diunduh:
                 </p>
-                <div class="grid grid-cols-2 gap-2">
-                    <button type="button" onclick="downloadWordTextTemplate()" class="btn-compact bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 flex items-center justify-center gap-1.5 font-bold transition">
-                        <i class="fa-solid fa-file-word"></i> <span>Template Word (.doc)</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="downloadWordTextTemplate()" class="btn-compact py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 flex items-center justify-center gap-2 font-bold transition shadow-2xs">
+                        <i class="fa-solid fa-file-word text-base text-blue-600"></i> <span>Template Word (.doc)</span>
                     </button>
-                    <button type="button" onclick="downloadExcelTemplate()" class="btn-compact bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center gap-1.5 font-bold transition">
-                        <i class="fa-solid fa-file-excel"></i> <span>Template Excel (.xlsx)</span>
+                    <button type="button" onclick="downloadExcelTemplate()" class="btn-compact py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center gap-2 font-bold transition shadow-2xs">
+                        <i class="fa-solid fa-file-excel text-base text-emerald-600"></i> <span>Template Excel (.xlsx)</span>
                     </button>
                 </div>
-                <p class="text-[10px] text-slate-500">
-                    <i class="fa-solid fa-circle-info text-brand-600 mr-1"></i> Mendukung 5 bentuk soal standar pemerintah & gambar langsung di dalam dokumen Word/Excel.
-                </p>
-            </div>
-
-            <!-- Form Upload -->
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Target Paket Kuis <span class="text-rose-500">*</span></label>
-                    <select id="import-target-quiz" class="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none text-xs bg-white font-bold text-slate-800">
-                        <!-- Populated dynamically -->
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Pilih Berkas Soal <span class="text-rose-500">*</span></label>
-                    <input type="file" id="import-file-input" accept=".docx, .doc, .xlsx, .xls, .csv, .txt" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-800 hover:file:bg-amber-100 border border-slate-200 rounded-xl p-1.5">
+                <div class="text-[11px] text-slate-600 space-y-1.5 pt-2 border-t border-slate-200/80">
+                    <p class="font-bold text-slate-700 flex items-center gap-1"><i class="fa-solid fa-circle-info text-brand-600"></i> Ketentuan Format Penulisan:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-500 text-[11px] pl-1">
+                        <li>Mendukung 5 jenis soal resmi: Pilihan Ganda (mc), Pilihan Ganda Kompleks (complex), Sebab Akibat (cause_effect), Analisis Kasus (case_analysis), dan Menjodohkan (matching).</li>
+                        <li>Gambar dapat langsung disisipkan (paste) di dalam dokumen Word/Excel dan otomatis disimpan ke server.</li>
+                        <li>Pada dokumen Word, pisahkan setiap butir soal menggunakan tiga tanda strip (<code>---</code>).</li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="pt-3 flex justify-end gap-2 border-t">
-                <button type="button" onclick="closeMassImportModal()" class="btn-compact border border-slate-300 text-slate-600 hover:bg-slate-50">Batal</button>
-                <button type="button" onclick="processUploadedFile()" class="btn-compact bg-amber-600 hover:bg-amber-700 text-white font-bold flex items-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> <span>Import</span>
-                </button>
+            <div class="pt-3 flex justify-end border-t">
+                <button type="button" onclick="closeMassImportModal()" class="btn-compact bg-brand-600 hover:bg-brand-700 text-white font-bold px-5">Tutup</button>
             </div>
         </div>
     </div>
@@ -443,25 +446,25 @@
                     ? '<span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">DRAF</span>'
                     : '<span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">AKTIF</span>';
 
+                const isAutoPin = (q.pin && q.pin_auto_refresh !== false);
                 const tokenBadge = q.pin ? `
-                    <span class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-lg text-xs font-mono font-bold" title="Token Akses Siswa">
-                        <i class="fa-solid fa-key text-[10px] text-blue-500"></i> <span class="tracking-widest">${q.pin}</span>
-                        <button type="button" onclick="copyQuizToken('${q.pin}', this)" class="p-0.5 text-blue-500 hover:text-blue-800 transition focus:outline-none" title="Salin Token">
+                    <span class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded-lg text-xs font-mono font-bold" title="Token Akses Siswa ${isAutoPin ? '(Otomatis berganti tiap 10 menit)' : ''}">
+                        <i class="fa-solid fa-key text-[10px] text-blue-600"></i> <span class="tracking-widest font-black" id="quiz-token-text-${q.id}">${q.pin}</span>
+                        <button type="button" onclick="copyQuizToken('${q.pin}', this)" class="p-0.5 text-blue-600 hover:text-blue-900 transition focus:outline-none" title="Salin Token">
                             <i class="fa-regular fa-copy"></i>
                         </button>
+                        ${isAutoPin ? `
+                            <span class="ml-1 pl-1.5 border-l border-blue-200 text-[10px] font-semibold text-blue-600 flex items-center gap-1 font-sans" title="Sisa waktu sebelum token otomatis berubah">
+                                <i class="fa-regular fa-clock text-[9px]"></i>
+                                <span class="token-timer" data-quiz-id="${q.id}" data-updated-at="${q.pin_updated_at || Math.floor(Date.now()/1000)}">10:00</span>
+                            </span>
+                        ` : ''}
                     </span>
                 ` : `
                     <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-500 px-2 py-0.5 rounded-lg text-xs font-medium" title="Ujian tanpa token">
                         <i class="fa-solid fa-lock-open text-[10px]"></i> Tanpa Token
                     </span>
                 `;
-
-                const isSubsetRandom = (q.max_questions > 0 && q.max_questions < qCount);
-                const randomBadge = isSubsetRandom ? `
-                    <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-lg text-xs font-bold" title="Siswa hanya mengerjakan ${q.max_questions} soal acak dari total ${qCount} soal">
-                        <i class="fa-solid fa-shuffle text-[10px] text-indigo-500"></i> ${q.max_questions} Soal Acak
-                    </span>
-                ` : '';
 
                 return `
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs hover:shadow-sm transition p-4 space-y-3 flex flex-col justify-between">
@@ -479,7 +482,6 @@
                             <div class="flex items-center justify-between pt-1 flex-wrap gap-1">
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     ${tokenBadge}
-                                    ${randomBadge}
                                 </div>
                                 <span class="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
                                     <i class="fa-solid fa-clock text-slate-400"></i> ${q.duration || 60}m
@@ -489,7 +491,7 @@
 
                         <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5">
                             <button type="button" onclick="openQuestionManager('${q.id}')" class="flex-1 btn-compact bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 flex items-center justify-center gap-1.5 font-bold transition">
-                                <i class="fa-solid fa-list-check text-xs"></i> <span>Soal (${isSubsetRandom ? `${q.max_questions}/${qCount} Acak` : qCount})</span>
+                                <i class="fa-solid fa-list-check text-xs"></i> <span>Soal (${qCount})</span>
                             </button>
                             <button type="button" onclick="openQuizModal('${q.id}')" class="p-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Edit Paket">
                                 <i class="fa-solid fa-pen text-xs"></i>
@@ -501,6 +503,37 @@
                     </div>
                 `;
             }).join('');
+            startTokenCountdownTimer();
+        }
+
+        // Countdown timer untuk token kuis otomatis berganti tiap 10 menit
+        let tokenTimerInterval = null;
+        function startTokenCountdownTimer() {
+            if (tokenTimerInterval) clearInterval(tokenTimerInterval);
+            const updateTimers = () => {
+                const now = Math.floor(Date.now() / 1000);
+                let needsReload = false;
+                document.querySelectorAll('.token-timer').forEach(el => {
+                    const updatedAt = parseInt(el.getAttribute('data-updated-at')) || now;
+                    const elapsed = now - updatedAt;
+                    const remaining = Math.max(0, 600 - elapsed);
+                    const mins = Math.floor(remaining / 60);
+                    const secs = remaining % 60;
+                    el.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    if (remaining <= 0) {
+                        needsReload = true;
+                    }
+                });
+                if (needsReload && !window._tokenReloading) {
+                    window._tokenReloading = true;
+                    setTimeout(async () => {
+                        await loadQuizzesData();
+                        window._tokenReloading = false;
+                    }, 1500);
+                }
+            };
+            updateTimers();
+            tokenTimerInterval = setInterval(updateTimers, 1000);
         }
 
         // Copy Quiz Token
@@ -556,6 +589,8 @@
                     document.getElementById('quiz-end-input').value = q.end_at || '';
                     document.getElementById('quiz-status-input').value = q.status || 'ACTIVE';
                     document.getElementById('quiz-pin-input').value = q.pin || '';
+                    const pinAuto = document.getElementById('quiz-pin-auto-refresh-input');
+                    if (pinAuto) pinAuto.checked = (q.pin_auto_refresh !== false);
                     document.getElementById('quiz-modal-title').innerText = "Edit Paket Kuis";
                 }
             } else {
@@ -563,6 +598,10 @@
                 document.getElementById('quiz-max-questions-input').value = '';
                 document.getElementById('quiz-type-input').value = 'mc';
                 document.getElementById('quiz-modal-title').innerText = "Buat Paket Kuis Baru";
+                const pinAuto = document.getElementById('quiz-pin-auto-refresh-input');
+                if (pinAuto) pinAuto.checked = true;
+                const importFile = document.getElementById('quiz-file-import-input');
+                if (importFile) importFile.value = '';
                 generateQuizToken();
             }
             toggleModal('quiz-modal', true);
@@ -607,7 +646,9 @@
             const end_at = document.getElementById('quiz-end-input').value;
             const status = document.getElementById('quiz-status-input').value;
             const pin = document.getElementById('quiz-pin-input').value.trim().toUpperCase();
+            const pinAutoRefresh = document.getElementById('quiz-pin-auto-refresh-input') ? document.getElementById('quiz-pin-auto-refresh-input').checked : true;
 
+            let targetQuizId = editId;
             let updatedQuestions = [...allQuizzes];
 
             if (editId) {
@@ -618,23 +659,82 @@
                     target.max_questions = maxQuestions;
                     target.quiz_type = quizType;
                     target.description = desc;
-                    Object.assign(target, { subject, class: className, start_at, end_at, status, pin, pin_enabled: !!pin });
+                    Object.assign(target, {
+                        subject, class: className, start_at, end_at, status, pin,
+                        pin_enabled: !!pin,
+                        pin_auto_refresh: pinAutoRefresh
+                    });
                 }
             } else {
+                targetQuizId = 'quiz-' + Date.now();
                 updatedQuestions.push({
-                    id: 'quiz-' + Date.now(),
+                    id: targetQuizId,
                     title: title,
                     duration: duration,
                     max_questions: maxQuestions,
                     quiz_type: quizType,
                     description: desc,
-                    subject, class: className, start_at, end_at, status, pin, pin_enabled: !!pin,
+                    subject, class: className, start_at, end_at, status, pin,
+                    pin_enabled: !!pin,
+                    pin_auto_refresh: pinAutoRefresh,
+                    pin_updated_at: Math.floor(Date.now() / 1000),
                     questions: []
                 });
             }
 
             const ok = await saveQuestionsToAPI(updatedQuestions);
-            if (ok) toggleModal('quiz-modal', false);
+            if (!ok) return;
+
+            // Jika ada berkas soal yang dipilih di dalam modal, lakukan import sekaligus
+            const importFileInput = document.getElementById('quiz-file-import-input');
+            if (importFileInput && importFileInput.files && importFileInput.files.length > 0) {
+                const file = importFileInput.files[0];
+                const saveBtn = document.getElementById('btn-save-quiz');
+                const origText = saveBtn ? saveBtn.innerHTML : '';
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengimpor Soal...';
+                }
+                try {
+                    const formData = new FormData();
+                    formData.append('quiz_id', targetQuizId);
+                    formData.append('file', file);
+                    formData.append('status', status);
+                    const res = await fetch(`${API_URL}?action=import_questions_file`, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        body: formData
+                    });
+                    const result = await res.json();
+                    if (!res.ok || result.status !== 'success') {
+                        throw new Error(result.message || 'Gagal mengimpor file soal.');
+                    }
+                    importFileInput.value = '';
+                    await loadQuizzesData();
+                    toggleModal('quiz-modal', false);
+                    await appAlert(result.message, 'Paket & Soal Berhasil Disimpan');
+                    return;
+                } catch (err) {
+                    appAlert(err.message || 'Terjadi kesalahan saat mengimpor berkas soal.', 'Gagal Import Soal');
+                    return;
+                } finally {
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = origText;
+                    }
+                }
+            }
+
+            toggleModal('quiz-modal', false);
+            await appAlert('Paket kuis berhasil disimpan.', 'Berhasil');
+        }
+
+        function openGuideFromQuizForm() {
+            openMassImportModal();
+        }
+
+        function openImportModalFromQuizForm() {
+            openMassImportModal();
         }
 
         // Delete Quiz
@@ -1162,9 +1262,8 @@
             }
         }
 
-        // Mass Import Modal
+        // Download Template & Panduan Modal
         function openMassImportModal() {
-            populateImportTargetDropdown();
             toggleModal('modal-mass-import', true);
         }
 
@@ -1172,87 +1271,28 @@
             toggleModal('modal-mass-import', false);
         }
 
-        function populateImportTargetDropdown() {
-            const importSelect = document.getElementById('import-target-quiz');
-            if (importSelect && allQuizzes) {
-                importSelect.innerHTML = allQuizzes.map(q => `
-                    <option value="${q.id}">${q.title} (${(q.questions || []).length} Soal)</option>
-                `).join('');
-            }
-        }
-
-        async function processUploadedFile() {
-            const fileInput = document.getElementById('import-file-input');
-            const targetQuizId = document.getElementById('import-target-quiz').value;
-            const btn = document.querySelector('#modal-mass-import button[onclick="processUploadedFile()"]');
-
-            if (!targetQuizId) { appAlert("Pilih target paket kuis terlebih dahulu!"); return; }
-            if (!fileInput.files.length) { appAlert("Pilih berkas Word, Excel, atau Teks terlebih dahulu!"); return; }
-
-            const file = fileInput.files[0];
-            const originalBtnHtml = btn ? btn.innerHTML : '';
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengimpor...';
-            }
-
-            try {
-                const formData = new FormData();
-                formData.append('quiz_id', targetQuizId);
-                formData.append('file', file);
-
-                const res = await fetch(`${API_URL}?action=import_questions_file`, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    body: formData
-                });
-
-                const result = await res.json();
-                if (!res.ok || result.status !== 'success') {
-                    throw new Error(result.message || 'Gagal mengimpor file soal.');
-                }
-
-                appAlert(result.message, "Import Berhasil");
-                closeMassImportModal();
-                fileInput.value = '';
-
-                await loadQuizzesData();
-                if (document.getElementById('qm-dialog')) {
-                    renderQuestionsList(targetQuizId);
-                }
-            } catch (err) {
-                console.error("Gagal import soal:", err);
-                appAlert(err.message || "Terjadi kesalahan saat memproses berkas.", "Gagal Import");
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalBtnHtml;
-                }
-            }
-        }
-
         // Templates Download
         function downloadExcelTemplate() {
             const templateData = [
-                ["tipe", "pertanyaan", "opsi_a", "opsi_b", "opsi_c", "opsi_d", "opsi_e", "kunci_jawaban", "pasangan_menjodohkan", "pembahasan"],
-                ["mc", "Apa fungsi utama RAM pada komputer?", "Penyimpanan sementara sistem aktif", "Penyimpanan file permanen", "Pemroses data grafis 3D", "Penyedia catu daya listrik", "", "0", "", "RAM menyimpan memori komputasi saat daya perangkat menyala."],
-                ["complex", "Manakah yang tergolong perangkat input (masukan)?", "Keyboard", "Monitor", "Mouse", "Speaker", "Scanner", "0,2,4", "", "Keyboard, Mouse, dan Scanner merupakan peranti masukan data."],
-                ["matching", "Jodohkan perangkat keras berikut dengan fungsinya:", "", "", "", "", "", "", "Monitor=Menampilkan visual antarmuka|Keyboard=Memasukkan data teks|SSD=Menyimpan file secara permanen|CPU=Memproses instruksi komputasi", "Pasangkan perangkat keras sesuai fungsi utamanya."],
-                ["short_answer", "Ibu kota negara Republik Indonesia yang baru di Kalimantan Timur adalah...", "", "", "", "", "", "Nusantara|IKN", "", "IKN Nusantara berlokasi di Penajam Paser Utara."],
-                ["essay", "Jelaskan langkah-langkah mengatasi komputer yang mengalami bottleneck performa!", "", "", "", "", "", "Periksa Task Manager, analisis beban CPU/RAM/Disk, lalu tingkatkan komponen yang menjadi pembatas performa.", "", "Pedoman penskoran: Diagnosa (30%), Analisis bottleneck (30%), Peningkatan komponen (40%)."]
+                ["tipe", "pertanyaan", "teks_kasus", "pernyataan", "alasan", "opsi_a", "opsi_b", "opsi_c", "opsi_d", "opsi_e", "kunci_jawaban", "pasangan_menjodohkan", "pembahasan"],
+                ["mc", "Komponen komputer manakah yang berfungsi sebagai penyimpan data komputasi sementara saat sistem menyala?", "", "", "", "RAM (Random Access Memory)", "Harddisk / SSD", "Power Supply Unit", "Kartu Grafis (GPU)", "", "A", "", "RAM menyimpan instruksi dan data komputasi yang sedang aktif dijalankan sistem."],
+                ["complex", "Manakah yang tergolong perangkat masukan (input device)? (Pilih beberapa)", "", "", "", "Keyboard", "Monitor Layar", "Mouse Optik", "Speaker", "Scanner Dokumen", "A,C,E", "", "Keyboard, Mouse, dan Scanner merupakan perangkat masukan data pengguna."],
+                ["cause_effect", "Tentukan kebenaran pernyataan, alasan, dan keterkaitan sebab-akibat berikut:", "", "Peningkatan emisi gas rumah kaca dapat mempercepat pemanasan global.", "Gas rumah kaca seperti karbon dioksida memerangkap radiasi panas matahari di atmosfer bumi.", "", "", "", "", "", "A", "", "Pernyataan BENAR, Alasan BENAR, dan keduanya menunjukkan hubungan sebab akibat."],
+                ["case_analysis", "Berdasarkan studi kasus di atas, apa tindakan mitigasi awal yang paling tepat untuk menormalkan sistem?", "Sebuah laboratorium komputer sekolah mengalami gangguan jaringan lokal (LAN) saat pelaksanaan ujian berlangsung akibat adanya indikasi broadcast storm dari port salah satu switch.", "", "", "Merestart server ujian secara tiba-tiba tanpa backup", "Mengisolasi segmen kabel atau port switch yang bermasalah untuk memutus loop", "Mengganti seluruh kabel jaringan di laboratorium sekaligus", "Mematikan sambungan listrik utama laboratorium", "", "B", "", "Mengisolasi port/segmen bermasalah langsung memutus broadcast storm tanpa mematikan server utama."],
+                ["matching", "Jodohkan perangkat keras komputer berikut dengan fungsinya yang sesuai:", "", "", "", "", "", "", "", "", "0=0, 1=1, 2=2, 3=3", "Monitor=Menampilkan visual antarmuka|Keyboard=Memasukkan data teks dan perintah|SSD=Menyimpan berkas secara permanen|CPU=Memproses instruksi komputasi", "Pasangkan perangkat keras sesuai fungsi utamanya."]
             ];
 
             const ws = XLSX.utils.aoa_to_sheet(templateData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template_5_Bentuk_Soal");
-            XLSX.writeFile(wb, "Template_Import_Soal_Standar_Pemerintah.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Template_5_Jenis_Soal");
+            XLSX.writeFile(wb, "Template_Import_Soal_5_Jenis.xlsx");
         }
 
         function downloadWordTextTemplate() {
             const wordTemplate = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head>
     <meta charset="utf-8">
-    <title>Template Import Soal Resmi (5 Bentuk Soal Standar Pemerintah)</title>
+    <title>Template Import Soal Resmi (5 Jenis Soal)</title>
     <style>
         body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.45; color: #1e293b; padding: 20px; }
         h1 { font-size: 15pt; color: #1e40af; border-bottom: 2px solid #2563eb; padding-bottom: 5px; margin-bottom: 10px; }
@@ -1264,69 +1304,77 @@
     </style>
 </head>
 <body>
-    <h1>TEMPLATE IMPORT SOAL RESMI - 5 BENTUK SOAL STANDAR PEMERINTAH (WORD / DOC)</h1>
+    <h1>TEMPLATE IMPORT SOAL - 5 JENIS SOAL (WORD / DOC)</h1>
     <div class="notice">
-        <p><b>PETUNJUK PENGISIAN & KETENTUAN UJIAN:</b></p>
-        <p>1. Template ini mendukung <b>5 Bentuk Soal Resmi Pusmenjar / Kemendikbudristek / ANBK</b>.</p>
-        <p>2. <b>DUKUNGAN GAMBAR:</b> Anda dapat menyisipkan/paste gambar secara langsung di bawah pertanyaan atau teks soal! Gambar akan otomatis diekstrak dan disimpan ke server.</p>
+        <p><b>PETUNJUK PENGISIAN FORMAT SOAL:</b></p>
+        <p>1. Template ini mendukung <b>5 Jenis Soal</b>: Pilihan Ganda (mc), Pilihan Ganda Kompleks (complex), Sebab Akibat (cause_effect), Analisis Kasus (case_analysis), dan Menjodohkan (matching).</p>
+        <p>2. <b>DUKUNGAN GAMBAR:</b> Anda dapat menyisipkan/paste gambar secara langsung di bawah pertanyaan atau teks soal! Gambar akan otomatis tersimpan ke server.</p>
         <p>3. <b>PENTING:</b> Pisahkan setiap butir soal dengan tanda tiga strip (<b>---</b>).</p>
-        <p>4. Simpan file ini dalam format <b>.docx</b> atau <b>.doc</b>, lalu unggah melalui menu Import Soal Massal.</p>
+        <p>4. Simpan file ini dalam format <b>.docx</b> atau <b>.doc</b>, lalu unggah saat membuat paket kuis.</p>
     </div>
 
     <p class="separator">---</p>
-    <p><span class="badge">1. PILIHAN GANDA (PG)</span></p>
+    <p><span class="badge">1. PILIHAN GANDA (mc)</span></p>
     <p><b>TIPE:</b> mc</p>
-    <p><b>PERTANYAAN:</b> Komponen perangkat keras manakah yang berfungsi sebagai penyimpan data utama bersifat sementara saat komputer menyala?</p>
+    <p><b>PERTANYAAN:</b> Komponen perangkat keras manakah yang berfungsi sebagai penyimpan memori komputasi sementara saat komputer menyala?</p>
     <p><b>A:</b> RAM (Random Access Memory)</p>
     <p><b>B:</b> Harddisk / SSD</p>
     <p><b>C:</b> Unit Pemrosesan Pusat (CPU)</p>
     <p><b>D:</b> Optical Disc Drive (DVD)</p>
-    <p><b>KUNCI:</b> 0</p>
-    <p><b>PEMBAHASAN:</b> RAM menyimpan instruksi dan data komputasi yang sedang aktif.</p>
+    <p><b>KUNCI:</b> A</p>
+    <p><b>PEMBAHASAN:</b> RAM menyimpan instruksi dan data komputasi yang sedang aktif dijalankan sistem.</p>
 
     <p class="separator">---</p>
-    <p><span class="badge">2. PILIHAN GANDA KOMPLEKS (PGK)</span></p>
+    <p><span class="badge">2. PILIHAN GANDA KOMPLEKS (complex)</span></p>
     <p><b>TIPE:</b> complex</p>
     <p><b>PERTANYAAN:</b> Manakah peranti berikut yang tergolong sebagai perangkat masukan (input device)? (Pilih lebih dari satu)</p>
     <p><b>A:</b> Papan Tombol (Keyboard)</p>
     <p><b>B:</b> Layar Monitor</p>
     <p><b>C:</b> Mouse / Trackpad</p>
     <p><b>D:</b> Mesin Pencetak (Printer)</p>
-    <p><b>KUNCI:</b> 0,2</p>
-    <p><b>PEMBAHASAN:</b> Keyboard dan Mouse berfungsi memasukkan instruksi dan data pengguna.</p>
+    <p><b>E:</b> Pemindai (Scanner)</p>
+    <p><b>KUNCI:</b> A, C, E</p>
+    <p><b>PEMBAHASAN:</b> Keyboard, Mouse, dan Scanner berfungsi memasukkan instruksi dan data pengguna.</p>
 
     <p class="separator">---</p>
-    <p><span class="badge">3. MENJODOHKAN (MATCHING)</span></p>
+    <p><span class="badge">3. SEBAB AKIBAT (cause_effect)</span></p>
+    <p><b>TIPE:</b> cause_effect</p>
+    <p><b>PERNYATAAN:</b> Peningkatan emisi gas rumah kaca di atmosfer dapat mempercepat pemanasan global bumi.</p>
+    <p><b>ALASAN:</b> Gas rumah kaca seperti karbon dioksida memerangkap radiasi gelombang panas matahari di permukaan bumi.</p>
+    <p><b>KUNCI:</b> A</p>
+    <p><b>PEMBAHASAN:</b> Pernyataan BENAR, Alasan BENAR, dan keduanya menunjukkan hubungan sebab akibat.</p>
+    <p><i>Catatan Kunci Sebab Akibat: A = Keduanya benar & berhubungan | B = Keduanya benar, tidak berhubungan | C = Pernyataan benar, alasan salah | D = Pernyataan salah, alasan benar | E = Keduanya salah</i></p>
+
+    <p class="separator">---</p>
+    <p><span class="badge">4. ANALISIS KASUS (case_analysis)</span></p>
+    <p><b>TIPE:</b> case_analysis</p>
+    <p><b>KASUS:</b> Sebuah laboratorium komputer sekolah mengalami gangguan jaringan lokal saat pelaksanaan ujian berlangsung akibat adanya indikasi broadcast storm dari salah satu switch yang mengalami looping kabel.</p>
+    <p><b>PERTANYAAN:</b> Berdasarkan studi kasus di atas, apa tindakan mitigasi pertama yang harus segera diambil oleh teknisi lab?</p>
+    <p><b>A:</b> Mematikan catu daya server ujian utama secara paksa</p>
+    <p><b>B:</b> Mengisolasi kabel loop atau memutus port switch yang memicu broadcast storm</p>
+    <p><b>C:</b> Mengganti seluruh kabel jaringan LAN di semua unit komputer siswa</p>
+    <p><b>D:</b> Memformat ulang semua komputer klien yang terhubung</p>
+    <p><b>KUNCI:</b> B</p>
+    <p><b>PEMBAHASAN:</b> Mengisolasi port/kabel penyebab loop langsung menghentikan badai broadcast sehingga jaringan lab kembali stabil.</p>
+
+    <p class="separator">---</p>
+    <p><span class="badge">5. MENJODOHKAN (matching)</span></p>
     <p><b>TIPE:</b> matching</p>
-    <p><b>PERTANYAAN:</b> Jodohkan nama perangkat keras komputer berikut dengan kelompok fungsinya yang tepat:</p>
-    <p><b>JODOHKAN:</b></p>
-    <p>Monitor - Perangkat Output (Keluaran)</p>
-    <p>Keyboard - Perangkat Input (Masukan)</p>
-    <p>SSD - Perangkat Penyimpanan Permanen</p>
-    <p>CPU - Unit Pemrosesan Instruksi</p>
+    <p><b>PERTANYAAN:</b> Jodohkan nama perangkat keras komputer berikut dengan fungsi utamanya yang tepat:</p>
+    <p><b>PASANGAN:</b></p>
+    <p>Monitor = Menampilkan keluaran visual antarmuka</p>
+    <p>Keyboard = Memasukkan data teks dan instruksi</p>
+    <p>SSD = Menyimpan file dan sistem secara permanen</p>
+    <p>CPU = Memproses instruksi logika dan aritmatika komputasi</p>
     <p><b>KUNCI:</b> 0=0, 1=1, 2=2, 3=3</p>
-    <p><b>PEMBAHASAN:</b> Pasangkan perangkat dengan kategori fungsi kerja perangkat keras.</p>
-
-    <p class="separator">---</p>
-    <p><span class="badge">4. ISIAN SINGKAT (SHORT ANSWER)</span></p>
-    <p><b>TIPE:</b> short_answer</p>
-    <p><b>PERTANYAAN:</b> Protokol jaringan standar yang digunakan untuk mengamankan pertukaran data web dengan enkripsi SSL/TLS adalah...</p>
-    <p><b>KUNCI:</b> HTTPS|Hypertext Transfer Protocol Secure</p>
-    <p><b>PEMBAHASAN:</b> HTTPS menggunakan port default 443 untuk komunikasi terenkripsi.</p>
-
-    <p class="separator">---</p>
-    <p><span class="badge">5. URAIAN / ESAI (ESSAY)</span></p>
-    <p><b>TIPE:</b> essay</p>
-    <p><b>PERTANYAAN:</b> Jelaskan perbedaan mendasar antara topologi Star dan topologi Bus dalam instalasi jaringan lokal (LAN)!</p>
-    <p><b>KUNCI:</b> Topologi Star menggunakan konsentrator switch/hub terpusat sehingga jika satu kabel putus node lain tetap berjalan, sedangkan topologi Bus menggunakan kabel backbone tunggal yang rentan putus total jika kabel utama bermasalah.</p>
-    <p><b>PEMBAHASAN:</b> Penilaian berdasarkan kejelasan penjelasan arsitektur fisik (50%) dan kehandalan toleransi kegagalan jaringan (50%).</p>
+    <p><b>PEMBAHASAN:</b> Pasangkan setiap peranti keras komputer sesuai klasifikasi fungsinya.</p>
 </body>
 </html>`;
 
             const blob = new Blob(['\ufeff' + wordTemplate], { type: 'application/msword' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = "Template_Import_Soal_Standar_Pemerintah.doc";
+            link.download = "Template_Import_Soal_5_Jenis.doc";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

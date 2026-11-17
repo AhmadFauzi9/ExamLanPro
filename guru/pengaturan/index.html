@@ -111,8 +111,34 @@
                         </div>
 
                         <div class="space-y-2">
-                            <p class="text-xs font-bold text-slate-700">Riwayat Berkas Cadangan:</p>
-                            <div id="backup-history-list" class="space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar text-xs">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xs font-bold text-slate-700">Riwayat Berkas Cadangan:</p>
+                                    <span id="backup-total-badge" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">0 berkas</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span id="backup-selected-badge" class="hidden text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full animate-pulse">0 dipilih</span>
+                                    <button type="button" id="btn-delete-selected-backups" onclick="deleteSelectedBackups()" class="hidden px-2.5 py-1 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-2xs transition flex items-center gap-1.5" title="Hapus berkas cadangan yang dipilih">
+                                        <i class="fa-solid fa-trash-can text-[11px]"></i>
+                                        <span>Hapus Terpilih</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Table Header / Toolbar -->
+                            <div id="backup-table-header" class="hidden bg-slate-100/90 border border-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-slate-600 flex items-center justify-between gap-2 select-none">
+                                <div class="flex items-center gap-2 min-w-0 flex-1">
+                                    <input type="checkbox" id="backup-select-all" onchange="toggleSelectAllBackups(this.checked)" class="w-3.5 h-3.5 rounded text-brand-600 focus:ring-brand-500 cursor-pointer shrink-0" title="Pilih Semua Berkas">
+                                    <span class="w-6 text-center text-slate-400 shrink-0">No.</span>
+                                    <span>Nama Berkas Cadangan</span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="hidden sm:inline">Waktu Cadangan</span>
+                                    <span class="w-7 text-center">Aksi</span>
+                                </div>
+                            </div>
+
+                            <div id="backup-history-list" class="space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar text-xs">
                                 <p class="text-slate-400 text-xs py-2">Memuat daftar cadangan...</p>
                             </div>
                         </div>
@@ -184,33 +210,107 @@
             }
         }
 
+        function resetBackupSelection() {
+            const selectAll = document.getElementById('backup-select-all');
+            const badge = document.getElementById('backup-selected-badge');
+            const btnDelete = document.getElementById('btn-delete-selected-backups');
+            if (selectAll) {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+            if (badge) {
+                badge.textContent = '0 dipilih';
+                badge.classList.add('hidden');
+            }
+            if (btnDelete) {
+                btnDelete.classList.add('hidden');
+            }
+        }
+
         function renderBackupList() {
             const list = document.getElementById('backup-history-list');
             const backups = (dbData && dbData.backups) ? dbData.backups : [];
+            const header = document.getElementById('backup-table-header');
+            const totalBadge = document.getElementById('backup-total-badge');
+
+            if (totalBadge) totalBadge.textContent = `${backups.length} berkas`;
 
             if (!backups.length) {
-                list.innerHTML = '<p class="text-slate-400 text-xs py-2">Belum ada riwayat berkas cadangan.</p>';
+                if (header) header.classList.add('hidden');
+                list.innerHTML = '<p class="text-slate-400 text-xs py-4 text-center">Belum ada riwayat berkas cadangan.</p>';
+                resetBackupSelection();
                 return;
             }
 
-            list.innerHTML = backups.slice().reverse().map(b => {
+            if (header) header.classList.remove('hidden');
+
+            const reversed = backups.slice().reverse();
+            list.innerHTML = reversed.map((b, index) => {
                 const fileName = b.file || b.name || 'backup.json';
                 const timeStr = b.time ? new Date(b.time).toLocaleString('id-ID') : '-';
+                const noUrut = index + 1;
+                const safeName = typeof escapeHtml === 'function' ? escapeHtml(fileName) : fileName;
                 return `
-                    <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs gap-2">
-                        <div class="flex items-center gap-2 min-w-0">
+                    <div class="p-2.5 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-xl flex items-center justify-between text-xs gap-2 transition group">
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            <input type="checkbox" class="backup-checkbox w-3.5 h-3.5 rounded text-brand-600 focus:ring-brand-500 cursor-pointer shrink-0" value="${safeName}" onchange="updateBackupSelection()">
+                            <span class="w-6 text-center font-bold text-slate-400 text-[11px] shrink-0">${noUrut}</span>
                             <i class="fa-solid fa-file-zipper text-brand-600 shrink-0"></i>
-                            <span class="font-mono font-bold text-slate-700 truncate" title="${fileName}">${fileName}</span>
+                            <span class="font-mono font-bold text-slate-700 truncate" title="${safeName}">${safeName}</span>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <span class="text-slate-500 font-mono text-[11px]">${timeStr}</span>
-                            <button type="button" onclick="deleteBackup('${fileName}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Berkas Cadangan">
+                            <span class="text-slate-500 font-mono text-[11px] hidden sm:inline">${timeStr}</span>
+                            <button type="button" onclick="deleteBackup('${safeName}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Berkas Cadangan Ini">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>
                     </div>
                 `;
             }).join('');
+
+            resetBackupSelection();
+        }
+
+        function toggleSelectAllBackups(checked) {
+            const checkboxes = document.querySelectorAll('.backup-checkbox');
+            checkboxes.forEach(cb => { cb.checked = checked; });
+            updateBackupSelection();
+        }
+
+        function updateBackupSelection() {
+            const checkboxes = document.querySelectorAll('.backup-checkbox');
+            const selected = Array.from(checkboxes).filter(cb => cb.checked);
+            const count = selected.length;
+            const selectAll = document.getElementById('backup-select-all');
+            const badge = document.getElementById('backup-selected-badge');
+            const btnDelete = document.getElementById('btn-delete-selected-backups');
+
+            if (selectAll) {
+                if (checkboxes.length > 0) {
+                    selectAll.checked = (count === checkboxes.length);
+                    selectAll.indeterminate = (count > 0 && count < checkboxes.length);
+                } else {
+                    selectAll.checked = false;
+                    selectAll.indeterminate = false;
+                }
+            }
+
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = `${count} dipilih`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            if (btnDelete) {
+                if (count > 0) {
+                    btnDelete.classList.remove('hidden');
+                } else {
+                    btnDelete.classList.add('hidden');
+                }
+            }
         }
 
         async function createBackup() {
@@ -222,7 +322,11 @@
                 const d = await res.json();
                 if (d.backups) dbData.backups = d.backups;
                 renderBackupList();
-                appAlert(d.message || 'Backup berhasil dibuat.', 'Cadangan Dibuat');
+                if (typeof showToast === 'function') {
+                    showToast(d.message || 'Backup database berhasil dibuat.');
+                } else {
+                    appAlert(d.message || 'Backup database berhasil dibuat.', 'Cadangan Dibuat');
+                }
             } catch (e) {
                 appAlert('Gagal membuat backup database.');
             }
@@ -230,8 +334,15 @@
 
         async function deleteBackup(fileName) {
             if (!fileName) return;
-            const ok = await appConfirm(`Hapus berkas cadangan "${fileName}"? Tindakan ini tidak dapat dibatalkan.`, 'Hapus Backup', 'Batal', 'Hapus');
+            const ok = await appConfirm(
+                `Hapus berkas cadangan <strong>${fileName}</strong>?<br><span class="text-xs text-rose-500">Tindakan ini tidak dapat dibatalkan.</span>`,
+                'Hapus Berkas Cadangan',
+                'Batal',
+                'Ya, Hapus'
+            );
             if (!ok) return;
+
+            resetBackupSelection();
 
             try {
                 const res = await fetch(`${API_URL}?action=delete_backup`, {
@@ -247,7 +358,53 @@
                 }
                 if (d.backups) dbData.backups = d.backups;
                 renderBackupList();
-                appAlert('Berkas cadangan berhasil dihapus.', 'Berhasil');
+                if (typeof showToast === 'function') {
+                    showToast('Berkas cadangan berhasil dihapus.');
+                } else {
+                    appAlert('Berkas cadangan berhasil dihapus.', 'Berhasil');
+                }
+            } catch (e) {
+                appAlert('Gagal menghubungi server.', 'Gagal');
+            }
+        }
+
+        async function deleteSelectedBackups() {
+            const checkboxes = document.querySelectorAll('.backup-checkbox:checked');
+            const files = Array.from(checkboxes).map(cb => cb.value).filter(Boolean);
+            if (!files.length) {
+                appAlert('Pilih minimal satu berkas cadangan yang ingin dihapus.');
+                return;
+            }
+
+            const ok = await appConfirm(
+                `Hapus <strong>${files.length} berkas cadangan</strong> yang dipilih?<br><span class="text-xs text-rose-500">Berkas yang dihapus tidak dapat dipulihkan kembali.</span>`,
+                'Hapus Berkas Cadangan Terpilih',
+                'Batal',
+                'Ya, Hapus Semua Terpilih'
+            );
+            if (!ok) return;
+
+            resetBackupSelection();
+
+            try {
+                const res = await fetch(`${API_URL}?action=delete_backup`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ files: files })
+                });
+                const d = await res.json();
+                if (!res.ok || d.status !== 'success') {
+                    appAlert(d.message || 'Gagal menghapus berkas cadangan terpilih.', 'Gagal');
+                    return;
+                }
+                if (d.backups) dbData.backups = d.backups;
+                renderBackupList();
+                if (typeof showToast === 'function') {
+                    showToast(d.message || `${files.length} berkas cadangan berhasil dihapus.`);
+                } else {
+                    appAlert(d.message || `${files.length} berkas cadangan berhasil dihapus.`, 'Berhasil');
+                }
             } catch (e) {
                 appAlert('Gagal menghubungi server.', 'Gagal');
             }

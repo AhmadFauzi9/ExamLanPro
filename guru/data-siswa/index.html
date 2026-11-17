@@ -96,7 +96,8 @@
 
                         <!-- 2. Sort (Short) -->
                         <select id="student-sort" onchange="handleSearchFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Pengurutan data">
-                            <option value="nis_asc">Short</option>
+                            <option value="default">Short</option>
+                            <option value="nis_asc">NIS (0 - 9)</option>
                             <option value="nis_desc">NIS (9 - 0)</option>
                             <option value="name_asc">Nama (A - Z)</option>
                             <option value="name_desc">Nama (Z - A)</option>
@@ -190,6 +191,7 @@
                 <button type="button" onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
             <form onsubmit="handleSaveStudent(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="student-id" value="">
                 <input type="hidden" id="student-mode" value="add">
                 <input type="hidden" id="student-original-nis" value="">
 
@@ -206,7 +208,8 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Kelas <span class="text-rose-500">*</span></label>
-                        <input type="text" id="form-student-class" required placeholder="Contoh: 7A" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
+                        <input type="text" id="form-student-class" list="class-datalist" required placeholder="Contoh: 7A" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
+                        <datalist id="class-datalist"></datalist>
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">Tahun Ajaran</label>
@@ -245,10 +248,10 @@
             </div>
             <div class="space-y-3 text-xs">
                 <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2">
-                    <p class="font-bold text-emerald-900">Format Template Excel:</p>
-                    <p class="text-emerald-800 text-[11px]">Kolom wajib: <code>No Induk</code>, <code>Nama</code>, <code>Kelas</code>, dan <code>Tahun Ajaran</code> (cocok dengan file Absensi Kelas).</p>
+                    <p class="font-bold text-emerald-900">Format File Excel yang Didukung:</p>
+                    <p class="text-emerald-800 text-[11px]">Sistem kini otomatis mendeteksi <strong>Template Standar</strong> (kolom <code>No Induk</code>, <code>Nama</code>, <code>Kelas</code>, <code>Tahun Ajaran</code>) maupun berkas <strong>Buku Presensi / Absensi Kelas</strong> resmi sekolah.</p>
                     <button type="button" onclick="downloadStudentTemplate()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-2xs">
-                        <i class="fa-solid fa-download"></i> Unduh Template Excel
+                        <i class="fa-solid fa-download"></i> Unduh Template Excel Standar
                     </button>
                 </div>
 
@@ -364,6 +367,11 @@
 
             classSelect.innerHTML = '<option value="all">Kelas</option>' + classes.map(c => `<option value="${c}" ${c === currentClass ? 'selected' : ''}>${c}</option>`).join('');
             yearSelect.innerHTML = '<option value="all">Tahun</option>' + years.map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`).join('');
+
+            const classDatalist = document.getElementById('class-datalist');
+            if (classDatalist) {
+                classDatalist.innerHTML = classes.map(c => `<option value="${c}">`).join('');
+            }
         }
 
         function handleSearchFilter() {
@@ -378,15 +386,17 @@
                 return matchQ && matchClass && matchYear;
             });
 
-            const sortMode = document.getElementById('student-sort')?.value || 'nis_asc';
-            filteredStudents.sort((a, b) => {
-                if (sortMode === 'nis_asc') return (a.nis || '').localeCompare(b.nis || '', undefined, { numeric: true });
-                if (sortMode === 'nis_desc') return (b.nis || '').localeCompare(a.nis || '', undefined, { numeric: true });
-                if (sortMode === 'name_asc') return (a.name || '').localeCompare(b.name || '');
-                if (sortMode === 'name_desc') return (b.name || '').localeCompare(a.name || '');
-                if (sortMode === 'class_asc') return (a.class || '').localeCompare(b.class || '') || (a.name || '').localeCompare(b.name || '');
-                return 0;
-            });
+            const sortMode = document.getElementById('student-sort')?.value || 'default';
+            if (sortMode !== 'default') {
+                filteredStudents.sort((a, b) => {
+                    if (sortMode === 'nis_asc') return (a.nis || '').localeCompare(b.nis || '', undefined, { numeric: true });
+                    if (sortMode === 'nis_desc') return (b.nis || '').localeCompare(a.nis || '', undefined, { numeric: true });
+                    if (sortMode === 'name_asc') return (a.name || '').localeCompare(b.name || '');
+                    if (sortMode === 'name_desc') return (b.name || '').localeCompare(a.name || '');
+                    if (sortMode === 'class_asc') return (a.class || '').localeCompare(b.class || '') || (a.name || '').localeCompare(b.name || '');
+                    return 0;
+                });
+            }
 
             currentPage = 1;
             renderStudentsTable();
@@ -429,37 +439,39 @@
 
             tbody.innerHTML = pageData.map((st, idx) => {
                 const rowNo = startIndex + idx + 1; // Nomor Urut Dinamis Berdasarkan Pagination
-                const isSelected = selectedNisSet.has(st.nis);
-                const isRevealed = revealedPasswords.has(st.nis);
+                const stKey = st.id || st.nis || `std_idx_${idx}`;
+                const isSelected = selectedNisSet.has(stKey);
+                const isRevealed = revealedPasswords.has(stKey);
                 const pwd = st.password || '------';
                 const pwdDisplay = isRevealed ? pwd : '••••••';
                 const avatar = st.photo
                     ? `<img src="${st.photo}" class="w-7 h-7 rounded-full object-cover mx-auto border border-slate-200">`
                     : `<div class="w-7 h-7 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xs font-bold">${(st.name || 'S').charAt(0).toUpperCase()}</div>`;
+                const nisDisplay = st.nis ? escapeHtml(st.nis) : `<span class="text-rose-500 italic text-[11px] font-normal">NIS Kosong</span>`;
 
                 return `
                     <tr class="hover:bg-slate-50/70 transition ${isSelected ? 'bg-brand-50/40' : ''}">
                         <td class="p-2.5 text-center">
-                            <input type="checkbox" value="${st.nis}" ${isSelected ? 'checked' : ''} onchange="toggleSelectStudent('${st.nis}', this.checked)" class="w-3.5 h-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer">
+                            <input type="checkbox" value="${stKey}" ${isSelected ? 'checked' : ''} onchange="toggleSelectStudent('${stKey}', this.checked)" class="w-3.5 h-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer">
                         </td>
                         <td class="p-2.5 text-center font-mono font-bold text-slate-400 text-[11px]">${rowNo}</td>
                         <td class="p-2.5 text-center">${avatar}</td>
-                        <td class="p-2.5 font-mono font-bold text-slate-700">${st.nis}</td>
-                        <td class="p-2.5 font-semibold text-slate-800">${st.name}</td>
-                        <td class="p-2.5 text-slate-600"><span class="px-2 py-0.5 bg-slate-100 rounded-md font-medium text-[11px]">${st.class || '-'}</span></td>
-                        <td class="p-2.5 text-slate-500">${st.tahun_ajaran || '-'}</td>
+                        <td class="p-2.5 font-mono font-bold text-slate-700">${nisDisplay}</td>
+                        <td class="p-2.5 font-semibold text-slate-800">${escapeHtml(st.name)}</td>
+                        <td class="p-2.5 text-slate-600"><span class="px-2 py-0.5 bg-slate-100 rounded-md font-medium text-[11px]">${escapeHtml(st.class || '-')}</span></td>
+                        <td class="p-2.5 text-slate-500">${escapeHtml(st.tahun_ajaran || '-')}</td>
                         <td class="p-2.5">
                             <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded-lg border border-slate-200 font-mono text-[11px]">
                                 <span class="w-14 font-bold tracking-wider ${isRevealed ? 'text-brand-700' : 'text-slate-400'}">${pwdDisplay}</span>
-                                <button type="button" onclick="togglePasswordReveal('${st.nis}')" class="text-slate-400 hover:text-slate-600" title="${isRevealed ? 'Sembunyikan' : 'Tampilkan'} Password">
+                                <button type="button" onclick="togglePasswordReveal('${stKey}')" class="text-slate-400 hover:text-slate-600" title="${isRevealed ? 'Sembunyikan' : 'Tampilkan'} Password">
                                     <i class="fa-solid ${isRevealed ? 'fa-eye-slash text-brand-600' : 'fa-eye'} text-xs"></i>
                                 </button>
                             </div>
                         </td>
                         <td class="p-2.5 text-center">
                             <div class="inline-flex items-center gap-1">
-                                <button type="button" onclick="editStudent('${st.nis}')" class="p-1.5 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Edit"><i class="fa-solid fa-pen text-xs"></i></button>
-                                <button type="button" onclick="deleteSingleStudent('${st.nis}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                <button type="button" onclick="editStudent('${stKey}')" class="p-1.5 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Edit Data Siswa"><i class="fa-solid fa-pen text-xs"></i></button>
+                                <button type="button" onclick="deleteSingleStudent('${stKey}', '${escapeHtml(st.name || '')}', '${escapeHtml(st.nis || '')}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Siswa"><i class="fa-solid fa-trash-can text-xs"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -521,8 +533,11 @@
 
         function toggleSelectAll(isChecked) {
             filteredStudents.forEach(st => {
-                if (isChecked) selectedNisSet.add(st.nis);
-                else selectedNisSet.delete(st.nis);
+                const k = st.id || st.nis;
+                if (k) {
+                    if (isChecked) selectedNisSet.add(k);
+                    else selectedNisSet.delete(k);
+                }
             });
             renderStudentsTable();
         }
@@ -559,12 +574,13 @@
             }
 
             if (selectAllCheck) {
-                selectAllCheck.checked = filteredStudents.length > 0 && filteredStudents.every(st => selectedNisSet.has(st.nis));
+                selectAllCheck.checked = filteredStudents.length > 0 && filteredStudents.every(st => selectedNisSet.has(st.id || st.nis));
             }
         }
 
         // ================= MODAL TAMBAH / EDIT =================
         function openStudentModal(mode = 'add', stData = null) {
+            document.getElementById('student-id').value = stData ? (stData.id || '') : '';
             document.getElementById('student-mode').value = mode;
             document.getElementById('student-modal-title').innerText = mode === 'add' ? 'Tambah Siswa Baru' : 'Edit Data Siswa';
             const nisInput = document.getElementById('form-student-nis');
@@ -574,10 +590,10 @@
             const origNis = document.getElementById('student-original-nis');
 
             if (mode === 'edit' && stData) {
-                origNis.value = stData.nis;
-                nisInput.value = stData.nis;
-                nameInput.value = stData.name;
-                classInput.value = stData.class;
+                origNis.value = stData.nis || '';
+                nisInput.value = stData.nis || '';
+                nameInput.value = stData.name || '';
+                classInput.value = stData.class || '';
                 yearInput.value = stData.tahun_ajaran || '';
             } else {
                 origNis.value = '';
@@ -593,13 +609,14 @@
             toggleModal('modal-student-form', false);
         }
 
-        function editStudent(nis) {
-            const st = rawStudents.find(s => s.nis === nis);
+        function editStudent(identifier) {
+            const st = rawStudents.find(s => (s.id && s.id === identifier) || (s.nis && s.nis === identifier));
             if (st) openStudentModal('edit', st);
         }
 
         async function handleSaveStudent(e) {
             e.preventDefault();
+            const studentId = document.getElementById('student-id').value;
             const mode = document.getElementById('student-mode').value;
             const origNis = document.getElementById('student-original-nis').value;
             const nis = document.getElementById('form-student-nis').value.trim();
@@ -608,8 +625,8 @@
             const yearVal = document.getElementById('form-student-year').value.trim();
             const photoInput = document.getElementById('form-student-photo');
 
-            if (!nis || !name || !classVal) {
-                appAlert('NIS, Nama Lengkap, dan Kelas wajib diisi!');
+            if (!name || !classVal) {
+                appAlert('Nama Lengkap dan Kelas wajib diisi!');
                 return;
             }
 
@@ -623,8 +640,9 @@
             }
 
             try {
-                const action = mode === 'add' ? 'save_student' : 'update_student';
+                const action = 'save_student';
                 const payload = {
+                    ...(studentId ? { id: studentId } : {}),
                     nis, name, class: classVal, tahun_ajaran: yearVal,
                     ...(mode === 'edit' ? { original_nis: origNis } : {}),
                     ...(photoBase64 ? { photo: photoBase64 } : {})
@@ -645,14 +663,15 @@
             }
         }
 
-        async function deleteSingleStudent(nis) {
-            if (await appConfirm(`Hapus siswa dengan NIS ${nis}?`, 'Hapus Siswa', 'Batal', 'Hapus')) {
+        async function deleteSingleStudent(idOrNis, name = '', nis = '') {
+            const label = name ? `${name}${nis ? ' (NIS: ' + nis + ')' : ''}` : `siswa`;
+            if (await appConfirm(`Hapus data ${label}?`, 'Hapus Siswa', 'Batal', 'Hapus')) {
                 try {
                     const res = await fetch(`${API_URL}?action=delete_students`, {
                         method: 'POST',
                         credentials: 'same-origin',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nis_list: [nis] })
+                        body: JSON.stringify({ ids: [idOrNis], nis_list: [idOrNis] })
                     });
                     const d = await res.json();
                     if (d.status === 'success') {
@@ -670,11 +689,12 @@
             if (count === 0) return;
             if (await appConfirm(`Hapus ${count} siswa yang dipilih?`, 'Hapus Siswa Terpilih', 'Batal', 'Hapus Semua Terpilih')) {
                 try {
+                    const selectedList = Array.from(selectedNisSet);
                     const res = await fetch(`${API_URL}?action=delete_students`, {
                         method: 'POST',
                         credentials: 'same-origin',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nis_list: Array.from(selectedNisSet) })
+                        body: JSON.stringify({ ids: selectedList, nis_list: selectedList })
                     });
                     const d = await res.json();
                     if (d.status === 'success') {
@@ -711,6 +731,164 @@
             XLSX.writeFile(wb, "Template_Data_Siswa.xlsx");
         }
 
+        function extractStudentsFromWorkbook(wb) {
+            const students = [];
+            const seenNis = new Set();
+
+            for (const sheetName of wb.SheetNames) {
+                // Lewati sheet non-siswa seperti wali kelas, cover, rekap, petunjuk
+                if (/^(wali\s*kelas|cover|rekap|petunjuk|keterangan)$/i.test(sheetName.trim())) continue;
+
+                const sheet = wb.Sheets[sheetName];
+                if (!sheet) continue;
+
+                const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+                if (!rawRows || rawRows.length === 0) continue;
+
+                // 1. Cek apakah berkas memiliki struktur Buku Presensi (multi-kelas / kop 'Kelas / Bag :')
+                let hasPresensiFormat = false;
+                for (let i = 0; i < Math.min(rawRows.length, 100); i++) {
+                    const rowStr = (rawRows[i] || []).join(' ');
+                    if (/kelas\s*(?:[\/\\]\s*bag(?:ian)?)?\s*[:\-]/i.test(rowStr) || /presensi\s+siswa/i.test(rowStr)) {
+                        hasPresensiFormat = true;
+                        break;
+                    }
+                }
+
+                if (hasPresensiFormat) {
+                    let currentClass = "";
+                    let currentYear = "2026-2027";
+
+                    rawRows.forEach(row => {
+                        if (!Array.isArray(row)) return;
+
+                        // Deteksi nama kelas di awal baris
+                        for (let c = 0; c < Math.min(row.length, 5); c++) {
+                            const val = String(row[c] || '').trim();
+                            const cm = val.match(/kelas\s*(?:[\/\\]\s*bag(?:ian)?)?\s*[:\-]\s*([^,\n\r;]+)/i);
+                            if (cm) {
+                                currentClass = cm[1].trim();
+                                break;
+                            }
+                        }
+
+                        // Deteksi tahun pelajaran
+                        for (let c = 0; c < Math.min(row.length, 35); c++) {
+                            const val = String(row[c] || '').trim();
+                            const ym = val.match(/tahun\s*(?:pelajaran|ajaran)?\s*[:\s]*([0-9\s\-\/]{7,15})/i);
+                            if (ym) {
+                                currentYear = ym[1].replace(/\s+/g, '').trim();
+                                break;
+                            }
+                        }
+
+                        // Baris data siswa pada tabel absensi:
+                        // Kolom 0 = No urut, Kolom 1 = No Induk / NIS, Kolom 2 = Nama Siswa
+                        const noVal = String(row[0] || '').trim();
+                        const nisVal = String(row[1] || '').trim();
+                        const nameVal = String(row[2] || '').trim();
+
+                        if (/^\d{1,3}$/.test(noVal) && /^\d{4,16}$/.test(nisVal) && nameVal.length >= 2 && !/^(nama|induk|urt|no)/i.test(nameVal)) {
+                            if (!seenNis.has(nisVal)) {
+                                seenNis.add(nisVal);
+                                students.push({
+                                    nis: nisVal,
+                                    name: nameVal,
+                                    class: currentClass || "",
+                                    tahun_ajaran: currentYear || "2026-2027"
+                                });
+                            }
+                        }
+                    });
+                }
+
+                // 2. Format Tabel Standar / Template (mencari baris header di baris-baris awal)
+                if (students.length === 0) {
+                    let headerRowIndex = -1;
+                    let nisCol = -1, nameCol = -1, classCol = -1, yearCol = -1;
+
+                    for (let r = 0; r < Math.min(rawRows.length, 25); r++) {
+                        const row = rawRows[r];
+                        if (!Array.isArray(row)) continue;
+
+                        let tempNis = -1, tempName = -1, tempClass = -1, tempYear = -1;
+                        row.forEach((cell, idx) => {
+                            const txt = String(cell || '').trim().toLowerCase();
+                            if (/^(no\.?\s*induk|nis|nisn|nomor\s*induk|induk)$/i.test(txt)) tempNis = idx;
+                            else if (/^(nama|nama\s*siswa|nama\s*lengkap|nama\s*peserta\s*didik)$/i.test(txt)) tempName = idx;
+                            else if (/^(kelas|rombel|tingkat|class)$/i.test(txt)) tempClass = idx;
+                            else if (/^(tahun|tahun\s*ajaran|tahun\s*pelajaran|ta|academic\s*year)$/i.test(txt)) tempYear = idx;
+                        });
+
+                        if (tempNis !== -1 && tempName !== -1) {
+                            headerRowIndex = r;
+                            nisCol = tempNis;
+                            nameCol = tempName;
+                            classCol = tempClass;
+                            yearCol = tempYear;
+                            break;
+                        }
+                    }
+
+                    if (headerRowIndex !== -1) {
+                        for (let r = headerRowIndex + 1; r < rawRows.length; r++) {
+                            const row = rawRows[r];
+                            if (!Array.isArray(row)) continue;
+
+                            const nisVal = String(row[nisCol] || '').trim();
+                            const nameVal = String(row[nameCol] || '').trim();
+                            const classVal = classCol !== -1 ? String(row[classCol] || '').trim() : '';
+                            const yearVal = yearCol !== -1 ? String(row[yearCol] || '').trim() : '';
+
+                            if (nisVal && nameVal && !seenNis.has(nisVal) && !/^(nis|nama|no)/i.test(nisVal)) {
+                                seenNis.add(nisVal);
+                                students.push({
+                                    nis: nisVal,
+                                    name: nameVal,
+                                    class: classVal || "",
+                                    tahun_ajaran: yearVal || "2026-2027"
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Fallback Objek (Format sheet_to_json default dengan pencocokan nama kolom fleksibel)
+            if (students.length === 0) {
+                const sheet = wb.Sheets[wb.SheetNames[0]];
+                if (sheet) {
+                    const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+                    json.forEach(row => {
+                        let nis = "", name = "", cls = "", year = "";
+                        for (const k of Object.keys(row)) {
+                            const cleanKey = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+                            if (cleanKey.includes('induk') || cleanKey.includes('nis')) {
+                                if (!nis) nis = String(row[k] || '').trim();
+                            } else if (cleanKey.includes('nama') || cleanKey.includes('name')) {
+                                if (!name) name = String(row[k] || '').trim();
+                            } else if (cleanKey.includes('kelas') || cleanKey.includes('class')) {
+                                if (!cls) cls = String(row[k] || '').trim();
+                            } else if (cleanKey.includes('tahun') || cleanKey.includes('year') || cleanKey === 'ta') {
+                                if (!year) year = String(row[k] || '').trim();
+                            }
+                        }
+                        if (nis && name && !seenNis.has(nis)) {
+                            seenNis.add(nis);
+                            students.push({
+                                nis,
+                                name,
+                                class: cls,
+                                tahun_ajaran: year || "2026-2027"
+                            });
+                        }
+                    });
+                }
+            }
+
+            return students;
+        }
+
         async function processStudentExcelImport() {
             const fileInput = document.getElementById('import-student-file');
             if (!fileInput.files.length) {
@@ -718,27 +896,26 @@
                 return;
             }
             const file = fileInput.files[0];
+            const btn = document.getElementById('btn-process-import-students');
+            const originalBtnHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Mengimpor...</span>';
+            }
+
             const reader = new FileReader();
             reader.onload = async function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const wb = XLSX.read(data, { type: 'array' });
-                    const sheet = wb.Sheets[wb.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-
-                    const studentsToUpload = [];
-                    json.forEach(row => {
-                        const nis = (row["No Induk"] || row["NIS"] || row["nis"] || row["no_induk"] || "").toString().trim();
-                        const name = (row["Nama"] || row["Nama Siswa"] || row["nama"] || "").toString().trim();
-                        const cls = (row["Kelas"] || row["kelas"] || "").toString().trim();
-                        const year = (row["Tahun Ajaran"] || row["Tahun"] || row["tahun_ajaran"] || "").toString().trim();
-                        if (nis && name) {
-                            studentsToUpload.push({ nis, name, class: cls, tahun_ajaran: year });
-                        }
-                    });
+                    const studentsToUpload = extractStudentsFromWorkbook(wb);
 
                     if (studentsToUpload.length === 0) {
                         appAlert('Tidak ada data siswa yang valid ditemukan dalam berkas Excel!');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = originalBtnHtml;
+                        }
                         return;
                     }
 
@@ -756,6 +933,11 @@
                     } else throw new Error(resJson.message);
                 } catch (err) {
                     appAlert(err.message || 'Gagal membaca berkas Excel!');
+                } finally {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalBtnHtml;
+                    }
                 }
             };
             reader.readAsArrayBuffer(file);

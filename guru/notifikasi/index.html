@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permintaan Waktu & Notifikasi - ExamLAN Pro</title>
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/guru.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+                            500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col m-0 p-0 overflow-x-hidden">
+
+    <!-- Injected Global Header -->
+    <div id="guru-header-placeholder"></div>
+
+    <!-- Main Container -->
+    <main class="flex-grow w-full px-4 sm:px-6 lg:px-8 py-5">
+        <div class="grid grid-cols-1 md:grid-cols-[230px_minmax(0,1fr)] gap-5 items-start">
+            
+            <!-- Injected Sidebar Navigation -->
+            <div id="guru-sidebar-placeholder" class="sticky top-16 z-20"></div>
+
+            <!-- Content Area: PERMINTAAN WAKTU & NOTIFIKASI -->
+            <div class="space-y-4 min-w-0">
+                
+                <!-- Summary Cards Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-hourglass-half text-amber-500"></i> Menunggu Persetujuan
+                        </p>
+                        <p id="sum-pending" class="text-2xl font-black text-amber-600 mt-1">0</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Siswa butuh tambahan waktu</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i> Disetujui
+                        </p>
+                        <p id="sum-approved" class="text-2xl font-black text-emerald-600 mt-1">0</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Waktu berhasil ditambah</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-xmark text-rose-500"></i> Ditolak
+                        </p>
+                        <p id="sum-rejected" class="text-2xl font-black text-rose-600 mt-1">0</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Permintaan tidak diizinkan</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-bell text-brand-600"></i> Total Riwayat
+                        </p>
+                        <p id="sum-total" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Seluruh rekaman pengajuan</p>
+                    </div>
+                </div>
+
+                <!-- Page Header & Action Card -->
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center text-lg font-bold shrink-0">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Permintaan Perpanjangan Waktu Ujian</h2>
+                                <span id="header-pending-badge" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 animate-pulse">
+                                    0 Baru
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Kelola dan berikan tambahan waktu pengerjaan ujian secara fleksibel sesuai kendala teknis siswa di lab.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="confirmClearHistory()" class="btn-compact bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" data-tooltip="Bersihkan riwayat permintaan yang sudah selesai">
+                            <i class="fa-solid fa-trash-can text-xs"></i> <span>Bersihkan Riwayat</span>
+                        </button>
+                        <button type="button" onclick="loadRequestsData()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" data-tooltip="Muat Ulang Data">
+                            <i class="fa-solid fa-rotate text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Toolbar Filters -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <!-- Filter Status -->
+                        <select id="req-filter-status" onchange="applyFilters()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none font-medium">
+                            <option value="ALL">Semua Status</option>
+                            <option value="PENDING" selected>Menunggu Persetujuan</option>
+                            <option value="APPROVED">Disetujui</option>
+                            <option value="REJECTED">Ditolak</option>
+                        </select>
+
+                        <!-- Filter Kelas -->
+                        <select id="req-filter-class" onchange="applyFilters()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none">
+                            <option value="ALL">Semua Kelas</option>
+                        </select>
+
+                        <!-- Search -->
+                        <div class="relative min-w-[180px] sm:min-w-[220px] max-w-xs flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                            <input id="req-search-input" type="text" oninput="applyFilters()" placeholder="Cari NIS, nama siswa, atau kuis..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request List Cards / Table -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+                    <div id="requests-container" class="divide-y divide-slate-100 p-2 sm:p-4">
+                        <div class="p-8 text-center text-slate-400">
+                            <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-brand-600"></i>
+                            <p class="text-xs">Memuat data permintaan perpanjangan waktu...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../assets/js/guru-core.js"></script>
+    <script src="../assets/js/guru-nav.js"></script>
+    <script>
+        let allRequests = [];
+        let filteredRequests = [];
+        let requestsPollTimer = null;
+
+        window.onDataLoaded = async () => {
+            await loadRequestsData();
+        };
+
+        // Terkoneksi dengan polling global guru-core.js
+        window.onExtensionRequestsUpdated = (data) => {
+            if (data && Array.isArray(data.all_requests)) {
+                allRequests = data.all_requests;
+                updateSummary(data);
+                populateClassFilter();
+                applyFilters();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ok = await checkServerSession(window.onDataLoaded);
+            if (ok) {
+                await loadRequestsData();
+                startLocalRequestsPolling();
+            }
+        });
+
+        function startLocalRequestsPolling() {
+            clearInterval(requestsPollTimer);
+            requestsPollTimer = setInterval(() => {
+                loadRequestsData(true);
+            }, 6000);
+        }
+
+        async function loadRequestsData(silent = false) {
+            try {
+                const res = await fetch(`${API_URL}?action=check_extension_requests`, { credentials: 'same-origin', cache: 'no-store' });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                allRequests = data.all_requests || [];
+                updateSummary(data);
+                populateClassFilter();
+                applyFilters();
+            } catch (err) {
+                if (!silent) {
+                    document.getElementById('requests-container').innerHTML = `
+                        <div class="p-8 text-center text-rose-500">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl mb-1"></i>
+                            <p class="text-xs font-semibold">Gagal memuat data permintaan waktu dari server.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function updateSummary(data) {
+            const all = allRequests;
+            const pending = all.filter(r => (r.status || '') === 'PENDING').length;
+            const approved = all.filter(r => (r.status || '') === 'APPROVED').length;
+            const rejected = all.filter(r => (r.status || '') === 'REJECTED').length;
+
+            document.getElementById('sum-pending').innerText = pending;
+            document.getElementById('sum-approved').innerText = approved;
+            document.getElementById('sum-rejected').innerText = rejected;
+            document.getElementById('sum-total').innerText = all.length;
+
+            const badge = document.getElementById('header-pending-badge');
+            if (badge) {
+                if (pending > 0) {
+                    badge.innerText = `${pending} Menunggu`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        function populateClassFilter() {
+            const select = document.getElementById('req-filter-class');
+            if (!select) return;
+            const cur = select.value || 'ALL';
+            const classes = Array.from(new Set(allRequests.map(r => r.class).filter(Boolean))).sort();
+            select.innerHTML = '<option value="ALL">Semua Kelas</option>' + classes.map(c => `
+                <option value="${escapeHtml(c)}" ${c === cur ? 'selected' : ''}>${escapeHtml(c)}</option>
+            `).join('');
+        }
+
+        function applyFilters() {
+            const statusFilter = document.getElementById('req-filter-status')?.value || 'ALL';
+            const classFilter = document.getElementById('req-filter-class')?.value || 'ALL';
+            const query = (document.getElementById('req-search-input')?.value || '').trim().toLowerCase();
+
+            filteredRequests = allRequests.filter(r => {
+                if (statusFilter !== 'ALL' && (r.status || 'PENDING') !== statusFilter) return false;
+                if (classFilter !== 'ALL' && (r.class || '') !== classFilter) return false;
+                if (query) {
+                    const matchNis = String(r.nis || '').includes(query);
+                    const matchName = String(r.name || '').toLowerCase().includes(query);
+                    const matchQuiz = String(r.quiz_title || '').toLowerCase().includes(query);
+                    if (!matchNis && !matchName && !matchQuiz) return false;
+                }
+                return true;
+            });
+
+            renderRequestsList();
+        }
+
+        function renderRequestsList() {
+            const container = document.getElementById('requests-container');
+            if (!container) return;
+
+            if (filteredRequests.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-slate-400">
+                        <i class="fa-solid fa-inbox text-3xl mb-2 text-slate-300"></i>
+                        <p class="text-xs font-medium">Tidak ada data permintaan perpanjangan waktu yang sesuai filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredRequests.map(req => {
+                const targetKey = req.token_hash || req.id || req.nis;
+                const reqTime = req.requested_at ? formatRelativeTime(req.requested_at) : '-';
+                const status = (req.status || 'PENDING').toUpperCase();
+
+                let statusBadge = '';
+                if (status === 'PENDING') {
+                    statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 animate-pulse"><i class="fa-solid fa-clock text-[9px]"></i> Menunggu Persetujuan</span>`;
+                } else if (status === 'APPROVED') {
+                    statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check text-[9px]"></i> Disetujui (+${req.added_minutes || 15} Menit)</span>`;
+                } else if (status === 'REJECTED') {
+                    statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-circle-xmark text-[9px]"></i> Ditolak</span>`;
+                }
+
+                return `
+                    <div class="p-4 hover:bg-slate-50/80 transition rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <!-- Info Siswa & Kuis -->
+                        <div class="space-y-1 flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-slate-800 text-sm">${escapeHtml(req.name || '-')}</span>
+                                <span class="text-xs font-mono font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded border border-brand-200">${escapeHtml(req.nis || '-')}</span>
+                                <span class="text-xs text-slate-500 font-medium">${escapeHtml(req.class || '-')}</span>
+                                ${statusBadge}
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+                                <span><i class="fa-solid fa-book-open text-brand-600 mr-1"></i> ${escapeHtml(req.quiz_title || req.quiz_id || '-')}</span>
+                                <span><i class="fa-regular fa-clock text-slate-400 mr-1"></i> Diajukan: ${reqTime}</span>
+                            </div>
+                        </div>
+
+                        <!-- Aksi Tambah Waktu Fleksibel -->
+                        <div class="shrink-0 flex items-center gap-2 flex-wrap justify-end">
+                            ${status === 'PENDING' ? `
+                                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                                    <button type="button" onclick="grantExtension('${escapeHtml(targetKey)}', 5)" class="px-2.5 py-1 bg-white hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg text-xs font-bold transition shadow-2xs" data-tooltip="Beri tambahan 5 menit">+5m</button>
+                                    <button type="button" onclick="grantExtension('${escapeHtml(targetKey)}', 10)" class="px-2.5 py-1 bg-white hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg text-xs font-bold transition shadow-2xs" data-tooltip="Beri tambahan 10 menit">+10m</button>
+                                    <button type="button" onclick="grantExtension('${escapeHtml(targetKey)}', 15)" class="px-2.5 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold transition shadow-2xs" data-tooltip="Beri tambahan 15 menit">+15m</button>
+                                    <button type="button" onclick="grantExtension('${escapeHtml(targetKey)}', 30)" class="px-2.5 py-1 bg-white hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg text-xs font-bold transition shadow-2xs" data-tooltip="Beri tambahan 30 menit">+30m</button>
+                                </div>
+
+                                <!-- Input Fleksibel Custom Menit -->
+                                <div class="flex items-center gap-1">
+                                    <input type="number" id="custom-min-${escapeHtml(req.id || req.token_hash || req.nis)}" min="1" max="180" value="15" class="w-14 px-2 py-1.5 rounded-lg border border-slate-300 text-xs text-center font-bold outline-none focus:ring-2 focus:ring-brand-500" title="Atur menit tambahan bebas">
+                                    <button type="button" onclick="grantCustomExtension('${escapeHtml(targetKey)}', '${escapeHtml(req.id || req.token_hash || req.nis)}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-2xs" data-tooltip="Berikan waktu sesuai jumlah menit di samping">
+                                        <i class="fa-solid fa-check text-[10px]"></i> <span>Beri Waktu</span>
+                                    </button>
+                                </div>
+
+                                <button type="button" onclick="rejectExtensionRequest('${escapeHtml(targetKey)}')" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-semibold transition" data-tooltip="Tolak perpanjangan waktu">
+                                    <i class="fa-solid fa-ban text-[10px]"></i> <span>Tolak</span>
+                                </button>
+                            ` : `
+                                <span class="text-xs text-slate-400 italic">Selesai diproses</span>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function grantExtension(targetKey, minutes) {
+            await handleExtensionDecision(targetKey, true, minutes);
+            await loadRequestsData(true);
+        }
+
+        async function grantCustomExtension(targetKey, inputId) {
+            const input = document.getElementById(`custom-min-${inputId}`);
+            const minutes = parseInt(input ? input.value : 15) || 15;
+            if (minutes < 1) {
+                appAlert("Jumlah menit perpanjangan harus minimal 1 menit.");
+                return;
+            }
+            await handleExtensionDecision(targetKey, true, minutes);
+            await loadRequestsData(true);
+        }
+
+        async function rejectExtensionRequest(targetKey) {
+            if (!await appConfirm("Tolak permintaan perpanjangan waktu untuk siswa ini?", "Tolak Permintaan", "Batal", "Tolak")) return;
+            await handleExtensionDecision(targetKey, false);
+            await loadRequestsData(true);
+        }
+
+        async function confirmClearHistory() {
+            if (!await appConfirm("Bersihkan riwayat permintaan waktu yang sudah selesai (Disetujui/Ditolak)? Permintaan yang masih menunggu persetujuan tidak akan terhapus.", "Bersihkan Riwayat", "Batal", "Bersihkan")) return;
+            try {
+                const res = await fetch(`${API_URL}?action=clear_extension_history`, { method: 'POST', credentials: 'same-origin' });
+                const d = await res.json();
+                appAlert(d.message || "Riwayat berhasil dibersihkan.");
+                await loadRequestsData();
+            } catch (e) {
+                appAlert("Gagal membersihkan riwayat.");
+            }
+        }
+
+        function formatRelativeTime(timestamp) {
+            if (!timestamp) return '-';
+            const diff = Math.floor(Date.now() / 1000) - Number(timestamp);
+            if (diff < 5) return 'Baru saja';
+            if (diff < 60) return `${diff} dtk lalu`;
+            if (diff < 3600) return `${Math.floor(diff / 60)} mnt lalu`;
+            return new Date(timestamp * 1000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
+</body>
+</html>

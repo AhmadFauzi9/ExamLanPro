@@ -259,26 +259,44 @@ function startAdminExtensionPolling() {
 async function fetchExtensionRequests() {
     if (!isServerAuthenticated) return;
     try {
-        const res = await fetch(`${API_URL}?action=check_extension_requests`, { credentials: 'same-origin' });
+        const res = await fetch(`${API_URL}?action=check_extension_requests`, { credentials: 'same-origin', cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         pendingExtensionRequests = data.requests || [];
+        const count = data.pending_count ?? pendingExtensionRequests.length;
+
+        // 1. Update Red Badge di Sidebar Menu "Permintaan Waktu"
+        const sidebarBadge = document.getElementById('sidebar-notif-badge');
+        if (sidebarBadge) {
+            if (count > 0) {
+                sidebarBadge.innerText = count;
+                sidebarBadge.classList.remove('hidden');
+            } else {
+                sidebarBadge.classList.add('hidden');
+            }
+        }
+
+        // 2. Update Red Dot di Tombol Bell Header
         const dot = document.getElementById('admin-bell-dot');
         const badge = document.getElementById('extension-count-badge');
         if (dot) {
-            if (pendingExtensionRequests.length > 0) dot.classList.remove('hidden');
+            if (count > 0) dot.classList.remove('hidden');
             else dot.classList.add('hidden');
         }
-        if (badge) badge.innerText = pendingExtensionRequests.length;
+        if (badge) badge.innerText = count;
+
         renderExtensionDropdownItems();
+
+        // 3. Callback jika berada di halaman Notifikasi / Permintaan Waktu
+        if (typeof window.onExtensionRequestsUpdated === 'function') {
+            window.onExtensionRequestsUpdated(data);
+        }
     } catch (e) {}
 }
 
 function toggleExtensionDropdown() {
-    const dd = document.getElementById('extension-dropdown');
-    if (!dd) return;
-    dd.classList.toggle('hidden');
-    renderExtensionDropdownItems();
+    // Arahkan langsung ke halaman notifikasi jika dibuka
+    window.location.href = `${GURU_BASE}notifikasi/`;
 }
 
 function renderExtensionDropdownItems() {
@@ -288,36 +306,42 @@ function renderExtensionDropdownItems() {
         list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Tidak ada permintaan perpanjangan waktu.</p>`;
         return;
     }
-    list.innerHTML = pendingExtensionRequests.map(req => `
-        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs">
-            <div class="flex items-center justify-between font-bold text-slate-800">
-                <span>${req.name} (${req.class})</span>
-                <span class="text-[10px] text-slate-400 font-mono">NIS: ${req.nis}</span>
+    list.innerHTML = pendingExtensionRequests.map(req => {
+        const targetToken = req.token_hash || req.id || req.nis;
+        return `
+            <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs">
+                <div class="flex items-center justify-between font-bold text-slate-800">
+                    <span>${escapeHtml(req.name)} (${escapeHtml(req.class)})</span>
+                    <span class="text-[10px] text-slate-400 font-mono">NIS: ${escapeHtml(req.nis)}</span>
+                </div>
+                <p class="text-[11px] text-slate-500">Kuis: ${escapeHtml(req.quiz_title)}</p>
+                <div class="flex items-center justify-end gap-1.5 pt-1">
+                    <button type="button" onclick="handleExtensionDecision('${escapeHtml(targetToken)}', false)" class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-600 rounded-lg text-[11px] font-semibold">Tolak</button>
+                    <button type="button" onclick="handleExtensionDecision('${escapeHtml(targetToken)}', true, 15)" class="px-2.5 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-[11px] font-bold">+15 Menit</button>
+                </div>
             </div>
-            <p class="text-[11px] text-slate-500">Kuis: ${req.quiz_title}</p>
-            <div class="flex items-center justify-end gap-1.5 pt-1">
-                <button type="button" onclick="handleExtensionDecision('${req.attempt_token}', false)" class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-600 rounded-lg text-[11px] font-semibold">Tolak</button>
-                <button type="button" onclick="handleExtensionDecision('${req.attempt_token}', true, 15)" class="px-2.5 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-[11px] font-bold">+15 Menit</button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
-async function handleExtensionDecision(token, approve, minutes = 15) {
+async function handleExtensionDecision(tokenHash, approve, minutes = 15) {
     try {
-        const res = await fetch(`${API_URL}?action=approve_extension`, {
+        const action = approve ? 'approve_extension' : 'reject_extension';
+        const res = await fetch(`${API_URL}?action=${action}`, {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ attempt_token: token, approve: approve, minutes: minutes })
+            body: JSON.stringify({ token_hash: tokenHash, approve: approve, minutes: parseInt(minutes) || 15 })
         });
         const data = await res.json();
-        if (data.status === 'success') {
-            appAlert(data.message, 'Perpanjangan Waktu');
-            fetchExtensionRequests();
+        if (res.ok && data.status === 'success') {
+            appAlert(data.message || (approve ? `Perpanjangan waktu ${minutes} menit berhasil diberikan.` : 'Permintaan waktu ditolak.'), 'Permintaan Waktu');
+            await fetchExtensionRequests();
+        } else {
+            appAlert(data.message || 'Gagal memproses permintaan waktu.', 'Perhatian');
         }
     } catch (e) {
-        appAlert('Gagal memproses perpanjangan waktu.');
+        appAlert('Gagal memproses perpanjangan waktu. Periksa koneksi server.', 'Error');
     }
 }
 

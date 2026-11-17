@@ -5,3 +5,7 @@ backups/*
 !backups/.gitkeep
 *.log
 *.tmp
+~$*
+.DS_Store
+Thumbs.db
+

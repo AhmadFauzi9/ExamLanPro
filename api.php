@@ -35,6 +35,7 @@ if (!file_exists($file_db)) {
         'retake_permissions' => [],
         'students' => [],
         'active_attempts' => [],
+        'student_sessions' => [],
         'audit_logs' => [],
         'backups' => [],
         'trash' => ['results' => [], 'students' => [], 'quizzes' => []],
@@ -59,12 +60,31 @@ function loadDb($file_db) {
     if (!is_array($db)) $db = [];
     $db['questions'] = $db['questions'] ?? [];
     $dirty = false;
+    $now = time();
+    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     foreach ($db['questions'] as &$q) {
         if (empty($q['pin'])) {
-            $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             $q['pin'] = substr(str_shuffle($chars), 0, 6);
             $q['pin_enabled'] = true;
+            $q['pin_updated_at'] = $now;
+            $q['pin_auto_refresh'] = true;
             $dirty = true;
+        }
+
+        // Fitur rotasi token otomatis setiap 10 menit (600 detik) - Strict Security (tanpa toleransi token lama)
+        $autoRefresh = ($q['pin_auto_refresh'] ?? true);
+        if ($autoRefresh && !empty($q['pin'])) {
+            $updatedAt = (int)($q['pin_updated_at'] ?? 0);
+            if ($updatedAt <= 0) {
+                $q['pin_updated_at'] = $now;
+                $dirty = true;
+            } elseif (($now - $updatedAt) >= 600) {
+                // Rotasi token baru secara ketat
+                $q['pin'] = substr(str_shuffle($chars), 0, 6);
+                $q['pin_updated_at'] = $now;
+                unset($q['prev_pin'], $q['prev_pin_expires_at']);
+                $dirty = true;
+            }
         }
     }
     unset($q);
@@ -80,6 +100,7 @@ function loadDb($file_db) {
     }
     unset($st);
     $db['active_attempts'] = $db['active_attempts'] ?? [];
+    $db['student_sessions'] = $db['student_sessions'] ?? [];
     $db['audit_logs'] = $db['audit_logs'] ?? [];
     $db['backups'] = $db['backups'] ?? [];
     $db['time_extension_requests'] = $db['time_extension_requests'] ?? [];
@@ -225,6 +246,77 @@ function normalizeAnswers($value) {
     return $out;
 }
 
+function normalizeCauseEffectKey($key) {
+    if ($key === null) return '';
+    $v = strtolower(trim((string)$key));
+    if ($v === '') return '';
+
+    $clean = preg_replace('/[^a-z0-9]/', '', $v);
+
+    // Option A (Pernyataan & Alasan Benar, Berhubungan Sebab Akibat)
+    if (in_array($clean, [
+        'a', '1', '0',
+        'bothcorrectconnected', 'bothtrueconnected', 'bothcorrectrelated',
+        'bothcorrect', 'bothtrue',
+        'keduanyabenarberhubungan', 'keduanyabenardansalingberhubungan',
+        'benarbenarberhubungan', 'keduanyabenar'
+    ], true)) {
+        return 'both_correct_connected';
+    }
+
+    // Option B (Pernyataan & Alasan Benar, TIDAK Berhubungan)
+    if (in_array($clean, [
+        'b', '2',
+        'bothcorrectnotconnected', 'bothtruenotconnected', 'bothcorrectunconnected',
+        'keduanyabenartidakberhubungan', 'keduanyabenartetapitidakberhubungan',
+        'benarbenartidakberhubungan'
+    ], true)) {
+        return 'both_correct_not_connected';
+    }
+
+    // Option C (Pernyataan BENAR dan Alasan SALAH)
+    if (in_array($clean, [
+        'c', '3',
+        'statementtruereasonfalse',
+        'statementcorrectreasonwrong',
+        'statementtruereasonwrong',
+        'statementcorrectreasonfalse',
+        'pernyataanbenaralasansalah',
+        'pernyataanbenardanalasansalah',
+        'benarsalah'
+    ], true)) {
+        return 'statement_true_reason_false';
+    }
+
+    // Option D (Pernyataan SALAH dan Alasan BENAR)
+    if (in_array($clean, [
+        'd', '4',
+        'statementfalsereasontrue',
+        'statementwrongreasoncorrect',
+        'statementwrongreasontrue',
+        'statementfalsereasoncorrect',
+        'pernyataansalahalasanbenar',
+        'pernyataansalahdanalasanbenar',
+        'salahbenar'
+    ], true)) {
+        return 'statement_false_reason_true';
+    }
+
+    // Option E (Pernyataan dan Alasan keduanya SALAH)
+    if (in_array($clean, [
+        'e', '5',
+        'bothfalse',
+        'bothwrong',
+        'keduanyasalah',
+        'salahsalah',
+        'pernyataandanalasankeduanyasalah'
+    ], true)) {
+        return 'both_false';
+    }
+
+    return $v;
+}
+
 function findQuestionByStudentId($quiz, $studentId) {
     $idx = (int)$studentId;
     return ($idx >= 0 && isset($quiz['questions'][$idx])) ? $quiz['questions'][$idx] : null;
@@ -263,14 +355,15 @@ function answerText($q, $answer, $correct = false) {
         return ($answer !== null && $answer !== '') ? nl2br(htmlspecialchars((string)$answer)) : 'Tidak dijawab';
     }
     if ($q['type'] === 'cause_effect') {
+        $canonical = normalizeCauseEffectKey($answer);
         $labels = [
-            'both_correct_connected' => 'Pernyataan & alasan benar, berhubungan sebab akibat',
-            'both_correct_not_connected' => 'Pernyataan & alasan benar, TIDAK berhubungan',
-            'statement_true_reason_false' => 'Pernyataan benar, alasan salah',
-            'statement_false_reason_true' => 'Pernyataan salah, alasan benar',
-            'both_false' => 'Keduanya salah'
+            'both_correct_connected' => 'Pernyataan & alasan benar, berhubungan sebab akibat (A)',
+            'both_correct_not_connected' => 'Pernyataan & alasan benar, TIDAK berhubungan (B)',
+            'statement_true_reason_false' => 'Pernyataan benar, alasan salah (C)',
+            'statement_false_reason_true' => 'Pernyataan salah, alasan benar (D)',
+            'both_false' => 'Keduanya salah (E)'
         ];
-        return $labels[$answer] ?? 'Tidak dijawab';
+        return $labels[$canonical] ?? (($answer !== null && $answer !== '') ? htmlspecialchars((string)$answer) : 'Tidak dijawab');
     }
     if ($q['type'] === 'scaled') {
         $opt = isset($q['options'][(int)$answer]) ? $q['options'][(int)$answer] : null;
@@ -293,10 +386,24 @@ function calculateSubmission($quiz, $questionOrder, $answers) {
         $isCorrect = false;
 
         if ($q['type'] === 'mc' || $q['type'] === 'case_analysis') {
-            $isCorrect = ($studentAns !== null && (int)$studentAns === (int)($q['answer'] ?? -1));
+            $isCorrect = false;
+            if ($studentAns !== null && $studentAns !== '') {
+                $rawAns = $q['answer'] ?? 0;
+                $sIdx = is_numeric($studentAns) ? (int)$studentAns : (ord(strtoupper(trim((string)$studentAns))[0]) - 65);
+                if (is_numeric($rawAns)) {
+                    $eIdx = (int)$rawAns;
+                } else {
+                    $eIdx = ord(strtoupper(trim((string)$rawAns))[0]) - 65;
+                }
+                $isCorrect = ($sIdx === $eIdx);
+            }
         } elseif ($q['type'] === 'complex') {
-            $expected = array_map('intval', $q['answers'] ?? []);
-            $given = is_array($studentAns) ? array_map('intval', $studentAns) : [];
+            $expected = array_map(function($v) {
+                return is_numeric($v) ? (int)$v : (ord(strtoupper(trim((string)$v))[0]) - 65);
+            }, $q['answers'] ?? []);
+            $given = is_array($studentAns) ? array_map(function($v) {
+                return is_numeric($v) ? (int)$v : (ord(strtoupper(trim((string)$v))[0]) - 65);
+            }, $studentAns) : [];
             sort($expected); sort($given);
             $isCorrect = !empty($expected) && $expected === $given;
         } elseif ($q['type'] === 'matching') {
@@ -319,7 +426,9 @@ function calculateSubmission($quiz, $questionOrder, $answers) {
             $given = trim((string)$studentAns);
             $isCorrect = ($given !== '');
         } elseif ($q['type'] === 'cause_effect') {
-            $isCorrect = ($studentAns !== null && (string)$studentAns === (string)($q['answer'] ?? ''));
+            $sNorm = normalizeCauseEffectKey($studentAns);
+            $kNorm = normalizeCauseEffectKey($q['answer'] ?? '');
+            $isCorrect = ($studentAns !== null && $studentAns !== '' && $sNorm !== '' && $sNorm === $kNorm);
         } elseif ($q['type'] === 'scaled') {
             $selected = isset($q['options'][(int)$studentAns]) ? $q['options'][(int)$studentAns] : null;
             $score = $selected ? (int)$selected['score'] : 0;
@@ -585,6 +694,168 @@ if ($action === 'student_login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Catat sesi login siswa ke sistem monitoring & audit log
+    $quizId = trim((string)($input['quiz_id'] ?? ''));
+    $quizTitle = '';
+    if ($quizId !== '') {
+        foreach ($db['questions'] as $q) {
+            if ((string)($q['id'] ?? '') === $quizId) {
+                $quizTitle = (string)($q['title'] ?? $quizId);
+                break;
+            }
+        }
+    }
+
+    // Periksa apakah siswa memiliki sesi ujian aktif yang belum selesai
+    $activeAttempt = null;
+    $activeAttemptKey = null;
+    $db['active_attempts'] = $db['active_attempts'] ?? [];
+    foreach ($db['active_attempts'] as $ak => $cand) {
+        if ((string)($cand['nis'] ?? '') === $nis && empty($cand['finished'])) {
+            if ((int)($cand['ends_at'] ?? 0) > time()) {
+                $activeAttempt = $cand;
+                $activeAttemptKey = $ak;
+                break;
+            }
+        }
+    }
+
+    $db['student_sessions'] = $db['student_sessions'] ?? [];
+    $prev = $db['student_sessions'][$nis] ?? [];
+    $isResetAllowed = !empty($prev['reset_allowed']) || !empty($activeAttempt['reset_allowed']);
+
+    // Kasus 1: Siswa memiliki ujian aktif yang belum selesai
+    if ($activeAttempt !== null) {
+        $attemptQuizId = (string)($activeAttempt['quiz_id'] ?? $quizId);
+        $attemptQuiz = null;
+        foreach ($db['questions'] as $q) {
+            if ((string)($q['id'] ?? '') === $attemptQuizId) {
+                $attemptQuiz = $q;
+                break;
+            }
+        }
+
+        // Jika guru pengawas sudah klik Reset Sesi di Monitoring Ujian ATAU siswa me-refresh/relogin
+        if ($isResetAllowed) {
+            // Cek apakah paket kuis mewajibkan token ujian
+            $quizPin = strtoupper(trim((string)($attemptQuiz['pin'] ?? '')));
+            $inputPin = strtoupper(trim((string)($input['pin'] ?? '')));
+
+            if ($quizPin !== '') {
+                // Jika siswa belum memasukkan token saat login, minta masukkan token terlebih dahulu
+                if ($inputPin === '') {
+                    echo json_encode([
+                        'status' => 'success',
+                        'needs_resume_token' => true,
+                        'message' => 'Sesi ujian Anda telah dibuka oleh Guru Pengawas. Silakan masukkan Token Ujian aktif terbaru dari pengawas untuk melanjutkan ujian.',
+                        'student' => [
+                            'nis' => (string)$matched['nis'],
+                            'name' => (string)$matched['name'],
+                            'class' => (string)$matched['class'],
+                            'tahun_ajaran' => (string)($matched['tahun_ajaran'] ?? '')
+                        ],
+                        'quiz' => [
+                            'id' => $attemptQuizId,
+                            'title' => $attemptQuiz['title'] ?? 'Ujian Berjalan',
+                            'subject' => $attemptQuiz['subject'] ?? 'Umum',
+                            'class' => $attemptQuiz['class'] ?? ''
+                        ]
+                    ]);
+                    exit;
+                }
+
+                // Jika siswa memasukkan token, verifikasi secara ketat (harus cocok dengan token aktif saat ini)
+                if (!hash_equals($quizPin, $inputPin)) {
+                    http_response_code(401);
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'TOKEN ujian tidak valid atau sudah kedaluwarsa. Silakan minta dan masukkan token terbaru yang aktif dari guru pengawas.'
+                    ]);
+                    exit;
+                }
+            }
+
+            // Bersihkan flag reset_allowed setelah token tervalidasi
+            if (isset($db['student_sessions'][$nis])) {
+                $db['student_sessions'][$nis]['reset_allowed'] = false;
+                $db['student_sessions'][$nis]['last_seen'] = time();
+                $db['student_sessions'][$nis]['status'] = 'WORKING';
+                $db['student_sessions'][$nis]['ip'] = $_SERVER['REMOTE_ADDR'] ?? '';
+            }
+            if (isset($db['active_attempts'][$activeAttemptKey])) {
+                $db['active_attempts'][$activeAttemptKey]['reset_allowed'] = false;
+                $db['active_attempts'][$activeAttemptKey]['updated_at'] = time();
+            }
+
+            audit($db, 'Siswa resume ujian', "{$nis} - " . (string)$matched['name'], "Melanjutkan ujian setelah reset sesi & validasi token pengawas: " . ($attemptQuiz['title'] ?? $attemptQuizId));
+            saveDb($file_db, $db);
+
+            $tokenToSend = $activeAttempt['token'] ?? '';
+            if ($tokenToSend === '') {
+                // Generate token baru jika token asli hilang tapi hash ada
+                $tokenToSend = bin2hex(random_bytes(32));
+                $newHash = attemptKey($tokenToSend);
+                $db['active_attempts'][$newHash] = $activeAttempt;
+                $db['active_attempts'][$newHash]['token'] = $tokenToSend;
+                $db['active_attempts'][$newHash]['token_hash'] = $newHash;
+                if ($newHash !== $activeAttemptKey) {
+                    unset($db['active_attempts'][$activeAttemptKey]);
+                }
+                saveDb($file_db, $db);
+            }
+
+            echo json_encode([
+                'status' => 'success',
+                'resume_attempt' => true,
+                'message' => 'Sesi ujian Anda dipulihkan oleh Guru Pengawas. Seluruh progres dan jawaban tersimpan aman di server.',
+                'student' => [
+                    'nis' => (string)$matched['nis'],
+                    'name' => (string)$matched['name'],
+                    'class' => (string)$matched['class'],
+                    'tahun_ajaran' => (string)($matched['tahun_ajaran'] ?? '')
+                ],
+                'attempt' => [
+                    'attempt_token' => $tokenToSend,
+                    'quiz' => $attemptQuiz ? publicAttemptQuiz($attemptQuiz, $activeAttempt) : null,
+                    'answers' => $activeAttempt['answers'] ?? [],
+                    'server_now' => time(),
+                    'ends_at' => $activeAttempt['ends_at']
+                ]
+            ]);
+            exit;
+        }
+
+        // Jika sesi masih aktif di perangkat lain dan belum di-reset oleh guru pengawas
+        // dan jika waktu aktif terakhir kurang dari 60 detik atau beda IP
+        $lastSeen = (int)($prev['last_seen'] ?? ($activeAttempt['updated_at'] ?? 0));
+        $prevIp = (string)($prev['ip'] ?? '');
+        $currentIp = $_SERVER['REMOTE_ADDR'] ?? '';
+
+        if (($prevIp !== '' && $prevIp !== $currentIp) || (time() - $lastSeen < 60)) {
+            http_response_code(403);
+            echo json_encode([
+                'status' => 'locked',
+                'message' => "Sesi ujian Anda masih aktif atau terkunci di perangkat ujian lab. Jika komputer Anda mati, restart, atau kabel listrik tersenggol, silakan lapor kepada Guru Pengawas untuk melakukan 'Reset Sesi' di halaman Monitoring Ujian agar Anda dapat lanjut ujian tanpa kehilangan jawaban."
+            ]);
+            exit;
+        }
+    }
+
+    $db['student_sessions'][$nis] = [
+        'nis' => (string)$matched['nis'],
+        'name' => (string)$matched['name'],
+        'class' => (string)$matched['class'],
+        'quiz_id' => $quizId ?: ($prev['quiz_id'] ?? ''),
+        'quiz_title' => $quizTitle ?: ($prev['quiz_title'] ?? ''),
+        'status' => (!empty($prev['status']) && $prev['status'] === 'WORKING') ? 'WORKING' : 'STANDBY',
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        'login_at' => $prev['login_at'] ?? time(),
+        'last_seen' => time(),
+        'attempt_token_hash' => $prev['attempt_token_hash'] ?? ''
+    ];
+    audit($db, 'Login siswa', (string)$matched['nis'] . ' - ' . (string)$matched['name'], 'Kelas ' . (string)$matched['class'] . ($quizTitle ? ' (' . $quizTitle . ')' : ''));
+    saveDb($file_db, $db);
+
     echo json_encode([
         'status' => 'success',
         'message' => 'Login berhasil.',
@@ -613,23 +884,52 @@ if ($action === 'start_attempt' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($quizPin !== '') {
         if ($inputPin === '' || !hash_equals($quizPin, $inputPin)) {
             http_response_code(401);
-            echo json_encode(['status'=>'error','message'=>'TOKEN ujian tidak valid atau belum dimasukkan. Silakan minta token kepada guru pengawas.']);
+            echo json_encode(['status'=>'error','message'=>'TOKEN ujian tidak valid atau sudah kedaluwarsa. Silakan masukkan token terbaru yang aktif dari guru pengawas.']);
             exit;
         }
     }
-    // Validasi password siswa jika siswa terdaftar
-    $inputPassword = strtoupper(trim((string)($input['password'] ?? '')));
-    foreach ($db['students'] as $st) {
-        if (trim((string)($st['nis'] ?? '')) === $nis) {
-            $stPassword = strtoupper(trim((string)($st['password'] ?? '')));
-            if ($stPassword !== '' && ($inputPassword === '' || !hash_equals($stPassword, $inputPassword))) {
-                http_response_code(401);
-                echo json_encode(['status'=>'error','message'=>'Autentikasi siswa gagal: Password tidak valid.']);
-                exit;
+    // Validasi password siswa jika siswa terdaftar dan pengaturan mewajibkan password
+    $requirePassword = (bool)($db['settings']['require_student_password'] ?? true);
+    if ($requirePassword) {
+        $inputPassword = strtoupper(trim((string)($input['password'] ?? '')));
+        foreach ($db['students'] as $st) {
+            if (trim((string)($st['nis'] ?? '')) === $nis) {
+                $stPassword = strtoupper(trim((string)($st['password'] ?? '')));
+                if ($stPassword !== '' && ($inputPassword === '' || !hash_equals($stPassword, $inputPassword))) {
+                    http_response_code(401);
+                    echo json_encode(['status'=>'error','message'=>'Autentikasi siswa gagal: Password tidak valid.']);
+                    exit;
+                }
+                break;
             }
-            break;
         }
     }
+    // Cek jika siswa sudah memiliki sesi aktif yang sedang berjalan untuk kuis ini
+    foreach ($db['active_attempts'] as $existingKey => $existingAttempt) {
+        if ((string)($existingAttempt['nis'] ?? '') === $nis && (string)($existingAttempt['quiz_id'] ?? '') === $quizId && empty($existingAttempt['finished']) && (int)($existingAttempt['ends_at'] ?? 0) > time()) {
+            $tokenToSend = $existingAttempt['token'] ?? '';
+            if ($tokenToSend === '') {
+                $tokenToSend = bin2hex(random_bytes(32));
+                $newHash = attemptKey($tokenToSend);
+                $db['active_attempts'][$newHash] = $existingAttempt;
+                $db['active_attempts'][$newHash]['token'] = $tokenToSend;
+                $db['active_attempts'][$newHash]['token_hash'] = $newHash;
+                if ($newHash !== $existingKey) unset($db['active_attempts'][$existingKey]);
+                saveDb($file_db, $db);
+            }
+            echo json_encode([
+                'status' => 'success',
+                'resumed' => true,
+                'attempt_token' => $tokenToSend,
+                'quiz' => publicAttemptQuiz($quiz, $existingAttempt),
+                'server_now' => time(),
+                'ends_at' => $existingAttempt['ends_at'],
+                'answers' => $existingAttempt['answers'] ?? []
+            ]);
+            exit;
+        }
+    }
+
     $permissionKey = $nis . '_' . $quizId; $permission = $db['retake_permissions'][$permissionKey] ?? null; $retakeAllowed = is_array($permission) ? ((int)($permission['remaining'] ?? 0) > 0 && (empty($permission['expires_at']) || strtotime($permission['expires_at']) >= time())) : !empty($permission); foreach ($db['results'] as $r) if ((string)($r['nis'] ?? '') === $nis && (string)($r['code'] ?? '') === $quizId && !$retakeAllowed) { http_response_code(409); echo json_encode(['status'=>'error','message'=>'Ujian ini sudah pernah dikerjakan.']); exit; }
     $totalQuestions = count($quiz['questions']);
     $maxQuestions = isset($quiz['max_questions']) ? (int)$quiz['max_questions'] : 0;
@@ -649,17 +949,72 @@ if ($action === 'start_attempt' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $optionOrder[$qid] = shuffledIndices(count($quiz['questions'][$qid]['options']));
         }
     }
-    $attempt = ['token_hash'=>attemptKey($token), 'quiz_id'=>$quizId, 'quiz_title'=>$quiz['title'] ?? $quizId, 'nis'=>$nis, 'name'=>$name, 'class'=>$class, 'question_order'=>$order, 'option_order'=>$optionOrder, 'answers'=>[], 'started_at'=>time(), 'ends_at'=>time() + max(1, (int)($quiz['duration'] ?? 1)) * 60, 'updated_at'=>time()];
-    $db['active_attempts'][attemptKey($token)] = $attempt; saveDb($file_db, $db);
+    $attempt = ['token'=>$token, 'token_hash'=>attemptKey($token), 'quiz_id'=>$quizId, 'quiz_title'=>$quiz['title'] ?? $quizId, 'nis'=>$nis, 'name'=>$name, 'class'=>$class, 'question_order'=>$order, 'option_order'=>$optionOrder, 'answers'=>[], 'started_at'=>time(), 'ends_at'=>time() + max(1, (int)($quiz['duration'] ?? 1)) * 60, 'updated_at'=>time()];
+    $db['active_attempts'][attemptKey($token)] = $attempt;
+    $db['student_sessions'] = $db['student_sessions'] ?? [];
+    $prev = $db['student_sessions'][$nis] ?? [];
+    $db['student_sessions'][$nis] = array_merge($prev, [
+        'nis' => $nis,
+        'name' => $name,
+        'class' => $class,
+        'quiz_id' => $quizId,
+        'quiz_title' => $quiz['title'] ?? $quizId,
+        'status' => 'WORKING',
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        'login_at' => $prev['login_at'] ?? time(),
+        'started_at' => time(),
+        'ends_at' => $attempt['ends_at'],
+        'last_seen' => time(),
+        'attempt_token_hash' => attemptKey($token)
+    ]);
+    audit($db, 'Mulai ujian', "{$nis} - {$name}", 'Paket: ' . ($quiz['title'] ?? $quizId));
+    saveDb($file_db, $db);
     echo json_encode(['status'=>'success','attempt_token'=>$token,'quiz'=>publicAttemptQuiz($quiz,$attempt),'server_now'=>time(),'ends_at'=>$attempt['ends_at'],'answers'=>[]]); exit;
 }
 
 if ($action === 'get_attempt') {
     $token = (string)($_GET['token'] ?? ''); $db = loadDb($file_db); $attempt = studentAttempt($db, $token);
     if (!$attempt) { http_response_code(404); echo json_encode(['status'=>'error','message'=>'Sesi ujian tidak ditemukan.']); exit; }
+    if (!empty($attempt['reset_allowed'])) {
+        http_response_code(403);
+        echo json_encode([
+            'status' => 'needs_login',
+            'message' => 'Sesi ujian Anda telah direset oleh Pengawas. Silakan login kembali dan masukkan token aktif terbaru.'
+        ]);
+        exit;
+    }
     $quiz = null; foreach ($db['questions'] as $candidate) if ((string)($candidate['id'] ?? '') === (string)$attempt['quiz_id']) { $quiz=$candidate; break; }
     if (!$quiz) { http_response_code(404); echo json_encode(['status'=>'error','message'=>'Kuis tidak ditemukan.']); exit; }
-    echo json_encode(['status'=>'success','quiz'=>publicAttemptQuiz($quiz,$attempt),'answers'=>$attempt['answers'],'server_now'=>time(),'ends_at'=>$attempt['ends_at'],'finished'=>!empty($attempt['finished'])]); exit;
+    echo json_encode(['status'=>'success','quiz'=>publicAttemptQuiz($quiz,$attempt),'answers'=>$attempt['answers'],'server_now'=>time(),'ends_at'=>$attempt['ends_at'],'finished'=>!empty($attempt['finished']),'violations_count'=>(int)($attempt['violations_count']??0)]); exit;
+}
+
+if ($action === 'student_heartbeat' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
+    $nis = trim((string)($input['nis'] ?? ''));
+    $attemptToken = (string)($input['attempt_token'] ?? '');
+    $quizId = trim((string)($input['quiz_id'] ?? ''));
+    $db = loadDb($file_db);
+    $dirty = false;
+    if ($nis !== '') {
+        $db['student_sessions'] = $db['student_sessions'] ?? [];
+        if (isset($db['student_sessions'][$nis])) {
+            $db['student_sessions'][$nis]['last_seen'] = time();
+            if ($quizId !== '' && empty($db['student_sessions'][$nis]['quiz_id'])) {
+                $db['student_sessions'][$nis]['quiz_id'] = $quizId;
+            }
+            $dirty = true;
+        }
+    }
+    if ($attemptToken !== '') {
+        $key = attemptKey($attemptToken);
+        if (isset($db['active_attempts'][$key])) {
+            $db['active_attempts'][$key]['updated_at'] = time();
+            $dirty = true;
+        }
+    }
+    if ($dirty) saveDb($file_db, $db);
+    echo json_encode(['status' => 'success', 'server_now' => time()]);
+    exit;
 }
 
 if ($action === 'save_attempt_answers' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -667,8 +1022,63 @@ if ($action === 'save_attempt_answers' && $_SERVER['REQUEST_METHOD'] === 'POST')
     if (!$attempt || !empty($attempt['finished'])) { http_response_code(404); echo json_encode(['status'=>'error','message'=>'Sesi ujian tidak aktif.']); exit; }
     if (time() > (int)$attempt['ends_at']) { http_response_code(403); echo json_encode(['status'=>'error','message'=>'Waktu ujian telah berakhir.']); exit; }
     $answers=normalizeAnswers($input['answers']??[]); $allowed=count($attempt['question_order']); foreach($answers as $position=>$answer) if($position < 0 || $position >= $allowed) unset($answers[$position]);
-    $db['active_attempts'][$key]['answers']=$answers; $db['active_attempts'][$key]['updated_at']=time(); saveDb($file_db,$db);
+    $db['active_attempts'][$key]['answers']=$answers; $db['active_attempts'][$key]['updated_at']=time();
+    $nis = (string)($attempt['nis'] ?? '');
+    if ($nis !== '' && isset($db['student_sessions'][$nis])) {
+        $db['student_sessions'][$nis]['last_seen'] = time();
+        $db['student_sessions'][$nis]['status'] = 'WORKING';
+    }
+    saveDb($file_db,$db);
     echo json_encode(['status'=>'success','message'=>'Jawaban tersimpan.','server_now'=>time()]); exit;
+}
+
+if ($action === 'report_student_violation' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rawInput = file_get_contents('php://input');
+    $input = json_decode($rawInput, true) ?: $_POST;
+    $token = (string)($input['attempt_token'] ?? '');
+    $nisInput = trim((string)($input['nis'] ?? ''));
+    $type = (string)($input['type'] ?? 'tab_switch');
+    $details = (string)($input['details'] ?? 'Pindah tab / aplikasi');
+    $db = loadDb($file_db);
+    $key = attemptKey($token);
+    $attempt = $db['active_attempts'][$key] ?? null;
+
+    if (!$attempt && $nisInput !== '') {
+        foreach ($db['active_attempts'] as $aKey => $a) {
+            if ((string)($a['nis'] ?? '') === $nisInput && empty($a['finished'])) {
+                $key = $aKey;
+                $attempt = $a;
+                break;
+            }
+        }
+    }
+
+    $count = 0;
+    if ($attempt) {
+        $count = (int)($db['active_attempts'][$key]['violations_count'] ?? 0) + 1;
+        $db['active_attempts'][$key]['violations_count'] = $count;
+        $db['active_attempts'][$key]['last_violation_at'] = time();
+        $db['active_attempts'][$key]['last_violation_type'] = $type;
+        $nis = (string)($attempt['nis'] ?? $nisInput);
+        if ($nis !== '' && isset($db['student_sessions'][$nis])) {
+            $db['student_sessions'][$nis]['violations_count'] = $count;
+            $db['student_sessions'][$nis]['last_violation_at'] = time();
+            $db['student_sessions'][$nis]['last_violation_type'] = $type;
+        }
+        $name = (string)($attempt['name'] ?? ($db['student_sessions'][$nis]['name'] ?? $nis));
+        audit($db, 'Peringatan Kecurangan', "Siswa {$name} (NIS: {$nis}) terdeteksi: {$details} (ke-{$count})");
+        saveDb($file_db, $db);
+    } elseif ($nisInput !== '' && isset($db['student_sessions'][$nisInput])) {
+        $count = (int)($db['student_sessions'][$nisInput]['violations_count'] ?? 0) + 1;
+        $db['student_sessions'][$nisInput]['violations_count'] = $count;
+        $db['student_sessions'][$nisInput]['last_violation_at'] = time();
+        $db['student_sessions'][$nisInput]['last_violation_type'] = $type;
+        $name = (string)($db['student_sessions'][$nisInput]['name'] ?? $nisInput);
+        audit($db, 'Peringatan Kecurangan', "Siswa {$name} (NIS: {$nisInput}) terdeteksi: {$details} (ke-{$count})");
+        saveDb($file_db, $db);
+    }
+    echo json_encode(['status' => 'success', 'violations_count' => $count]);
+    exit;
 }
 
 if ($action === 'submit_result' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -728,8 +1138,25 @@ if ($action === 'submit_result' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     array_unshift($db['results'], $record);
     $db['active_attempts'][$attemptKey]['finished'] = true;
     $db['active_attempts'][$attemptKey]['result_token'] = $token;
+    $db['active_attempts'][$attemptKey]['score'] = $score;
     $permissionKey = $nis . '_' . $quizId;
     if (isset($db['retake_permissions'][$permissionKey]) && is_array($db['retake_permissions'][$permissionKey])) { $db['retake_permissions'][$permissionKey]['remaining'] = max(0, (int)$db['retake_permissions'][$permissionKey]['remaining'] - 1); if (!$db['retake_permissions'][$permissionKey]['remaining']) unset($db['retake_permissions'][$permissionKey]); } else { unset($db['retake_permissions'][$permissionKey]); }
+    
+    // Update status monitoring siswa
+    $db['student_sessions'] = $db['student_sessions'] ?? [];
+    $prev = $db['student_sessions'][$nis] ?? [];
+    $db['student_sessions'][$nis] = array_merge($prev, [
+        'nis' => $nis,
+        'name' => (string)($attempt['name'] ?? ($prev['name'] ?? $nis)),
+        'class' => (string)($attempt['class'] ?? ($prev['class'] ?? '')),
+        'quiz_id' => $quizId,
+        'quiz_title' => (string)($quiz['title'] ?? $quizId),
+        'status' => 'FINISHED',
+        'finished_at' => time(),
+        'score' => $score,
+        'last_seen' => time()
+    ]);
+    audit($db, 'Selesai ujian', "{$nis} - " . (string)($attempt['name'] ?? ''), "Nilai: {$score} ({$correct} Benar, {$wrong} Salah) - " . ($quiz['title'] ?? $quizId));
     saveDb($file_db, $db);
 
     echo json_encode(['status' => 'success', 'message' => 'Jawaban berhasil terkirim ke server', 'score' => $score, 'correct' => $correct, 'wrong' => $wrong, 'review_token' => $token]);
@@ -797,6 +1224,11 @@ if ($action === 'save_questions' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     foreach ($input as &$quiz) {
         $quiz['status'] = $quiz['status'] ?? 'ACTIVE';
+        // Jika paket kuis belum memiliki soal sama sekali (masih baru dibuat / draf),
+        // otomatis simpan sebagai DRAFT agar tidak memblokir pembuatan paket baru sebelum import/input soal
+        if (empty($quiz['questions'])) {
+            $quiz['status'] = 'DRAFT';
+        }
         if ($quiz['status'] === 'ACTIVE' && ($errors = quizValidationErrors($quiz))) {
             http_response_code(400);
             echo json_encode(['status'=>'error','message'=>'Kuis tidak dapat diaktifkan: ' . implode('; ', $errors)]);
@@ -859,6 +1291,33 @@ if ($action === 'save_questions' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     unset($quiz);
 
     $db = loadDb($file_db); backupDb($file_db, $db, 'before-save-quizzes');
+    
+    $existingMap = [];
+    foreach ($db['questions'] as $eq) {
+        if (!empty($eq['id'])) $existingMap[$eq['id']] = $eq;
+    }
+
+    $now = time();
+    foreach ($input as &$quiz) {
+        $qid = $quiz['id'] ?? '';
+        $existing = $existingMap[$qid] ?? null;
+
+        if (!isset($quiz['pin_auto_refresh'])) {
+            $quiz['pin_auto_refresh'] = $existing['pin_auto_refresh'] ?? true;
+        }
+
+        // Jika pin diganti manual oleh guru
+        if ($existing && !empty($existing['pin']) && !empty($quiz['pin']) && $existing['pin'] !== $quiz['pin']) {
+            $quiz['pin_updated_at'] = $now;
+        } elseif ($existing && !empty($existing['pin_updated_at'])) {
+            $quiz['pin_updated_at'] = $existing['pin_updated_at'];
+        } else {
+            $quiz['pin_updated_at'] = $now;
+        }
+        unset($quiz['prev_pin'], $quiz['prev_pin_expires_at']);
+    }
+    unset($quiz);
+
     $db['questions'] = $input;
     audit($db, 'Simpan paket kuis', '', count($input) . ' paket');
     saveDb($file_db, $db);
@@ -904,10 +1363,17 @@ function parseQuestionBlocks($blocks) {
             } elseif (preg_match('/^ALASAN\s*[:=]\s*(.+)$/i', $line, $m)) {
                 $qData['reason'] = trim($m[1]);
             } elseif (preg_match('/^(PASANGAN|JODOHKAN)\s*[:=]\s*(.+)$/i', $line, $m)) {
-                $matchingPairs[] = trim($m[2]);
+                $rawP = trim($m[2]);
+                if (strpos($rawP, '|') !== false) {
+                    foreach (explode('|', $rawP) as $sp) {
+                        if (trim($sp) !== '') $matchingPairs[] = trim($sp);
+                    }
+                } else {
+                    $matchingPairs[] = $rawP;
+                }
             } elseif (preg_match('/^(PASANGAN|JODOHKAN)\s*[:=]?$/i', $line)) {
                 // Header penanda bagian menjodohkan
-            } elseif ((strpos($line, ' - ') !== false || strpos($line, ' = ') !== false) && !preg_match('/^(TIPE|PERTANYAAN|KASUS|PERNYATAAN|ALASAN|KUNCI|PEMBAHASAN)/i', $line)) {
+            } elseif ((strpos($line, ' - ') !== false || strpos($line, ' = ') !== false || strpos($line, '=') !== false) && !preg_match('/^(TIPE|PERTANYAAN|KASUS|PERNYATAAN|ALASAN|KUNCI|PEMBAHASAN)/i', $line)) {
                 $matchingPairs[] = $line;
             } elseif (preg_match('/^([A-E])\s*[:\.]\s*(.+)$/i', $line, $m)) {
                 $letter = strtoupper($m[1]);
@@ -970,7 +1436,11 @@ function parseQuestionBlocks($blocks) {
             foreach ($rawPairs as $k => $val) {
                 $prem = '';
                 $targ = '';
-                if (strpos($val, ' - ') !== false) {
+                if (strpos($val, '=') !== false) {
+                    $split = explode('=', $val, 2);
+                    $prem = trim($split[0]);
+                    $targ = trim($split[1]);
+                } elseif (strpos($val, ' - ') !== false) {
                     $split = explode(' - ', $val, 2);
                     $prem = trim($split[0]);
                     $targ = trim($split[1]);
@@ -989,6 +1459,23 @@ function parseQuestionBlocks($blocks) {
                     $idx++;
                 }
             }
+            if (!empty($qData['key_raw'])) {
+                $customPairs = [];
+                $customParts = explode(',', (string)$qData['key_raw']);
+                foreach ($customParts as $cp) {
+                    if (strpos($cp, '=') !== false) {
+                        [$pPart, $tPart] = explode('=', trim($cp), 2);
+                        $pPart = trim($pPart);
+                        $tPart = trim($tPart);
+                        $pIdx = is_numeric($pPart) ? (int)$pPart : (ord(strtoupper($pPart[0])) - 65);
+                        $tIdx = is_numeric($tPart) ? (int)$tPart : (ord(strtoupper($tPart[0])) - 65);
+                        $customPairs[(string)$pIdx] = $tIdx;
+                    }
+                }
+                if (!empty($customPairs)) {
+                    $pairs = $customPairs;
+                }
+            }
             $qData['premises'] = $premises;
             $qData['targets'] = $targets;
             $qData['pairs'] = $pairs;
@@ -1000,14 +1487,29 @@ function parseQuestionBlocks($blocks) {
         } elseif ($type === 'cause_effect') {
             $qData['statement'] = $qData['statement'] ?? '';
             $qData['reason'] = $qData['reason'] ?? '';
-            $qData['answer'] = trim($qData['key_raw'] ?? 'both_correct_connected');
+            $rawKey = trim((string)($qData['key_raw'] ?? 'both_correct_connected'));
+            $qData['answer'] = normalizeCauseEffectKey($rawKey);
         } elseif ($type === 'case_analysis') {
             $opts = [];
-            foreach (['A', 'B', 'C', 'D'] as $let) {
+            foreach (['A', 'B', 'C', 'D', 'E'] as $let) {
                 if (isset($optMap[$let])) $opts[] = $optMap[$let];
             }
-            $qData['options'] = $opts;
-            $qData['answer'] = (int)($qData['key_raw'] ?? 0);
+            $qData['options'] = $opts ?: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'];
+            $key = trim((string)($qData['key_raw'] ?? '0'));
+            if (preg_match('/^[A-E]$/i', $key)) {
+                $qData['answer'] = ord(strtoupper($key)) - 65;
+            } elseif (is_numeric($key)) {
+                $intKey = (int)$key;
+                if ($intKey >= 0 && $intKey < count($qData['options'])) {
+                    $qData['answer'] = $intKey;
+                } elseif ($intKey >= 1 && $intKey <= count($qData['options'])) {
+                    $qData['answer'] = $intKey - 1;
+                } else {
+                    $qData['answer'] = 0;
+                }
+            } else {
+                $qData['answer'] = 0;
+            }
         }
 
         unset($qData['key_raw']);
@@ -1289,15 +1791,23 @@ function parseXlsxQuestionsWithImages($filePath, $uploadsDir, $quizId = 'quiz') 
 
             $lines[] = 'TIPE: ' . ($typeVal ?: 'mc');
             if (!empty($namedRow['pertanyaan'])) $lines[] = 'PERTANYAAN: ' . $namedRow['pertanyaan'];
-            if (!empty($namedRow['teks_kasus'])) $lines[] = 'KASUS: ' . $namedRow['teks_kasus'];
-            if (!empty($namedRow['pernyataan'])) $lines[] = 'PERNYATAAN: ' . $namedRow['pernyataan'];
-            if (!empty($namedRow['alasan'])) $lines[] = 'ALASAN: ' . $namedRow['alasan'];
+            $caseVal = $namedRow['teks_kasus'] ?? ($namedRow['kasus'] ?? ($namedRow['bacaan'] ?? ''));
+            if (!empty($caseVal)) $lines[] = 'KASUS: ' . $caseVal;
+            $stmtVal = $namedRow['pernyataan'] ?? ($namedRow['statement'] ?? '');
+            if (!empty($stmtVal)) $lines[] = 'PERNYATAAN: ' . $stmtVal;
+            $reasonVal = $namedRow['alasan'] ?? ($namedRow['reason'] ?? '');
+            if (!empty($reasonVal)) $lines[] = 'ALASAN: ' . $reasonVal;
             if (!empty($namedRow['opsi_a'])) $lines[] = 'A: ' . $namedRow['opsi_a'];
             if (!empty($namedRow['opsi_b'])) $lines[] = 'B: ' . $namedRow['opsi_b'];
             if (!empty($namedRow['opsi_c'])) $lines[] = 'C: ' . $namedRow['opsi_c'];
             if (!empty($namedRow['opsi_d'])) $lines[] = 'D: ' . $namedRow['opsi_d'];
             if (!empty($namedRow['opsi_e'])) $lines[] = 'E: ' . $namedRow['opsi_e'];
-            if (!empty($namedRow['kunci_jawaban'])) $lines[] = 'KUNCI: ' . $namedRow['kunci_jawaban'];
+            $matchVal = $namedRow['pasangan_menjodohkan'] ?? ($namedRow['jodohkan'] ?? ($namedRow['pasangan'] ?? ''));
+            if (!empty($matchVal)) {
+                $lines[] = 'PASANGAN: ' . $matchVal;
+            }
+            $keyVal = $namedRow['kunci_jawaban'] ?? ($namedRow['kunci'] ?? ($namedRow['jawaban'] ?? ''));
+            if (!empty($keyVal)) $lines[] = 'KUNCI: ' . $keyVal;
             if (!empty($namedRow['pembahasan'])) $lines[] = 'PEMBAHASAN: ' . $namedRow['pembahasan'];
 
             $blocks[] = ['lines' => $lines, 'image' => $img];
@@ -1332,16 +1842,27 @@ function parseCsvQuestions($filePath, $quizId = 'quiz') {
             $named[$k] = trim($v);
         }
         $lines = [];
-        $t = $named['tipe'] ?? 'mc';
+        $t = $named['tipe'] ?? ($named['type'] ?? 'mc');
         if (empty($t) && empty($named['pertanyaan'])) continue;
         $lines[] = 'TIPE: ' . ($t ?: 'mc');
         if (!empty($named['pertanyaan'])) $lines[] = 'PERTANYAAN: ' . $named['pertanyaan'];
+        $caseVal = $named['teks_kasus'] ?? ($named['kasus'] ?? ($named['bacaan'] ?? ''));
+        if (!empty($caseVal)) $lines[] = 'KASUS: ' . $caseVal;
+        $stmtVal = $named['pernyataan'] ?? ($named['statement'] ?? '');
+        if (!empty($stmtVal)) $lines[] = 'PERNYATAAN: ' . $stmtVal;
+        $reasonVal = $named['alasan'] ?? ($named['reason'] ?? '');
+        if (!empty($reasonVal)) $lines[] = 'ALASAN: ' . $reasonVal;
         if (!empty($named['opsi_a'])) $lines[] = 'A: ' . $named['opsi_a'];
         if (!empty($named['opsi_b'])) $lines[] = 'B: ' . $named['opsi_b'];
         if (!empty($named['opsi_c'])) $lines[] = 'C: ' . $named['opsi_c'];
         if (!empty($named['opsi_d'])) $lines[] = 'D: ' . $named['opsi_d'];
         if (!empty($named['opsi_e'])) $lines[] = 'E: ' . $named['opsi_e'];
-        if (!empty($named['kunci_jawaban'])) $lines[] = 'KUNCI: ' . $named['kunci_jawaban'];
+        $matchVal = $named['pasangan_menjodohkan'] ?? ($named['jodohkan'] ?? ($named['pasangan'] ?? ''));
+        if (!empty($matchVal)) {
+            $lines[] = 'PASANGAN: ' . $matchVal;
+        }
+        $keyVal = $named['kunci_jawaban'] ?? ($named['kunci'] ?? ($named['jawaban'] ?? ''));
+        if (!empty($keyVal)) $lines[] = 'KUNCI: ' . $keyVal;
         if (!empty($named['pembahasan'])) $lines[] = 'PEMBAHASAN: ' . $named['pembahasan'];
         $blocks[] = ['lines' => $lines, 'image' => $named['gambar'] ?? ''];
     }
@@ -1430,6 +1951,12 @@ if ($action === 'import_questions_file' && $_SERVER['REQUEST_METHOD'] === 'POST'
         $addedCount++;
     }
 
+    if (!empty($_POST['status'])) {
+        $targetQuiz['status'] = trim((string)$_POST['status']);
+    } elseif ($targetQuiz['status'] === 'DRAFT' && count($targetQuiz['questions']) > 0) {
+        $targetQuiz['status'] = 'ACTIVE';
+    }
+
     audit($db, 'Import soal file (' . $ext . ')', $targetQuiz['title'], "$addedCount soal ditambahkan");
     saveDb($file_db, $db);
 
@@ -1474,11 +2001,12 @@ if ($action === 'get_students') {
     exit;
 }
 
-if ($action === 'save_student' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if (($action === 'save_student' || $action === 'update_student') && $_SERVER['REQUEST_METHOD'] === 'POST') {
     teacherOnly();
     $input = json_decode(file_get_contents('php://input'), true) ?: [];
     $id = trim((string)($input['id'] ?? ''));
     $nis = trim((string)($input['nis'] ?? ''));
+    $originalNis = trim((string)($input['original_nis'] ?? ''));
     $name = trim((string)($input['name'] ?? ''));
     $class = trim((string)($input['class'] ?? ''));
     $tahun_ajaran = trim((string)($input['tahun_ajaran'] ?? $input['academic_year'] ?? '2026-2027'));
@@ -1502,7 +2030,9 @@ if ($action === 'save_student' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($db['students'] as $st) {
             $stNis = trim((string)($st['nis'] ?? ''));
             $stId = (string)($st['id'] ?? '');
-            if ($stNis === $nis && ($id === '' || $stId !== $id)) {
+            if ($stNis === $nis) {
+                if ($id !== '' && $stId === $id) continue;
+                if ($originalNis !== '' && $stNis === $originalNis) continue;
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => "NIS '{$nis}' sudah digunakan oleh siswa '{$st['name']}'."]);
                 exit;
@@ -1518,7 +2048,16 @@ if ($action === 'save_student' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
             }
         }
-    } elseif ($nis !== '') {
+    }
+    if ($existingPassword === '' && $originalNis !== '') {
+        foreach ($db['students'] as $st) {
+            if ((string)($st['nis'] ?? '') === $originalNis && !empty($st['password'])) {
+                $existingPassword = (string)$st['password'];
+                break;
+            }
+        }
+    }
+    if ($existingPassword === '' && $nis !== '') {
         foreach ($db['students'] as $st) {
             if ((string)($st['nis'] ?? '') === $nis && !empty($st['password'])) {
                 $existingPassword = (string)$st['password'];
@@ -1538,28 +2077,98 @@ if ($action === 'save_student' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     $found = false;
+    $foundIdx = -1;
+    $oldClass = '';
     if ($id !== '') {
-        foreach ($db['students'] as &$st) {
+        foreach ($db['students'] as $sIdx => $st) {
             if ((string)($st['id'] ?? '') === $id) {
-                $st = array_merge($st, $studentData);
+                $oldClass = (string)($st['class'] ?? '');
+                $foundIdx = $sIdx;
                 $found = true;
                 break;
             }
         }
-        unset($st);
-    } elseif ($nis !== '') {
-        foreach ($db['students'] as &$st) {
+    }
+    if (!$found && $originalNis !== '') {
+        foreach ($db['students'] as $sIdx => $st) {
+            if ((string)($st['nis'] ?? '') === $originalNis) {
+                $oldClass = (string)($st['class'] ?? '');
+                $foundIdx = $sIdx;
+                $found = true;
+                break;
+            }
+        }
+    }
+    if (!$found && $nis !== '') {
+        foreach ($db['students'] as $sIdx => $st) {
             if ((string)($st['nis'] ?? '') === $nis) {
-                $st = array_merge($st, $studentData);
+                $oldClass = (string)($st['class'] ?? '');
+                $foundIdx = $sIdx;
                 $found = true;
                 break;
             }
         }
-        unset($st);
     }
 
-    if (!$found) {
-        $db['students'][] = $studentData;
+    if ($found && $foundIdx !== -1) {
+        $db['students'][$foundIdx] = array_merge($db['students'][$foundIdx], $studentData);
+        // Jika kelas diubah saat edit, pindahkan siswa ke urutan terbawah dari kelas baru tersebut
+        if ($oldClass !== '' && strcasecmp(trim($oldClass), trim($class)) !== 0) {
+            $updatedStudent = $db['students'][$foundIdx];
+            array_splice($db['students'], $foundIdx, 1);
+
+            $targetClassClean = strtolower(trim(preg_replace('/\s+/', ' ', (string)$class)));
+            $lastClassIdx = -1;
+            foreach ($db['students'] as $sIdx => $st) {
+                $stClassClean = strtolower(trim(preg_replace('/\s+/', ' ', (string)($st['class'] ?? ''))));
+                if ($stClassClean === $targetClassClean) {
+                    $lastClassIdx = $sIdx;
+                }
+            }
+            if ($lastClassIdx === -1 && $targetClassClean !== '') {
+                foreach ($db['students'] as $sIdx => $st) {
+                    $stClassClean = strtolower(trim(preg_replace('/\s+/', ' ', (string)($st['class'] ?? ''))));
+                    if (strpos($stClassClean, $targetClassClean) === 0 || strpos($targetClassClean, $stClassClean) === 0) {
+                        $lastClassIdx = $sIdx;
+                    }
+                }
+            }
+            if ($lastClassIdx !== -1) {
+                array_splice($db['students'], $lastClassIdx + 1, 0, [$updatedStudent]);
+            } else {
+                $db['students'][] = $updatedStudent;
+            }
+        }
+    } else {
+        // Tambah siswa manual baru: tempatkan di urutan terbawah sesuai kelas data tersebut
+        $targetClassClean = strtolower(trim(preg_replace('/\s+/', ' ', (string)$class)));
+        $lastClassIdx = -1;
+
+        // 1. Pencocokan kelas sama persis (case-insensitive & spasi seragam)
+        foreach ($db['students'] as $sIdx => $st) {
+            $stClassClean = strtolower(trim(preg_replace('/\s+/', ' ', (string)($st['class'] ?? ''))));
+            if ($stClassClean === $targetClassClean) {
+                $lastClassIdx = $sIdx;
+            }
+        }
+
+        // 2. Pencocokan awalan jika tidak ada yang sama persis
+        if ($lastClassIdx === -1 && $targetClassClean !== '') {
+            foreach ($db['students'] as $sIdx => $st) {
+                $stClassClean = strtolower(trim(preg_replace('/\s+/', ' ', (string)($st['class'] ?? ''))));
+                if (strpos($stClassClean, $targetClassClean) === 0 || strpos($targetClassClean, $stClassClean) === 0) {
+                    $lastClassIdx = $sIdx;
+                }
+            }
+        }
+
+        if ($lastClassIdx !== -1) {
+            // Sisipkan tepat di urutan terakhir siswa pada kelas tersebut
+            array_splice($db['students'], $lastClassIdx + 1, 0, [$studentData]);
+        } else {
+            // Jika kelas baru / belum ada di database, taruh di paling akhir
+            $db['students'][] = $studentData;
+        }
     }
 
     audit($db, $found ? 'Edit siswa' : 'Tambah siswa', $nis !== '' ? $nis : $name);
@@ -1571,7 +2180,13 @@ if ($action === 'save_student' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 if (($action === 'delete_student' || $action === 'delete_students') && $_SERVER['REQUEST_METHOD'] === 'POST') {
     teacherOnly();
     $input = json_decode(file_get_contents('php://input'), true) ?: [];
-    $ids = array_filter(array_map('trim', array_map('strval', (array)($input['ids'] ?? []))));
+    $rawList = array_merge(
+        (array)($input['ids'] ?? []),
+        (array)($input['nis_list'] ?? [])
+    );
+    if (!empty($input['id'])) $rawList[] = $input['id'];
+    if (!empty($input['nis'])) $rawList[] = $input['nis'];
+    $ids = array_filter(array_map('trim', array_map('strval', $rawList)));
     $id = trim((string)($input['id'] ?? ''));
     $nis = trim((string)($input['nis'] ?? ''));
 
@@ -1728,24 +2343,364 @@ if ($action === 'teacher_dashboard') {
         if (empty($quizMap[$fId])) $quizMap[$fId] = $fTitle;
     }
 
+    // Agregasi seluruh data monitoring peserta (student_sessions & active_attempts)
+    $monitoring = [];
+    $trackedNis = [];
+
+    // 1. Sesi siswa yang login / standby / mengerjakan / selesai
+    $db['student_sessions'] = $db['student_sessions'] ?? [];
+    foreach ($db['student_sessions'] as $nisKey => $sess) {
+        $sNis = (string)($sess['nis'] ?? $nisKey);
+        if ($sNis === '') continue;
+
+        // Cari active_attempt terkait jika ada
+        $matchedAttempt = null;
+        if (!empty($sess['attempt_token_hash']) && isset($db['active_attempts'][$sess['attempt_token_hash']])) {
+            $matchedAttempt = $db['active_attempts'][$sess['attempt_token_hash']];
+        } else {
+            foreach ($db['active_attempts'] as $candidate) {
+                if ((string)($candidate['nis'] ?? '') === $sNis) {
+                    if (!$matchedAttempt || ($candidate['started_at'] ?? 0) > ($matchedAttempt['started_at'] ?? 0)) {
+                        $matchedAttempt = $candidate;
+                    }
+                }
+            }
+        }
+
+        $qid = (string)($sess['quiz_id'] ?? ($matchedAttempt['quiz_id'] ?? ''));
+        $title = (!empty($sess['quiz_title']) && $sess['quiz_title'] !== $qid) ? $sess['quiz_title'] : ($quizMap[$qid] ?? ($qid !== '' ? $qid : '-'));
+
+        $lastSeen = (int)($sess['last_seen'] ?? ($matchedAttempt['updated_at'] ?? $sess['login_at'] ?? time()));
+        $endsAt = (int)($matchedAttempt['ends_at'] ?? ($sess['ends_at'] ?? 0));
+        $startedAt = (int)($matchedAttempt['started_at'] ?? ($sess['started_at'] ?? $sess['login_at'] ?? 0));
+
+        // Tentukan status pengerjaan
+        $rawStatus = strtoupper((string)($sess['status'] ?? 'STANDBY'));
+        $status = 'STANDBY';
+        $statusLabel = 'Login / Standby';
+
+        if ($rawStatus === 'FINISHED' || !empty($matchedAttempt['finished'])) {
+            $status = 'FINISHED';
+            $statusLabel = 'Selesai';
+        } elseif ($matchedAttempt && $endsAt > 0 && time() > $endsAt) {
+            $status = 'TIME_OVER';
+            $statusLabel = 'Waktu Habis';
+        } elseif ($rawStatus === 'WORKING' || $matchedAttempt) {
+            if (time() - $lastSeen > 90) {
+                $status = 'OFFLINE';
+                $statusLabel = 'Terputus';
+            } else {
+                $status = 'WORKING';
+                $statusLabel = 'Sedang Mengerjakan';
+            }
+        } else {
+            if (time() - $lastSeen > 180) {
+                $status = 'OFFLINE';
+                $statusLabel = 'Terputus';
+            } else {
+                $status = 'STANDBY';
+                $statusLabel = 'Login / Standby';
+            }
+        }
+
+        // Hitung progres soal terjawab
+        $ansCount = 0;
+        $totalQ = 0;
+        if ($matchedAttempt) {
+            $totalQ = count($matchedAttempt['question_order'] ?? []);
+            if (!empty($matchedAttempt['answers']) && is_array($matchedAttempt['answers'])) {
+                foreach ($matchedAttempt['answers'] as $ansVal) {
+                    if ($ansVal !== null && $ansVal !== '' && $ansVal !== []) {
+                        $ansCount++;
+                    }
+                }
+            }
+        }
+
+        $monitoring[] = [
+            'nis' => $sNis,
+            'name' => (string)($sess['name'] ?? ($matchedAttempt['name'] ?? $sNis)),
+            'class' => (string)($sess['class'] ?? ($matchedAttempt['class'] ?? '-')),
+            'quiz_id' => $qid,
+            'quiz_title' => $title,
+            'status' => $status,
+            'status_label' => $statusLabel,
+            'question' => $totalQ > 0 ? "{$ansCount} / {$totalQ}" : '-',
+            'answered_count' => $ansCount,
+            'total_questions' => $totalQ,
+            'score' => $sess['score'] ?? ($matchedAttempt['score'] ?? null),
+            'started_at' => $startedAt,
+            'ends_at' => $endsAt,
+            'updated_at' => $lastSeen,
+            'login_at' => (int)($sess['login_at'] ?? $startedAt),
+            'finished_at' => (int)($sess['finished_at'] ?? 0),
+            'time_remaining' => ($status === 'WORKING' && $endsAt > time()) ? ($endsAt - time()) : 0,
+            'ip' => (string)($sess['ip'] ?? ''),
+            'violations_count' => (int)($sess['violations_count'] ?? ($matchedAttempt['violations_count'] ?? 0))
+        ];
+        $trackedNis[$sNis] = true;
+    }
+
+    // 2. Sertakan attempt aktif/terbaru dalam 24 jam terakhir yang belum tercatat di student_sessions
+    $oneDayAgo = time() - 86400;
     foreach ($db['active_attempts'] as $a) {
-        if (empty($a['finished'])) {
-            $qid = (string)($a['quiz_id'] ?? '');
-            $title = (!empty($a['quiz_title']) && $a['quiz_title'] !== $qid) ? $a['quiz_title'] : ($quizMap[$qid] ?? ($qid !== '' ? $qid : '-'));
-            $active[] = [
-                'nis' => $a['nis'] ?? '',
-                'name' => $a['name'] ?? '',
-                'class' => $a['class'] ?? '',
-                'quiz_id' => $qid,
-                'quiz_title' => $title,
-                'question' => count($a['answers'] ?? []) . ' / ' . count($a['question_order'] ?? []),
-                'ends_at' => $a['ends_at'] ?? 0,
-                'updated_at' => $a['updated_at'] ?? 0
-            ];
+        $aNis = (string)($a['nis'] ?? '');
+        if ($aNis === '' || isset($trackedNis[$aNis])) continue;
+        $aStart = (int)($a['started_at'] ?? 0);
+        $aUpdated = (int)($a['updated_at'] ?? $aStart);
+        if ($aStart < $oneDayAgo && $aUpdated < $oneDayAgo) continue;
+
+        $qid = (string)($a['quiz_id'] ?? '');
+        $title = (!empty($a['quiz_title']) && $a['quiz_title'] !== $qid) ? $a['quiz_title'] : ($quizMap[$qid] ?? ($qid !== '' ? $qid : '-'));
+        $endsAt = (int)($a['ends_at'] ?? 0);
+
+        $status = 'WORKING';
+        $statusLabel = 'Sedang Mengerjakan';
+        if (!empty($a['finished'])) {
+            $status = 'FINISHED';
+            $statusLabel = 'Selesai';
+        } elseif ($endsAt > 0 && time() > $endsAt) {
+            $status = 'TIME_OVER';
+            $statusLabel = 'Waktu Habis';
+        } elseif (time() - $aUpdated > 90) {
+            $status = 'OFFLINE';
+            $statusLabel = 'Terputus';
+        }
+
+        $ansCount = 0;
+        $totalQ = count($a['question_order'] ?? []);
+        if (!empty($a['answers']) && is_array($a['answers'])) {
+            foreach ($a['answers'] as $ansVal) {
+                if ($ansVal !== null && $ansVal !== '' && $ansVal !== []) {
+                    $ansCount++;
+                }
+            }
+        }
+
+        $monitoring[] = [
+            'nis' => $aNis,
+            'name' => (string)($a['name'] ?? $aNis),
+            'class' => (string)($a['class'] ?? '-'),
+            'quiz_id' => $qid,
+            'quiz_title' => $title,
+            'status' => $status,
+            'status_label' => $statusLabel,
+            'question' => $totalQ > 0 ? "{$ansCount} / {$totalQ}" : '-',
+            'answered_count' => $ansCount,
+            'total_questions' => $totalQ,
+            'score' => $a['score'] ?? null,
+            'started_at' => $aStart,
+            'ends_at' => $endsAt,
+            'updated_at' => $aUpdated,
+            'login_at' => $aStart,
+            'finished_at' => !empty($a['finished']) ? $aUpdated : 0,
+            'time_remaining' => ($status === 'WORKING' && $endsAt > time()) ? ($endsAt - time()) : 0,
+            'violations_count' => (int)($a['violations_count'] ?? 0),
+            'ip' => (string)($a['ip'] ?? '')
+        ];
+        $trackedNis[$aNis] = true;
+    }
+
+    // Urutkan peserta: aktivitas terbaru di atas
+    usort($monitoring, function($a, $b) {
+        return ($b['updated_at'] ?? 0) <=> ($a['updated_at'] ?? 0);
+    });
+
+    // Ringkasan jumlah per status
+    $counts = [
+        'total' => count($monitoring),
+        'working' => 0,
+        'standby' => 0,
+        'finished' => 0,
+        'offline' => 0,
+        'time_over' => 0
+    ];
+    foreach ($monitoring as $item) {
+        $st = $item['status'];
+        if ($st === 'WORKING') $counts['working']++;
+        elseif ($st === 'STANDBY') $counts['standby']++;
+        elseif ($st === 'FINISHED') $counts['finished']++;
+        elseif ($st === 'OFFLINE') $counts['offline']++;
+        elseif ($st === 'TIME_OVER') $counts['time_over']++;
+    }
+
+    $scores = array_map(fn($r)=>(int)($r['score']??0), $db['results']);
+    echo json_encode([
+        'status' => 'success',
+        'monitoring' => $monitoring,
+        'counts' => $counts,
+        'audit_logs' => array_slice(array_reverse($db['audit_logs']), 0, 200),
+        'summary' => [
+            'students' => count($db['students']),
+            'quizzes' => count($db['questions']),
+            'results' => count($db['results']),
+            'average' => $scores ? (int)round(array_sum($scores)/count($scores)) : 0
+        ]
+    ]);
+    exit;
+}
+
+if ($action === 'reset_student_session' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    teacherOnly();
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
+    $nis = trim((string)($input['nis'] ?? ''));
+    $db = loadDb($file_db);
+    $stName = $nis;
+
+    if (isset($db['student_sessions'][$nis])) {
+        $stName = $db['student_sessions'][$nis]['name'] ?? $nis;
+        // Buka kunci sesi siswa dan beri izin relogin/resume
+        $db['student_sessions'][$nis]['reset_allowed'] = true;
+        $db['student_sessions'][$nis]['is_locked'] = false;
+        $db['student_sessions'][$nis]['status'] = 'STANDBY';
+        $db['student_sessions'][$nis]['last_seen'] = time();
+    }
+
+    // PENTING: JANGAN hapus active_attempts siswa!
+    // Kunci sesi dibuka dan flag reset_allowed diaktifkan sehingga saat siswa Ahmad menyalakan
+    // PC atau login kembali, seluruh progres soal dan jawaban tidak hilang dan langsung melanjutkan!
+    $hasAttempt = false;
+    foreach ($db['active_attempts'] as $ak => &$av) {
+        if ((string)($av['nis'] ?? '') === $nis && empty($av['finished'])) {
+            $av['reset_allowed'] = true;
+            $hasAttempt = true;
         }
     }
-    $scores=array_map(fn($r)=>(int)($r['score']??0),$db['results']);
-    echo json_encode(['status'=>'success','monitoring'=>$active,'audit_logs'=>array_slice(array_reverse($db['audit_logs']),0,200),'summary'=>['students'=>count($db['students']),'quizzes'=>count($db['questions']),'results'=>count($db['results']),'average'=>$scores?(int)round(array_sum($scores)/count($scores)):0]]); exit;
+    unset($av);
+
+    audit($db, 'Reset sesi siswa', "{$nis} - {$stName}", 'Kunci sesi dibuka agar siswa dapat login ulang tanpa kehilangan jawaban');
+    saveDb($file_db, $db);
+    echo json_encode([
+        'status' => 'success',
+        'message' => "Sesi siswa {$stName} ({$nis}) berhasil direset. Siswa dapat login kembali dari komputer lab dan langsung melanjutkan ujian dari nomor terakhir tanpa kehilangan jawaban."
+    ]);
+    exit;
+}
+
+if ($action === 'force_finish_student_session' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    teacherOnly();
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
+    $nis = trim((string)($input['nis'] ?? ''));
+    $db = loadDb($file_db);
+
+    $matchedAttempt = null;
+    $matchedKey = null;
+    foreach ($db['active_attempts'] as $ak => $cand) {
+        if ((string)($cand['nis'] ?? '') === $nis && empty($cand['finished'])) {
+            $matchedAttempt = $cand;
+            $matchedKey = $ak;
+            break;
+        }
+    }
+
+    if (!$matchedAttempt) {
+        http_response_code(404);
+        echo json_encode(['status' => 'error', 'message' => 'Tidak ditemukan sesi ujian aktif yang sedang berjalan untuk siswa ini.']);
+        exit;
+    }
+
+    $quizId = (string)$matchedAttempt['quiz_id'];
+    $quiz = null;
+    foreach ($db['questions'] as $q) {
+        if ((string)($q['id'] ?? '') === $quizId) { $quiz = $q; break; }
+    }
+    if (!$quiz) {
+        http_response_code(404);
+        echo json_encode(['status' => 'error', 'message' => 'Data paket kuis tidak ditemukan.']);
+        exit;
+    }
+
+    $questionOrder = $matchedAttempt['question_order'];
+    $answers = normalizeAnswers($matchedAttempt['answers'] ?? []);
+    foreach ($answers as $position => &$answer) {
+        $qid = $questionOrder[(int)$position] ?? null;
+        $map = $matchedAttempt['option_order'][$qid] ?? [];
+        if (is_array($answer)) {
+            $answer = array_values(array_filter(array_map(fn($v) => $map[(int)$v] ?? null, $answer), fn($v) => $v !== null));
+        } elseif (is_numeric($answer) && isset($map[(int)$answer])) {
+            $answer = $map[(int)$answer];
+        }
+    }
+    unset($answer);
+
+    [$score, $correct, $wrong, $breakdowns] = calculateSubmission($quiz, $questionOrder, $answers);
+    $token = bin2hex(random_bytes(32));
+    $record = [
+        'nis' => $nis,
+        'name' => (string)$matchedAttempt['name'],
+        'class' => (string)$matchedAttempt['class'],
+        'code' => $quizId,
+        'title' => (string)($quiz['title'] ?? ''),
+        'score' => $score,
+        'correct' => $correct,
+        'wrong' => $wrong,
+        'date' => date('d/m/Y H:i:s'),
+        'review_token' => $token,
+        'question_order' => $questionOrder,
+        'answers' => $answers,
+        'breakdowns' => $breakdowns,
+        'submitted_by' => 'Guru Pengawas (Selesai Paksa)'
+    ];
+    array_unshift($db['results'], $record);
+
+    $db['active_attempts'][$matchedKey]['finished'] = true;
+    $db['active_attempts'][$matchedKey]['score'] = $score;
+
+    if (isset($db['student_sessions'][$nis])) {
+        $db['student_sessions'][$nis]['status'] = 'FINISHED';
+        $db['student_sessions'][$nis]['finished_at'] = time();
+        $db['student_sessions'][$nis]['score'] = $score;
+    }
+
+    audit($db, 'Selesaikan paksa ujian', "{$nis} - " . (string)$matchedAttempt['name'], "Diselesaikan oleh guru pengawas. Nilai: {$score}");
+    saveDb($file_db, $db);
+    echo json_encode([
+        'status' => 'success',
+        'message' => "Ujian siswa {$matchedAttempt['name']} ({$nis}) berhasil dikumpulkan paksa. Nilai akhir: {$score}."
+    ]);
+    exit;
+}
+
+if ($action === 'get_result_detail') {
+    teacherOnly();
+    $db = loadDb($file_db);
+    $nis = trim((string)($_GET['nis'] ?? ''));
+    $quizId = trim((string)($_GET['quiz_id'] ?? ''));
+    $date = trim((string)($_GET['date'] ?? ''));
+
+    $found = null;
+    foreach ($db['results'] as $r) {
+        if ((string)($r['nis'] ?? '') === $nis && ((string)($r['code'] ?? '') === $quizId || $quizId === '')) {
+            if ($date === '' || (string)($r['date'] ?? '') === $date) {
+                $found = $r;
+                break;
+            }
+        }
+    }
+
+    if (!$found) {
+        http_response_code(404);
+        echo json_encode(['status' => 'error', 'message' => 'Data rincian hasil ujian tidak ditemukan.']);
+        exit;
+    }
+
+    echo json_encode(['status' => 'success', 'result' => $found]);
+    exit;
+}
+
+if ($action === 'clear_student_sessions' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    teacherOnly();
+    $db = loadDb($file_db);
+    $db['student_sessions'] = [];
+    foreach ($db['active_attempts'] as $ak => $av) {
+        if (!empty($av['finished']) || (int)($av['ends_at'] ?? 0) < time()) {
+            unset($db['active_attempts'][$ak]);
+        }
+    }
+    audit($db, 'Bersihkan sesi monitoring', 'Semua siswa', 'Oleh guru');
+    saveDb($file_db, $db);
+    echo json_encode(['status' => 'success', 'message' => 'Semua riwayat monitoring berhasil dibersihkan.']);
+    exit;
 }
 
 if ($action === 'exam_analytics') {
@@ -1765,21 +2720,36 @@ if ($action === 'create_backup' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($action === 'delete_backup' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     teacherOnly();
     $input = json_decode(file_get_contents('php://input'), true) ?: [];
-    $filename = basename(trim((string)($input['file'] ?? '')));
-    if ($filename === '') {
+    $files = [];
+    if (!empty($input['files']) && is_array($input['files'])) {
+        foreach ($input['files'] as $f) {
+            $fn = basename(trim((string)$f));
+            if ($fn !== '') {
+                $files[] = $fn;
+            }
+        }
+    } elseif (!empty($input['file'])) {
+        $fn = basename(trim((string)$input['file']));
+        if ($fn !== '') {
+            $files[] = $fn;
+        }
+    }
+
+    if (empty($files)) {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'Nama berkas cadangan tidak valid.']);
+        echo json_encode(['status' => 'error', 'message' => 'Nama berkas cadangan tidak valid atau belum dipilih.']);
         exit;
     }
+
     $db = loadDb($file_db);
-    $found = false;
     $newBackups = [];
     $backupsList = $db['backups'] ?? [];
+    $deleteMap = array_flip($files);
+
     foreach ($backupsList as $b) {
         $curFile = (string)($b['file'] ?? $b['name'] ?? '');
-        if ($curFile === $filename) {
-            $found = true;
-            $filePath = __DIR__ . '/backups/' . $filename;
+        if (isset($deleteMap[$curFile])) {
+            $filePath = __DIR__ . '/backups/' . $curFile;
             if (file_exists($filePath) && is_file($filePath)) {
                 @unlink($filePath);
             }
@@ -1787,18 +2757,29 @@ if ($action === 'delete_backup' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $newBackups[] = $b;
         }
     }
-    if (!$found) {
-        // Coba periksa apakah berkas fisik ada di folder backups
-        $filePath = __DIR__ . '/backups/' . $filename;
+
+    foreach ($files as $fn) {
+        $filePath = __DIR__ . '/backups/' . $fn;
         if (file_exists($filePath) && is_file($filePath)) {
             @unlink($filePath);
-            $found = true;
         }
     }
+
     $db['backups'] = $newBackups;
-    audit($db, 'Hapus berkas cadangan', $filename);
+    $auditDetail = count($files) > 1 ? count($files) . ' berkas: ' . implode(', ', array_slice($files, 0, 5)) . (count($files) > 5 ? '...' : '') : $files[0];
+    audit($db, 'Hapus berkas cadangan', $auditDetail);
     saveDb($file_db, $db);
-    echo json_encode(['status' => 'success', 'message' => 'Berkas cadangan berhasil dihapus.', 'backups' => $db['backups']]);
+
+    $msg = count($files) > 1 
+        ? count($files) . ' berkas cadangan berhasil dihapus.' 
+        : 'Berkas cadangan berhasil dihapus.';
+
+    echo json_encode([
+        'status' => 'success', 
+        'message' => $msg, 
+        'backups' => $db['backups'],
+        'deleted_count' => count($files)
+    ]);
     exit;
 }
 
@@ -1855,55 +2836,146 @@ if ($action === 'request_extension' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($action === 'check_extension_requests') {
     teacherOnly();
     $db = loadDb($file_db);
-    $requests = array_values(array_filter($db['time_extension_requests'] ?? [], fn($r) => ($r['status'] ?? '') === 'PENDING'));
-    echo json_encode(['status' => 'success', 'requests' => $requests, 'pending_count' => count($requests)]);
+    $all = array_values($db['time_extension_requests'] ?? []);
+    // Urutkan waktu request terbaru di atas
+    usort($all, function($a, $b) {
+        return ($b['requested_at'] ?? 0) <=> ($a['requested_at'] ?? 0);
+    });
+    $pending = array_values(array_filter($all, fn($r) => ($r['status'] ?? '') === 'PENDING'));
+    echo json_encode([
+        'status' => 'success',
+        'requests' => $pending,
+        'all_requests' => $all,
+        'pending_count' => count($pending)
+    ]);
     exit;
 }
 
 if ($action === 'approve_extension' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     teacherOnly();
     $input = json_decode(file_get_contents('php://input'), true) ?: [];
-    $tokenHash = (string)($input['token_hash'] ?? '');
+    
+    // Jika dikirim approve: false, teruskan ke alur penolakan
+    if (isset($input['approve']) && $input['approve'] === false) {
+        $tokenHash = trim((string)($input['token_hash'] ?? ''));
+        $attemptToken = trim((string)($input['attempt_token'] ?? ''));
+        $reqId = trim((string)($input['id'] ?? $input['request_id'] ?? ''));
+        $db = loadDb($file_db);
+        $db['time_extension_requests'] = $db['time_extension_requests'] ?? [];
+
+        if ($tokenHash === '' && $attemptToken !== '') $tokenHash = attemptKey($attemptToken);
+        if ($tokenHash === '' && $reqId !== '') {
+            foreach ($db['time_extension_requests'] as $r) {
+                if (($r['id'] ?? '') === $reqId) { $tokenHash = (string)($r['token_hash'] ?? ''); break; }
+            }
+        }
+
+        foreach ($db['time_extension_requests'] as &$req) {
+            if (($req['token_hash'] ?? '') === $tokenHash || ($reqId !== '' && ($req['id'] ?? '') === $reqId)) {
+                $req['status'] = 'REJECTED';
+                $req['responded_at'] = time();
+                audit($db, 'Tolak perpanjangan waktu', $req['nis']);
+                break;
+            }
+        }
+        unset($req);
+        saveDb($file_db, $db);
+        echo json_encode(['status' => 'success', 'message' => 'Permintaan perpanjangan waktu ditolak.']);
+        exit;
+    }
+
+    $tokenHash = trim((string)($input['token_hash'] ?? ''));
+    $attemptToken = trim((string)($input['attempt_token'] ?? ''));
+    $reqId = trim((string)($input['id'] ?? $input['request_id'] ?? ''));
+    $nis = trim((string)($input['nis'] ?? ''));
     $minutes = (int)($input['minutes'] ?? 0);
+
     if ($minutes < 1) {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'Jumlah menit perpanjangan harus minimal 1 menit.']);
+        echo json_encode(['status' => 'error', 'message' => 'Jumlah menit perpanjangan waktu harus minimal 1 menit.']);
         exit;
     }
+
     $db = loadDb($file_db);
+    $db['time_extension_requests'] = $db['time_extension_requests'] ?? [];
+
+    if ($tokenHash === '' && $attemptToken !== '') $tokenHash = attemptKey($attemptToken);
+    if ($tokenHash === '' && $reqId !== '') {
+        foreach ($db['time_extension_requests'] as $r) {
+            if (($r['id'] ?? '') === $reqId) { $tokenHash = (string)($r['token_hash'] ?? ''); break; }
+        }
+    }
+    if ($tokenHash === '' && $nis !== '') {
+        foreach ($db['active_attempts'] as $ak => $av) {
+            if ((string)($av['nis'] ?? '') === $nis && empty($av['finished'])) { $tokenHash = $ak; break; }
+        }
+    }
+
     if (!isset($db['active_attempts'][$tokenHash])) {
         http_response_code(404);
-        echo json_encode(['status' => 'error', 'message' => 'Sesi ujian siswa tidak ditemukan.']);
+        echo json_encode(['status' => 'error', 'message' => 'Sesi ujian siswa tidak ditemukan di server.']);
         exit;
     }
+
     $attempt = &$db['active_attempts'][$tokenHash];
-    $newEndsAt = max(time(), (int)$attempt['ends_at']) + ($minutes * 60);
+    $baseTime = max(time(), (int)($attempt['ends_at'] ?? time()));
+    $newEndsAt = $baseTime + ($minutes * 60);
     $attempt['ends_at'] = $newEndsAt;
+    $sNis = (string)($attempt['nis'] ?? '');
     unset($attempt);
 
+    if ($sNis !== '' && isset($db['student_sessions'][$sNis])) {
+        $db['student_sessions'][$sNis]['ends_at'] = $newEndsAt;
+    }
+
+    $matchedReq = false;
     foreach ($db['time_extension_requests'] as &$req) {
-        if (($req['token_hash'] ?? '') === $tokenHash) {
+        if (($req['token_hash'] ?? '') === $tokenHash || ($reqId !== '' && ($req['id'] ?? '') === $reqId)) {
             $req['status'] = 'APPROVED';
             $req['added_minutes'] = $minutes;
             $req['new_ends_at'] = $newEndsAt;
-            audit($db, "Setujui perpanjangan waktu +{$minutes}m", $req['nis']);
+            $req['responded_at'] = time();
+            $matchedReq = true;
+            audit($db, "Setujui perpanjangan waktu +{$minutes}m", ($req['nis'] ?? $sNis));
             break;
         }
     }
     unset($req);
+
+    if (!$matchedReq) {
+        audit($db, "Setujui perpanjangan waktu +{$minutes}m", $sNis);
+    }
+
     saveDb($file_db, $db);
-    echo json_encode(['status' => 'success', 'message' => "Perpanjangan waktu {$minutes} menit disetujui.", 'new_ends_at' => $newEndsAt]);
+    echo json_encode([
+        'status' => 'success',
+        'message' => "Perpanjangan waktu {$minutes} menit berhasil diberikan.",
+        'new_ends_at' => $newEndsAt,
+        'added_minutes' => $minutes
+    ]);
     exit;
 }
 
 if ($action === 'reject_extension' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     teacherOnly();
     $input = json_decode(file_get_contents('php://input'), true) ?: [];
-    $tokenHash = (string)($input['token_hash'] ?? '');
+    $tokenHash = trim((string)($input['token_hash'] ?? ''));
+    $attemptToken = trim((string)($input['attempt_token'] ?? ''));
+    $reqId = trim((string)($input['id'] ?? $input['request_id'] ?? ''));
     $db = loadDb($file_db);
+    $db['time_extension_requests'] = $db['time_extension_requests'] ?? [];
+
+    if ($tokenHash === '' && $attemptToken !== '') $tokenHash = attemptKey($attemptToken);
+    if ($tokenHash === '' && $reqId !== '') {
+        foreach ($db['time_extension_requests'] as $r) {
+            if (($r['id'] ?? '') === $reqId) { $tokenHash = (string)($r['token_hash'] ?? ''); break; }
+        }
+    }
+
     foreach ($db['time_extension_requests'] as &$req) {
-        if (($req['token_hash'] ?? '') === $tokenHash) {
+        if (($req['token_hash'] ?? '') === $tokenHash || ($reqId !== '' && ($req['id'] ?? '') === $reqId)) {
             $req['status'] = 'REJECTED';
+            $req['responded_at'] = time();
             audit($db, 'Tolak perpanjangan waktu', $req['nis']);
             break;
         }
@@ -1911,6 +2983,17 @@ if ($action === 'reject_extension' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     unset($req);
     saveDb($file_db, $db);
     echo json_encode(['status' => 'success', 'message' => 'Permintaan perpanjangan waktu ditolak.']);
+    exit;
+}
+
+if ($action === 'clear_extension_history' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    teacherOnly();
+    $db = loadDb($file_db);
+    // Pertahankan yang masih pending, hapus yang sudah approved / rejected
+    $db['time_extension_requests'] = array_values(array_filter($db['time_extension_requests'] ?? [], fn($r) => ($r['status'] ?? '') === 'PENDING'));
+    audit($db, 'Bersihkan riwayat perpanjangan waktu');
+    saveDb($file_db, $db);
+    echo json_encode(['status' => 'success', 'message' => 'Riwayat perpanjangan waktu berhasil dibersihkan.']);
     exit;
 }
 

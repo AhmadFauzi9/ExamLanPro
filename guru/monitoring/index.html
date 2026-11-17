@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring & Audit - ExamLAN Pro</title>
+    <title>Monitoring Ujian - ExamLAN Pro</title>
     <!-- Tailwind CSS & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,67 +35,209 @@
             <!-- Injected Sidebar Navigation -->
             <div id="guru-sidebar-placeholder" class="sticky top-16 z-20"></div>
 
-            <!-- Content Area: MONITORING & AUDIT -->
+            <!-- Content Area: MONITORING UJIAN -->
             <div class="space-y-4 min-w-0">
+
+                <!-- Alert Banner for Time Extension Requests -->
+                <div id="mon-extension-alert-banner" class="hidden bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs animate-pulse">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs" id="mon-extension-alert-text">Ada siswa meminta perpanjangan waktu!</p>
+                            <p class="text-[11px] text-rose-600">Siswa butuh tambahan waktu ujian karena kendala teknis.</p>
+                        </div>
+                    </div>
+                    <a href="../notifikasi/" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 shrink-0">
+                        <span>Kelola Permintaan</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
                 
-                <!-- Action Toolbar Card -->
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <!-- Summary Metrics Cards (Clickable Filter) -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div onclick="filterByCardStatus('ALL')" class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-2xs cursor-pointer hover:border-brand-300 transition">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-users text-slate-500"></i> Total Peserta
+                        </p>
+                        <p id="sum-total" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                    </div>
+                    <div onclick="filterByCardStatus('WORKING')" class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-2xs cursor-pointer hover:border-emerald-300 transition">
+                        <p class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Sedang Mengerjakan
+                        </p>
+                        <p id="sum-working" class="text-2xl font-black text-emerald-600 mt-1">0</p>
+                    </div>
+                    <div onclick="filterByCardStatus('STANDBY')" class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-2xs cursor-pointer hover:border-sky-300 transition">
+                        <p class="text-[11px] text-sky-600 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-right-to-bracket text-sky-500"></i> Login / Standby
+                        </p>
+                        <p id="sum-standby" class="text-2xl font-black text-sky-600 mt-1">0</p>
+                    </div>
+                    <div onclick="filterByCardStatus('FINISHED')" class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-2xs cursor-pointer hover:border-purple-300 transition">
+                        <p class="text-[11px] text-purple-600 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-purple-500"></i> Selesai
+                        </p>
+                        <p id="sum-finished" class="text-2xl font-black text-purple-600 mt-1">0</p>
+                    </div>
+                    <div onclick="filterByCardStatus('OFFLINE')" class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-2xs cursor-pointer hover:border-rose-300 transition">
+                        <p class="text-[11px] text-rose-600 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> Terputus
+                        </p>
+                        <p id="sum-offline" class="text-2xl font-black text-rose-600 mt-1">0</p>
+                    </div>
+                    <div onclick="filterByViolations()" id="card-violations" class="bg-white border border-rose-200 rounded-2xl p-3.5 shadow-2xs cursor-pointer hover:border-rose-400 transition bg-rose-50/20" title="Klik untuk memfilter siswa yang melanggar">
+                        <p class="text-[11px] text-rose-700 font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved text-rose-600"></i> Pelanggaran
+                        </p>
+                        <p id="sum-violations" class="text-2xl font-black text-rose-600 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Page Header Card -->
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center text-lg font-bold">
+                        <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center text-lg font-bold shrink-0">
                             <i class="fa-solid fa-tower-broadcast"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Monitoring Ujian</h2>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Pemantauan langsung peserta ujian yang sedang aktif dan diagnostik server.</p>
+                            <div class="flex items-center gap-2">
+                                <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Monitoring Ujian (Live)</h2>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Sedang Berlangsung
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Pantau kelancaran teknis & kejujuran siswa di lab secara real-time. Buka kunci sesi jika PC siswa hang/mati listrik.</p>
                         </div>
                     </div>
 
-                    <!-- Compact Action Buttons -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <label class="flex items-center gap-1.5 text-xs text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200 cursor-pointer">
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="toggleModal('modal-mon-guide', true)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition flex items-center gap-1.5 shadow-2xs">
+                            <i class="fa-solid fa-circle-question text-sky-600"></i>
+                            <span>Panduan Pengawas Lab</span>
+                        </button>
+                        <span id="active-count-badge" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            0 aktif mengerjakan
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Unified Filters, Sorting & Toolbar Action Buttons -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <!-- Left: View -> Sort -> Filter -> Search Group -->
+                    <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <!-- 1. View (Angka Saja) default 20 -->
+                        <select id="mon-per-page" onchange="changeMonPerPage(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Jumlah data per halaman">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+
+                        <!-- 2. Sort (Short) -->
+                        <select id="mon-sort" onchange="handleMonFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Pengurutan data">
+                            <option value="updated_desc">Aktivitas Terkini</option>
+                            <option value="updated_asc">Terlama</option>
+                            <option value="progress_desc">Progres Tertinggi</option>
+                            <option value="nis_asc">NIS (0 - 9)</option>
+                            <option value="name_asc">Nama (A - Z)</option>
+                        </select>
+
+                        <!-- 3. Filter Status -->
+                        <select id="mon-filter-status" onchange="handleMonFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none font-medium" title="Filter Status Peserta">
+                            <option value="ALL">Semua Status</option>
+                            <option value="WORKING">Sedang Mengerjakan</option>
+                            <option value="STANDBY">Login / Standby</option>
+                            <option value="OFFLINE">Terputus / Offline</option>
+                            <option value="TIME_OVER">Waktu Habis</option>
+                            <option value="FINISHED">Selesai</option>
+                        </select>
+
+                        <!-- 4. Filter Kelas -->
+                        <select id="mon-filter-class" onchange="handleMonFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[140px]" title="Filter Kelas">
+                            <option value="ALL">Kelas</option>
+                        </select>
+
+                        <!-- 5. Filter Soal Ujian -->
+                        <select id="mon-filter-quiz" onchange="handleMonFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none max-w-[160px]" title="Filter Soal Ujian">
+                            <option value="ALL">Soal Ujian</option>
+                        </select>
+
+                        <!-- Live Quiz Token Widget in Monitoring -->
+                        <div id="mon-quiz-token-widget" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 text-xs font-mono font-bold shrink-0" title="Token Akses Ujian (Otomatis ganti tiap 10 menit)">
+                            <i class="fa-solid fa-key text-[10px] text-blue-600"></i>
+                            <span id="mon-token-val" class="tracking-widest font-black">------</span>
+                            <button type="button" onclick="copyMonToken(this)" class="p-0.5 text-blue-600 hover:text-blue-900 transition" title="Salin Token Ujian">
+                                <i class="fa-regular fa-copy text-xs"></i>
+                            </button>
+                            <span id="mon-token-timer-box" class="ml-1 pl-1.5 border-l border-blue-200 text-[10px] font-semibold text-blue-600 flex items-center gap-1 font-sans" title="Sisa waktu token aktif">
+                                <i class="fa-regular fa-clock text-[9px]"></i>
+                                <span id="mon-token-countdown">10:00</span>
+                            </span>
+                        </div>
+
+                        <!-- 6. Search Input -->
+                        <div class="relative min-w-[160px] sm:min-w-[200px] flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                            <input id="mon-search-input" type="text" oninput="handleMonFilter()" placeholder="Cari NIS, nama, atau kelas..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
+                        </div>
+                    </div>
+
+                    <!-- Right: Toolbar Action Buttons (Icon Only with Tooltip) -->
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <label class="flex items-center gap-1.5 text-xs text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200 cursor-pointer mr-1" title="Perbarui data otomatis tiap 5 detik (Heartbeat)">
                             <input type="checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh(this.checked)" checked class="w-3.5 h-3.5 rounded text-brand-600 focus:ring-brand-500">
-                            <span class="font-semibold">Auto-refresh (5s)</span>
+                            <span class="font-semibold text-[11px] flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live (5s)
+                            </span>
                         </label>
+
                         <button type="button" onclick="loadMonitoringData()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" title="Muat Ulang Data Monitoring">
                             <i class="fa-solid fa-rotate text-xs"></i>
+                        </button>
+
+                        <button type="button" onclick="confirmClearAllSessions()" class="btn-icon border border-rose-200 text-rose-600 hover:bg-rose-50 transition" title="Bersihkan Semua Data Monitoring">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- SECTION 1: PESERTA UJIAN AKTIF (LIVE MONITORING) -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Peserta Sedang Mengerjakan
-                        </h3>
-                        <span id="active-count-badge" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">0 aktif</span>
+                <!-- Monitoring Table Card -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-xs border-collapse compact-table">
+                            <thead class="bg-slate-100 uppercase font-bold text-slate-600 tracking-wider">
+                                <tr>
+                                    <th class="w-10 text-center">No</th>
+                                    <th>NIS</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>Soal Ujian</th>
+                                    <th class="text-center">Status Kehadiran</th>
+                                    <th class="text-center min-w-[130px]">Progres Siswa</th>
+                                    <th class="min-w-[100px]">Sisa Waktu</th>
+                                    <th>Terakhir Aktif</th>
+                                    <th class="w-24 text-center">Aksi Guru</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitoring-tbody" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td colspan="10" class="p-8 text-center text-slate-400">
+                                        <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat data monitoring real-time...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left text-xs border-collapse compact-table">
-                                <thead class="bg-slate-100 uppercase font-bold text-slate-600 tracking-wider">
-                                    <tr>
-                                        <th class="w-12 text-center">No</th>
-                                        <th>NIS</th>
-                                        <th>Nama Siswa</th>
-                                        <th>Kelas</th>
-                                        <th>Paket Kuis</th>
-                                        <th class="text-center">Soal Terjawab</th>
-                                        <th>Selesai</th>
-                                        <th>Updated</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="monitoring-tbody" class="divide-y divide-slate-100">
-                                    <tr>
-                                        <td colspan="8" class="p-8 text-center text-slate-400">
-                                            <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat data monitoring...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <!-- Pagination -->
+                    <div id="mon-pagination-container" class="p-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                        <div id="mon-page-info">Menampilkan 0 dari 0 peserta</div>
+                        <div id="mon-pagination" class="flex items-center gap-1"></div>
                     </div>
                 </div>
 
@@ -103,12 +245,117 @@
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
                     <div class="flex items-center justify-between border-b pb-2">
                         <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-server text-brand-600"></i> Status Diagnostik Server
+                            <i class="fa-solid fa-server text-brand-600"></i> Status Diagnostik Server & Koneksi Jaringan
                         </h3>
                         <button type="button" onclick="loadSystemStatus()" class="text-xs text-brand-600 hover:text-brand-800 font-bold flex items-center gap-1">
                             <i class="fa-solid fa-stethoscope text-[11px]"></i> Cek Sekarang
                         </button>
                     </div>
+                    <div id="system-status-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                        <p class="text-slate-400 text-xs">Memeriksa status server...</p>
+                    </div>
+                </div>
+
+                <!-- MODAL PANDUAN PENGAWAS LAB (PERBEDAAN MONITORING VS HASIL UJIAN) -->
+                <div id="modal-mon-guide" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-[99] flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                        <div class="flex items-center justify-between border-b pb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-base">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Panduan Pengawas Lab Komputer</h3>
+                                    <p class="text-[11px] text-slate-500">Kapan menggunakan Monitoring Ujian vs Hasil Ujian & Penanganan Kendala</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="toggleModal('modal-mon-guide', false)" class="text-slate-400 hover:text-slate-600 p-1">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Perbedaan Tabel -->
+                        <div class="space-y-2 text-xs">
+                            <h4 class="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
+                                <i class="fa-solid fa-table-columns text-brand-600"></i> Tabel Perbedaan Utama:
+                            </h4>
+                            <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                                <table class="w-full text-left text-[11px] border-collapse">
+                                    <thead class="bg-slate-100 font-bold text-slate-700">
+                                        <tr>
+                                            <th class="p-2 border-b border-r border-slate-200">Poin Perbedaan</th>
+                                            <th class="p-2 border-b border-r border-slate-200 text-sky-700 bg-sky-50/50">Monitoring Ujian (Live)</th>
+                                            <th class="p-2 border-b text-indigo-700 bg-indigo-50/50">Hasil Ujian (Rekap/Pasca)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                                        <tr>
+                                            <td class="p-2 font-bold bg-slate-50 border-r border-slate-200">Kapan Digunakan?</td>
+                                            <td class="p-2 border-r border-slate-200">Saat jam ujian berlangsung di lab komputer.</td>
+                                            <td class="p-2">Setelah ujian selesai dikumpulkan oleh siswa.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-bold bg-slate-50 border-r border-slate-200">Tujuan Utama</td>
+                                            <td class="p-2 border-r border-slate-200">Mengawasi kelancaran teknis & kejujuran siswa secara real-time.</td>
+                                            <td class="p-2">Menganalisis nilai, mencetak rekap skor, dan evaluasi butir soal.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-bold bg-slate-50 border-r border-slate-200">Sifat Data</td>
+                                            <td class="p-2 border-r border-slate-200">Real-time (Live): Memperbarui otomatis tiap 5 detik (Heartbeat).</td>
+                                            <td class="p-2">Permanen / Arsip: Nilai akhir resmi tersimpan di database.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-bold bg-slate-50 border-r border-slate-200">Informasi Ditampilkan</td>
+                                            <td class="p-2 border-r border-slate-200">
+                                                • Status kehadiran (Mengerjakan, Standby, Terputus, Waktu Habis)<br>
+                                                • Progres siswa (contoh: 12 dari 25)<br>
+                                                • Sisa waktu pengerjaan countdown<br>
+                                                • Terakhir aktif (5 dtk lalu)
+                                            </td>
+                                            <td class="p-2">
+                                                • Nilai akhir angka (contoh: 88, 75, 92)<br>
+                                                • Jumlah Benar & Salah<br>
+                                                • Waktu submit pengerjaan<br>
+                                                • Lembar rincian jawaban per butir soal
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-bold bg-slate-50 border-r border-slate-200">Tindakan / Aksi Guru</td>
+                                            <td class="p-2 border-r border-slate-200">
+                                                • <b>Reset Sesi</b>: Buka kunci sesi jika PC siswa hang/mati listrik agar siswa bisa login lagi tanpa hilang jawaban.<br>
+                                                • Pantau siswa yang kabur/tutup browser (status jadi Offline).<br>
+                                                • Kumpulkan Paksa jika waktu habis.
+                                            </td>
+                                            <td class="p-2">
+                                                • Export Nilai ke Excel/PDF untuk buku rapor.<br>
+                                                • Tampilkan/Sembunyikan Pembahasan siswa.<br>
+                                                • Lihat Lembar Rincian Jawaban.<br>
+                                                • Izinkan Remedial / Ujian Ulang.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Contoh Kasus Nyata -->
+                        <div class="space-y-2 bg-amber-50/60 p-3 rounded-xl border border-amber-200 text-xs">
+                            <h4 class="font-bold text-amber-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-lightbulb text-amber-600"></i> Contoh Kasus Nyata di Ruang Ujian:
+                            </h4>
+                            <div class="space-y-1.5 text-slate-700 text-[11px] leading-relaxed">
+                                <p><b>1. Kasus Komputer Mati Listrik / Kabel Tersenggol:</b><br>
+                                Ujian berjalan 20 menit, PC Ahmad tiba-tiba mati karena kabel power tersenggol. Setelah PC dinyalakan lagi, Ahmad terkunci tidak bisa login. Guru membuka <b>Monitoring Ujian</b>, melihat status Ahmad <i>'Terputus'</i>, lalu klik tombol <b>Reset Sesi</b>. Ahmad langsung bisa login kembali dan <u>melanjutkan ujian dari nomor terakhir tanpa hilang jawaban</u>.</p>
+                                <p><b>2. Kasus Penilaian & Buku Rapor:</b><br>
+                                Waktu ujian selesai. Guru ingin mencatat nilai atau evaluasi kurikulum. Guru membuka <b>Hasil Ujian</b>, melihat daftar nilai satu kelas, lalu klik <b>Export Excel / Cetak PDF</b>.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-2 border-t">
+                            <button type="button" onclick="toggleModal('modal-mon-guide', false)" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition">Tutup</button>
+                        </div>
+                    </div>
+                </div>
                     <div id="system-status-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                         <p class="text-slate-400 text-xs">Memeriksa status server...</p>
                     </div>
@@ -122,10 +369,15 @@
     <script src="../assets/js/guru-core.js"></script>
     <script src="../assets/js/guru-nav.js"></script>
     <script>
-        let monitoringData = [];
+        let rawMonitoring = [];
+        let filteredMonitoring = [];
+        let monPerPage = 20;
+        let monCurrentPage = 1;
         let autoRefreshTimer = null;
+        let initialFilterPopulated = false;
 
         window.onDataLoaded = async () => {
+            populateFilterDropdowns();
             await loadMonitoringData();
             await loadSystemStatus();
         };
@@ -133,11 +385,28 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const ok = await checkServerSession(window.onDataLoaded);
             if (ok) {
+                populateFilterDropdowns();
                 await loadMonitoringData();
                 await loadSystemStatus();
                 toggleAutoRefresh(true);
             }
         });
+
+        function populateFilterDropdowns() {
+            if (initialFilterPopulated) return;
+            // Populasi filter kelas
+            const classSelect = document.getElementById('mon-filter-class');
+            if (classSelect && window.dbData && Array.isArray(window.dbData.students)) {
+                const classes = [...new Set(window.dbData.students.map(s => s.class).filter(Boolean))].sort();
+                classSelect.innerHTML = `<option value="ALL">Kelas</option>` + classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+            }
+            // Populasi filter soal ujian
+            const quizSelect = document.getElementById('mon-filter-quiz');
+            if (quizSelect && window.dbData && Array.isArray(window.dbData.questions)) {
+                quizSelect.innerHTML = `<option value="ALL">Soal Ujian</option>` + window.dbData.questions.map(q => `<option value="${escapeHtml(q.id)}">${escapeHtml(q.title || q.id)}</option>`).join('');
+            }
+            initialFilterPopulated = true;
+        }
 
         function toggleAutoRefresh(enabled) {
             clearInterval(autoRefreshTimer);
@@ -154,67 +423,460 @@
                 if (!res.ok) throw new Error();
                 const d = await res.json();
 
-                monitoringData = d.monitoring || [];
-                renderMonitoringTable();
+                rawMonitoring = d.monitoring || [];
+                updateSummaryCounts(d.counts || {});
+                handleMonFilter();
             } catch (e) {
                 if (!silent) {
                     document.getElementById('monitoring-tbody').innerHTML = `
-                        <tr><td colspan="8" class="p-4 text-center text-rose-500">Gagal memuat data monitoring dari server.</td></tr>
+                        <tr><td colspan="10" class="p-6 text-center text-rose-500 font-medium">Gagal memuat data monitoring dari server. Pastikan server aktif.</td></tr>
                     `;
                 }
             }
         }
 
+        let filterOnlyViolations = false;
+
+        function updateSummaryCounts(counts) {
+            const total = counts.total ?? rawMonitoring.length;
+            const working = counts.working ?? rawMonitoring.filter(m => m.status === 'WORKING').length;
+            const standby = counts.standby ?? rawMonitoring.filter(m => m.status === 'STANDBY').length;
+            const finished = counts.finished ?? rawMonitoring.filter(m => m.status === 'FINISHED').length;
+            const offline = (counts.offline ?? 0) + (counts.time_over ?? 0);
+            const violations = rawMonitoring.reduce((sum, m) => sum + (Number(m.violations_count) || 0), 0);
+
+            document.getElementById('sum-total').innerText = total;
+            document.getElementById('sum-working').innerText = working;
+            document.getElementById('sum-standby').innerText = standby;
+            document.getElementById('sum-finished').innerText = finished;
+            document.getElementById('sum-offline').innerText = offline;
+            const violEl = document.getElementById('sum-violations');
+            if (violEl) violEl.innerText = violations;
+
+            const badge = document.getElementById('active-count-badge');
+            if (badge) {
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 ${working > 0 ? 'animate-pulse' : ''}"></span> ${working} aktif mengerjakan`;
+            }
+        }
+
+        function filterByViolations() {
+            filterOnlyViolations = !filterOnlyViolations;
+            const card = document.getElementById('card-violations');
+            if (card) {
+                if (filterOnlyViolations) {
+                    card.classList.add('ring-2', 'ring-rose-500', 'bg-rose-100/60');
+                } else {
+                    card.classList.remove('ring-2', 'ring-rose-500', 'bg-rose-100/60');
+                }
+            }
+            handleMonFilter();
+        }
+
+        function filterByCardStatus(status) {
+            filterOnlyViolations = false;
+            const card = document.getElementById('card-violations');
+            if (card) card.classList.remove('ring-2', 'ring-rose-500', 'bg-rose-100/60');
+            const sel = document.getElementById('mon-filter-status');
+            if (sel) {
+                sel.value = status;
+                handleMonFilter();
+            }
+        }
+
+        function changeMonPerPage(val) {
+            monPerPage = parseInt(val) || 20;
+            monCurrentPage = 1;
+            renderMonitoringTable();
+            updateMonitoringTokenWidget();
+        }
+
+        function handleMonFilter() {
+            const statusFilter = document.getElementById('mon-filter-status')?.value || 'ALL';
+            const classFilter = document.getElementById('mon-filter-class')?.value || 'ALL';
+            const quizFilter = document.getElementById('mon-filter-quiz')?.value || 'ALL';
+            const search = (document.getElementById('mon-search-input')?.value || '').trim().toLowerCase();
+            const sort = document.getElementById('mon-sort')?.value || 'updated_desc';
+
+            filteredMonitoring = rawMonitoring.filter(m => {
+                if (filterOnlyViolations && (Number(m.violations_count) || 0) <= 0) return false;
+                if (statusFilter !== 'ALL') {
+                    if (statusFilter === 'OFFLINE') {
+                        if (m.status !== 'OFFLINE' && m.status !== 'TIME_OVER') return false;
+                    } else if (m.status !== statusFilter) {
+                        return false;
+                    }
+                }
+                if (classFilter !== 'ALL' && (m.class || '') !== classFilter) return false;
+                if (quizFilter !== 'ALL' && (m.quiz_id || '') !== quizFilter) return false;
+                if (search) {
+                    const matchNis = (m.nis || '').toLowerCase().includes(search);
+                    const matchName = (m.name || '').toLowerCase().includes(search);
+                    const matchClass = (m.class || '').toLowerCase().includes(search);
+                    const matchQuiz = (m.quiz_title || '').toLowerCase().includes(search);
+                    if (!matchNis && !matchName && !matchClass && !matchQuiz) return false;
+                }
+                return true;
+            });
+
+            // Sorting
+            filteredMonitoring.sort((a, b) => {
+                if (sort === 'updated_desc') return (b.updated_at || 0) - (a.updated_at || 0);
+                if (sort === 'updated_asc') return (a.updated_at || 0) - (b.updated_at || 0);
+                if (sort === 'progress_desc') return (b.answered_count || 0) - (a.answered_count || 0);
+                if (sort === 'nis_asc') return (a.nis || '').localeCompare(b.nis || '', undefined, { numeric: true });
+                if (sort === 'name_asc') return (a.name || '').localeCompare(b.name || '');
+                return 0;
+            });
+
+            renderMonitoringTable();
+            updateMonitoringTokenWidget();
+        }
+
         function renderMonitoringTable() {
             const tbody = document.getElementById('monitoring-tbody');
-            const badge = document.getElementById('active-count-badge');
-            if (badge) badge.innerText = `${monitoringData.length} aktif`;
-
-            if (!monitoringData.length) {
+            if (!filteredMonitoring.length) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="p-8 text-center text-slate-400">
+                        <td colspan="10" class="p-8 text-center text-slate-400">
                             <i class="fa-solid fa-mug-hot text-2xl mb-1 text-slate-300"></i>
-                            <p class="text-xs">Tidak ada siswa yang sedang mengerjakan ujian saat ini.</p>
+                            <p class="text-xs">Tidak ada data peserta ujian yang sesuai filter.</p>
                         </td>
                     </tr>
                 `;
+                renderPagination(0);
                 return;
             }
 
-            tbody.innerHTML = monitoringData.map((m, idx) => {
-                let quizTitle = m.quiz_title;
-                if ((!quizTitle || quizTitle.startsWith('quiz-')) && window.dbData && Array.isArray(window.dbData.questions)) {
-                    const qObj = window.dbData.questions.find(q => q.id === m.quiz_id);
-                    if (qObj && qObj.title) quizTitle = qObj.title;
-                }
-                const fallbackTitles = {
-                    'quiz-1789790671156': 'UB STS Ganjil Kelas 7',
-                    'quiz-1791161243662': 'Soal STS Ganjil 2026-2027',
-                    'quiz-1791169015921': 'Soal STS Ganjil 2026-2027',
-                    'quiz-1794792463299': 'UB SAS GANJIL 2026-2027',
-                    'quiz-1794805923538': 'UB SAS GANJIL 26-27'
-                };
-                if (!quizTitle || quizTitle.startsWith('quiz-')) {
-                    quizTitle = fallbackTitles[m.quiz_id] || m.quiz_title || m.quiz_id || '-';
-                }
+            const total = filteredMonitoring.length;
+            const totalPages = Math.ceil(total / monPerPage);
+            if (monCurrentPage > totalPages) monCurrentPage = totalPages;
+            if (monCurrentPage < 1) monCurrentPage = 1;
 
-                const selesaiFormatted = m.ends_at ? new Date(m.ends_at * 1000).toLocaleString('id-ID') : '-';
-                const updateFormatted = m.updated_at ? new Date(m.updated_at * 1000).toLocaleTimeString('id-ID') : '-';
+            const startIdx = (monCurrentPage - 1) * monPerPage;
+            const endIdx = Math.min(startIdx + monPerPage, total);
+            const pageData = filteredMonitoring.slice(startIdx, endIdx);
+
+            tbody.innerHTML = pageData.map((m, idx) => {
+                const rowNum = startIdx + idx + 1;
+                const statusBadge = getStatusBadge(m);
+                const progressHtml = getProgressHtml(m);
+                const timeHtml = getRemainingTimeHtml(m);
+                const lastActive = formatRelativeTime(m.updated_at);
+                const isWorkingOrOffline = m.status === 'WORKING' || m.status === 'OFFLINE' || m.status === 'TIME_OVER';
 
                 return `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
-                    <td class="p-3 font-mono font-bold text-brand-700">${escapeHtml(m.nis || '-')}</td>
-                    <td class="p-3 font-bold text-slate-800">${escapeHtml(m.name || '-')}</td>
-                    <td class="p-3 text-slate-600">${escapeHtml(m.class || '-')}</td>
-                    <td class="p-3 font-medium text-slate-700">${escapeHtml(quizTitle)}</td>
-                    <td class="p-3 text-center font-bold text-brand-600">${m.question || 0}</td>
-                    <td class="p-3 text-slate-500 font-mono text-[11px] whitespace-nowrap">${selesaiFormatted}</td>
-                    <td class="p-3 text-slate-500 text-[11px] font-mono whitespace-nowrap">${updateFormatted}</td>
-                </tr>
-            `;
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 text-center font-bold text-slate-400">${rowNum}</td>
+                        <td class="p-3 font-mono font-bold text-brand-700">${escapeHtml(m.nis || '-')}</td>
+                        <td class="p-3">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="font-bold text-slate-800">${escapeHtml(m.name || '-')}</span>
+                                ${m.violations_count > 0 ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse" title="Siswa terdeteksi: ${m.violations_count}x pindah tab / keluar fullscreen / buka aplikasi lain"><i class="fa-solid fa-triangle-exclamation"></i> ${m.violations_count}x Curang</span>` : ''}
+                            </div>
+                            ${m.ip ? `<span class="text-[10px] text-slate-400 font-mono"><i class="fa-solid fa-desktop text-[9px] mr-0.5"></i>${escapeHtml(m.ip)}</span>` : ''}
+                        </td>
+                        <td class="p-3 text-slate-600 whitespace-nowrap">${escapeHtml(m.class || '-')}</td>
+                        <td class="p-3 font-medium text-slate-700 max-w-[190px] truncate" title="${escapeHtml(m.quiz_title || '-')}">${escapeHtml(m.quiz_title || '-')}</td>
+                        <td class="p-3 text-center whitespace-nowrap">${statusBadge}</td>
+                        <td class="p-3 text-center whitespace-nowrap">${progressHtml}</td>
+                        <td class="p-3 whitespace-nowrap">${timeHtml}</td>
+                        <td class="p-3 text-slate-500 font-mono text-[11px] whitespace-nowrap" title="${m.updated_at ? new Date(m.updated_at * 1000).toLocaleString('id-ID') : '-'}">
+                            <div class="flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full ${m.status === 'OFFLINE' ? 'bg-rose-500' : 'bg-emerald-500'}"></span>
+                                <span>${lastActive}</span>
+                            </div>
+                        </td>
+                        <td class="p-3 text-center whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-1">
+                                <button type="button" onclick="confirmResetSession('${escapeHtml(m.nis)}', '${escapeHtml(m.name || m.nis)}')" class="p-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition shadow-2xs" data-tooltip="Reset Sesi: Buka kunci sesi jika PC mati/hang tanpa hilang jawaban">
+                                    <i class="fa-solid fa-arrow-rotate-left text-xs"></i>
+                                </button>
+                                ${isWorkingOrOffline ? `
+                                <button type="button" onclick="confirmForceFinish('${escapeHtml(m.nis)}', '${escapeHtml(m.name || m.nis)}')" class="p-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-2xs" data-tooltip="Kumpulkan Paksa Ujian Siswa">
+                                    <i class="fa-solid fa-file-circle-check text-xs"></i>
+                                </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
             }).join('');
+
+            renderPagination(total);
+        }
+
+        function getProgressHtml(m) {
+            const ansCount = m.answered_count ?? 0;
+            const totalQ = m.total_questions ?? 0;
+            if (totalQ <= 0) return '<span class="text-slate-400 font-mono text-[11px]">-</span>';
+            const pct = Math.min(100, Math.round((ansCount / totalQ) * 100));
+
+            return `
+                <div class="flex flex-col items-center justify-center gap-1">
+                    <span class="font-bold text-slate-700 text-xs">${ansCount} / ${totalQ} Soal</span>
+                    <div class="w-20 bg-slate-200/80 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-brand-600 h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStatusBadge(m) {
+            const st = m.status;
+            if (st === 'WORKING') {
+                return `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Mengerjakan
+                </span>`;
+            }
+            if (st === 'STANDBY') {
+                return `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> Standby
+                </span>`;
+            }
+            if (st === 'FINISHED') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                    <i class="fa-solid fa-circle-check text-[10px]"></i> Selesai
+                </span>`;
+            }
+            if (st === 'TIME_OVER') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                    <i class="fa-solid fa-clock text-[10px]"></i> Waktu Habis
+                </span>`;
+            }
+            if (st === 'OFFLINE') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 animate-pulse">
+                    <i class="fa-solid fa-plug-circle-xmark text-[10px]"></i> Terputus
+                </span>`;
+            }
+            return `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600">${escapeHtml(m.status_label || st)}</span>`;
+        }
+
+        function getRemainingTimeHtml(m) {
+            if (m.status === 'FINISHED') {
+                return `<span class="text-purple-700 font-bold font-mono text-[11px] flex items-center gap-1"><i class="fa-solid fa-check-double text-[10px]"></i> Selesai</span>`;
+            }
+            if (m.status === 'WORKING' || m.status === 'OFFLINE') {
+                const now = Math.floor(Date.now() / 1000);
+                const remain = Math.max(0, (m.ends_at || 0) - now);
+                if (remain <= 0) {
+                    return `<span class="text-amber-700 font-bold font-mono text-[11px]">Waktu Habis</span>`;
+                }
+                const mins = Math.floor(remain / 60);
+                const secs = remain % 60;
+                return `<span class="font-mono font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md border border-brand-200 text-[11px] inline-flex items-center gap-1">
+                    <i class="fa-regular fa-clock text-[10px]"></i> Sisa ${mins}m ${secs < 10 ? '0' : ''}${secs}s
+                </span>`;
+            }
+            if (m.status === 'STANDBY') {
+                return `<span class="text-slate-400 font-mono text-[11px] flex items-center gap-1"><i class="fa-solid fa-hourglass-start text-[10px]"></i> Belum Mulai</span>`;
+            }
+            return `<span class="text-slate-400 font-mono text-[11px]">-</span>`;
+        }
+
+        function formatRelativeTime(timestamp) {
+            if (!timestamp) return '-';
+            const diff = Math.floor(Date.now() / 1000) - timestamp;
+            if (diff < 5) return 'Baru saja';
+            if (diff < 60) return `${diff} dtk lalu`;
+            if (diff < 3600) return `${Math.floor(diff / 60)} mnt lalu`;
+            return new Date(timestamp * 1000).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function confirmResetSession(nis, name) {
+            const ok = await showConfirm(
+                `Yakin ingin mereset sesi ujian untuk siswa <b>${escapeHtml(name)}</b> (NIS: ${escapeHtml(nis)})?<br><br>` +
+                `<div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 leading-relaxed text-left">` +
+                `<b>Fungsi Reset Sesi:</b> Kunci sesi siswa akan dibuka. Siswa dapat login kembali dari komputer lab dan <u>langsung melanjutkan pengerjaan dari nomor terakhir tanpa kehilangan jawaban</u>.` +
+                `</div>`,
+                'Reset Sesi Siswa (Kendala PC/Koneksi)',
+                'Batal',
+                'Reset Sesi'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch(`${API_URL}?action=reset_student_session`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nis })
+                });
+                const d = await res.json();
+                if (res.ok && d.status === 'success') {
+                    showToast(d.message || 'Sesi siswa berhasil direset.');
+                    await loadMonitoringData();
+                } else {
+                    showAlert(d.message || 'Gagal mereset sesi siswa.', 'Gagal');
+                }
+            } catch (e) {
+                showAlert('Gagal menghubungi server.', 'Error');
+            }
+        }
+
+        async function confirmForceFinish(nis, name) {
+            const ok = await showConfirm(
+                `Kumpulkan ujian secara paksa untuk siswa <b>${escapeHtml(name)}</b> (NIS: ${escapeHtml(nis)})?<br><br>` +
+                `<div class="p-2.5 bg-sky-50 rounded-xl border border-sky-200 text-xs text-sky-900 leading-relaxed text-left">` +
+                `<b>Kumpulkan Paksa:</b> Ujian siswa akan dihentikan dan seluruh jawaban yang tersimpan di server akan dinilai secara resmi lalu dikirim ke menu <b>Hasil Ujian</b>.` +
+                `</div>`,
+                'Kumpulkan Ujian Siswa Sekarang',
+                'Batal',
+                'Kumpulkan Ujian'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch(`${API_URL}?action=force_finish_student_session`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nis })
+                });
+                const d = await res.json();
+                if (res.ok && d.status === 'success') {
+                    showToast(d.message || 'Ujian siswa berhasil dikumpulkan.');
+                    await loadMonitoringData();
+                } else {
+                    showAlert(d.message || 'Gagal mengumpulkan ujian siswa.', 'Gagal');
+                }
+            } catch (e) {
+                showAlert('Gagal menghubungi server.', 'Error');
+            }
+        }
+
+        const showConfirm = (msg, title, cancelText, okText) => appConfirm(msg, title, cancelText || 'Batal', okText || 'Ya, Lanjutkan');
+        const showAlert = (msg, title) => appAlert(msg, title || 'Informasi');
+
+        function renderPagination(total) {
+            const pageInfo = document.getElementById('mon-page-info');
+            const container = document.getElementById('mon-pagination');
+            if (!total) {
+                pageInfo.innerText = 'Menampilkan 0 dari 0 peserta';
+                container.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(total / monPerPage);
+            const start = (monCurrentPage - 1) * monPerPage + 1;
+            const end = Math.min(monCurrentPage * monPerPage, total);
+            pageInfo.innerText = `Menampilkan ${start}-${end} dari ${total} peserta`;
+
+            let html = `
+                <button type="button" onclick="goToMonPage(${monCurrentPage - 1})" ${monCurrentPage === 1 ? 'disabled' : ''} class="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= monCurrentPage - 1 && i <= monCurrentPage + 1)) {
+                    html += `
+                        <button type="button" onclick="goToMonPage(${i})" class="w-7 h-7 flex items-center justify-center rounded-lg border ${i === monCurrentPage ? 'bg-brand-600 text-white border-brand-600 font-bold' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === monCurrentPage - 2 || i === monCurrentPage + 2) {
+                    html += `<span class="w-7 text-center text-slate-400">...</span>`;
+                }
+            }
+
+            html += `
+                <button type="button" onclick="goToMonPage(${monCurrentPage + 1})" ${monCurrentPage === totalPages ? 'disabled' : ''} class="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </button>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function goToMonPage(p) {
+            const totalPages = Math.ceil(filteredMonitoring.length / monPerPage);
+            if (p < 1 || p > totalPages) return;
+            monCurrentPage = p;
+            renderMonitoringTable();
+            updateMonitoringTokenWidget();
+        }
+
+        function updateMonitoringTokenWidget() {
+            const widget = document.getElementById('mon-quiz-token-widget');
+            const quizFilter = document.getElementById('mon-filter-quiz')?.value || 'ALL';
+            if (!widget) return;
+
+            if (quizFilter === 'ALL' || !window.dbData || !Array.isArray(window.dbData.questions)) {
+                widget.classList.add('hidden');
+                widget.classList.remove('inline-flex');
+                return;
+            }
+
+            const q = window.dbData.questions.find(x => x.id === quizFilter);
+            if (!q || !q.pin) {
+                widget.classList.add('hidden');
+                widget.classList.remove('inline-flex');
+                return;
+            }
+
+            widget.classList.remove('hidden');
+            widget.classList.add('inline-flex');
+            const valSpan = document.getElementById('mon-token-val');
+            if (valSpan) valSpan.innerText = q.pin;
+
+            const isAuto = (q.pin_auto_refresh !== false);
+            const timerBox = document.getElementById('mon-token-timer-box');
+            if (timerBox) {
+                if (isAuto) {
+                    timerBox.style.display = 'inline-flex';
+                    const now = Math.floor(Date.now() / 1000);
+                    const updatedAt = parseInt(q.pin_updated_at) || now;
+                    const elapsed = now - updatedAt;
+                    const remaining = Math.max(0, 600 - elapsed);
+                    const mins = Math.floor(remaining / 60);
+                    const secs = remaining % 60;
+                    const cdSpan = document.getElementById('mon-token-countdown');
+                    if (cdSpan) cdSpan.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                } else {
+                    timerBox.style.display = 'none';
+                }
+            }
+        }
+
+        function copyMonToken(btn) {
+            const valSpan = document.getElementById('mon-token-val');
+            if (!valSpan) return;
+            const token = valSpan.innerText;
+            const originalHtml = btn.innerHTML;
+            const feedback = () => {
+                btn.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i>';
+                setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(token).then(feedback).catch(() => feedback());
+            } else {
+                feedback();
+            }
+        }
+
+        async function confirmClearAllSessions() {
+            const ok = await showConfirm(
+                'Yakin ingin membersihkan semua riwayat sesi monitoring ujian?<br><br><span class="text-xs text-rose-500">Tindakan ini akan mengosongkan daftar monitoring peserta ujian saat ini. Data hasil ujian siswa yang sudah selesai tetap aman di database.</span>',
+                'Bersihkan Sesi Monitoring',
+                'Ya, Bersihkan'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch(`${API_URL}?action=clear_student_sessions`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+                const d = await res.json();
+                if (res.ok && d.status === 'success') {
+                    showToast(d.message || 'Semua sesi monitoring berhasil dibersihkan.');
+                    await loadMonitoringData();
+                } else {
+                    showAlert(d.message || 'Gagal membersihkan sesi monitoring.', 'Gagal');
+                }
+            } catch (e) {
+                showAlert('Gagal menghubungi server.', 'Error');
+            }
         }
 
         // Server Diagnostics
@@ -238,6 +900,20 @@
                 grid.innerHTML = '<p class="text-rose-500 text-xs">Status server tidak dapat dibaca.</p>';
             }
         }
+
+        // Real-time banner update when extension requests arrive
+        window.onExtensionRequestsUpdated = function(data) {
+            const banner = document.getElementById('mon-extension-alert-banner');
+            const text = document.getElementById('mon-extension-alert-text');
+            if (!banner) return;
+            const count = data?.pending_count || 0;
+            if (count > 0) {
+                if (text) text.textContent = `Ada ${count} siswa meminta perpanjangan waktu!`;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        };
     </script>
 </body>
 </html>

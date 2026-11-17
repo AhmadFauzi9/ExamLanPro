@@ -13,6 +13,7 @@
         else if (path.includes('/data-siswa')) activeKey = 'data-siswa';
         else if (path.includes('/audit-log')) activeKey = 'audit-log';
         else if (path.includes('/monitoring')) activeKey = 'monitoring';
+        else if (path.includes('/notifikasi') || path.includes('/permintaan-waktu')) activeKey = 'notifikasi';
         else if (path.includes('/pengaturan')) activeKey = 'pengaturan';
         else if (path.includes('/hasil-ujian')) activeKey = 'hasil-ujian';
 
@@ -40,22 +41,11 @@
                                 <span>Host: ${host}</span>
                             </span>
 
-                            <!-- Admin Extension Bell -->
-                            <div class="relative">
-                                <button id="admin-bell-btn" type="button" onclick="toggleExtensionDropdown()" class="relative p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition focus:outline-none" title="Permintaan Waktu">
-                                    <i class="fa-solid fa-bell text-base"></i>
-                                    <span id="admin-bell-dot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-slate-900 animate-pulse"></span>
-                                </button>
-                                <div id="extension-dropdown" class="hidden absolute right-0 top-11 w-80 bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-200 z-50 p-3.5 space-y-2.5">
-                                    <div class="flex items-center justify-between border-b pb-2">
-                                        <h4 class="font-bold text-xs text-slate-800 flex items-center gap-1.5">
-                                            <i class="fa-solid fa-clock-rotate-left text-brand-600"></i> Permintaan Waktu
-                                        </h4>
-                                        <span id="extension-count-badge" class="text-[10px] font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">0</span>
-                                    </div>
-                                    <div id="extension-request-list" class="max-h-64 overflow-y-auto space-y-2 custom-scrollbar"></div>
-                                </div>
-                            </div>
+                            <!-- Admin Extension Bell (Link ke Halaman Permintaan Waktu) -->
+                            <a id="admin-bell-btn" href="${GURU_BASE}notifikasi/" class="relative p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition focus:outline-none" title="Permintaan Waktu Siswa">
+                                <i class="fa-solid fa-bell text-base"></i>
+                                <span id="admin-bell-dot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-slate-900 animate-pulse"></span>
+                            </a>
 
                             <button type="button" onclick="toggleModal('lan-guide-modal', true)" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 border border-slate-700">
                                 <i class="fa-solid fa-circle-question text-xs"></i>
@@ -79,6 +69,7 @@
                 { key: 'bank-soal', title: 'Bank Soal', icon: 'fa-folder-plus', url: `${GURU_BASE}bank-soal/` },
                 { key: 'data-siswa', title: 'Data Siswa', icon: 'fa-users', url: `${GURU_BASE}data-siswa/` },
                 { key: 'monitoring', title: 'Monitoring Ujian', icon: 'fa-tower-broadcast', url: `${GURU_BASE}monitoring/` },
+                { key: 'notifikasi', title: 'Permintaan Waktu', icon: 'fa-clock-rotate-left', url: `${GURU_BASE}notifikasi/`, badgeId: 'sidebar-notif-badge' },
                 { key: 'audit-log', title: 'Audit Log', icon: 'fa-shield-halved', url: `${GURU_BASE}audit-log/` },
                 { key: 'pengaturan', title: 'Pengaturan', icon: 'fa-gear', url: `${GURU_BASE}pengaturan/` }
             ];
@@ -91,9 +82,12 @@
                             ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200 shadow-2xs'
                             : 'text-slate-600 hover:bg-slate-50 font-medium hover:text-slate-900';
                         return `
-                            <a href="${m.url}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs transition shrink-0 md:shrink ${activeClass}">
-                                <i class="fa-solid ${m.icon} w-4 text-center text-sm ${isActive ? 'text-brand-600' : 'text-slate-400'}"></i>
-                                <span class="whitespace-nowrap">${m.title}</span>
+                            <a href="${m.url}" class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs transition shrink-0 md:shrink ${activeClass}">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <i class="fa-solid ${m.icon} w-4 text-center text-sm ${isActive ? 'text-brand-600' : 'text-slate-400'}"></i>
+                                    <span class="whitespace-nowrap">${m.title}</span>
+                                </div>
+                                ${m.badgeId ? `<span id="${m.badgeId}" class="hidden ml-auto bg-rose-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full animate-pulse shadow-sm">0</span>` : ''}
                             </a>
                         `;
                     }).join('')}

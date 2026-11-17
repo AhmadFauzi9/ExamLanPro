@@ -42,41 +42,52 @@
                 <div id="dashboard-summary" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
                         <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
-                            <i class="fa-solid fa-users text-brand-600"></i> Total Siswa
+                            <i class="fa-solid fa-users text-brand-600"></i> Status Peserta Ujian
                         </p>
-                        <p id="sum-students" class="text-2xl font-black text-slate-800 mt-1">0</p>
-                    </div>
-                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
-                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-lines text-brand-600"></i> Total Kuis
-                        </p>
-                        <p id="sum-quizzes" class="text-2xl font-black text-slate-800 mt-1">0</p>
-                    </div>
-                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
-                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
-                            <i class="fa-solid fa-calendar-day text-brand-600"></i> Ujian Hari Ini
-                        </p>
-                        <p id="sum-today" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                        <div id="sum-students" class="mt-1 min-h-[32px] flex items-center">
+                            <span class="text-2xl font-black text-slate-800">0</span>
+                        </div>
+                        <p id="sum-students-subtitle" class="text-[10px] text-slate-400 mt-1">Siswa telah submit</p>
                     </div>
                     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
                         <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-chart-simple text-brand-600"></i> Rata-rata Nilai
                         </p>
                         <p id="sum-avg" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Skala nilai 0 - 100</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-award text-amber-500"></i> Tertinggi / Terendah
+                        </p>
+                        <p id="sum-high-low" class="text-2xl font-black text-slate-800 mt-1">0 / 0</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Skor max & min kelas</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                        <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i> Ketuntasan KKM (≥75)
+                        </p>
+                        <p id="sum-pass-rate" class="text-2xl font-black text-emerald-600 mt-1">0%</p>
+                        <p id="sum-pass-detail" class="text-[10px] text-slate-400 mt-0.5">0 tuntas • 0 remedial</p>
                     </div>
                 </div>
 
-                <!-- Action Toolbar Card -->
-                <!-- Action Toolbar Card -->
+                <!-- Page Header & Pembahasan Toolbar Card -->
                 <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 border border-brand-100 flex items-center justify-center text-lg font-bold shrink-0">
                             <i class="fa-solid fa-chart-line"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Hasil Ujian Siswa</h2>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span id="results-total-badge" class="text-[11px] font-semibold text-slate-500">0 hasil terekam</span>
+                            <div class="flex items-center gap-2">
+                                <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">Hasil Ujian Siswa (Rekap & Evaluasi Pasca Ujian)</h2>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                                    <i class="fa-solid fa-book-bookmark text-[9px]"></i> Buku Rekap Nilai
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                                <span class="text-[11px] text-slate-500">Arsip nilai resmi tersimpan di server. Analisis skor, lembar rincian butir soal, dan cetak laporan resmi kurikulum.</span>
+                                <span id="results-total-badge" class="text-[11px] font-semibold text-slate-500">0 hasil tersimpan</span>
                                 <span id="results-selected-badge" class="hidden text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">0 dipilih</span>
                             </div>
                         </div>
@@ -110,13 +121,11 @@
 
                         <!-- 2. Sort (Short) -->
                         <select id="results-sort" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Pengurutan data">
-                            <option value="date_desc">Short</option>
-                            <option value="nis_asc">NIS (0 - 9)</option>
-                            <option value="nis_desc">NIS (9 - 0)</option>
-                            <option value="name_asc">Nama (A - Z)</option>
-                            <option value="name_desc">Nama (Z - A)</option>
+                            <option value="date_desc">Waktu Terkini</option>
                             <option value="score_desc">Nilai Tertinggi</option>
                             <option value="score_asc">Nilai Terendah</option>
+                            <option value="nis_asc">NIS (0 - 9)</option>
+                            <option value="name_asc">Nama (A - Z)</option>
                         </select>
 
                         <!-- 3. Filter: Soal Ujian -->
@@ -124,12 +133,19 @@
                             <option value="all">Soal Ujian</option>
                         </select>
 
-                        <!-- 3. Filter: Kelas -->
+                        <!-- 4. Filter: Kelas -->
                         <select id="results-filter-class" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none" title="Filter Kelas">
                             <option value="all">Kelas</option>
                         </select>
 
-                        <!-- 4. Search -->
+                        <!-- 5. Filter: Ketuntasan KKM -->
+                        <select id="results-filter-kkm" onchange="handleResultsFilter()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700 outline-none font-medium" title="Filter Ketuntasan Nilai KKM">
+                            <option value="all">Semua Nilai</option>
+                            <option value="pass">Tuntas (≥ 75)</option>
+                            <option value="remedial">Remedial (< 75)</option>
+                        </select>
+
+                        <!-- 6. Search -->
                         <div class="relative min-w-[160px] sm:min-w-[200px] max-w-xs flex-1">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
                             <input id="results-search-input" type="text" oninput="handleResultsFilter()" placeholder="Cari nama siswa atau NIS..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-xs text-slate-800 transition">
@@ -139,22 +155,27 @@
                     <!-- Right: Toolbar Action Buttons (Icon Only with Tooltip) -->
                     <div class="flex items-center gap-1.5 shrink-0">
                         <!-- Ekspor Excel -->
-                        <button type="button" onclick="exportToCSV()" class="btn-icon bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition" title="Ekspor ke Excel (CSV)">
+                        <button type="button" onclick="exportToCSV()" class="btn-icon bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition" data-tooltip="Ekspor Buku Nilai ke Excel (CSV)">
                             <i class="fa-solid fa-file-excel text-xs"></i>
                         </button>
 
+                        <!-- Cetak Dokumen Rekap Nilai PDF -->
+                        <button type="button" onclick="printGradeReport()" class="btn-icon bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition" data-tooltip="Cetak Rekap Nilai Resmi / Simpan PDF">
+                            <i class="fa-solid fa-print text-xs"></i>
+                        </button>
+
                         <!-- Hapus Terpilih -->
-                        <button type="button" id="btn-delete-selected-res" onclick="deleteSelectedResults()" disabled class="btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition" title="Hapus Hasil Ujian Terpilih">
+                        <button type="button" id="btn-delete-selected-res" onclick="deleteSelectedResults()" disabled class="btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition" data-tooltip="Hapus Hasil Ujian Terpilih">
                             <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
 
                         <!-- Reset Semua -->
-                        <button type="button" onclick="clearSubmissions()" class="btn-icon bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition" title="Reset Semua Hasil Ujian">
+                        <button type="button" onclick="clearSubmissions()" class="btn-icon bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition" data-tooltip="Reset Semua Hasil Ujian">
                             <i class="fa-solid fa-rotate-left text-xs"></i>
                         </button>
 
                         <!-- Refresh -->
-                        <button type="button" onclick="loadResultsData()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" title="Muat Ulang Data Hasil Ujian">
+                        <button type="button" onclick="loadResultsData()" class="btn-icon border border-slate-300 text-slate-700 hover:bg-slate-50 transition" data-tooltip="Muat Ulang Data Hasil Ujian">
                             <i class="fa-solid fa-rotate text-xs"></i>
                         </button>
                     </div>
@@ -169,20 +190,22 @@
                                     <th class="w-10 text-center">
                                         <input id="select-all-results" type="checkbox" onchange="toggleSelectAllResultRows(this.checked)" class="w-3.5 h-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer">
                                     </th>
-                                    <th class="w-12 text-center">No</th>
-                                    <th>NIS</th>
-                                    <th>Nama Siswa</th>
-                                    <th>Kelas</th>
-                                    <th>Paket Kuis</th>
-                                    <th class="text-center">Benar</th>
-                                    <th class="text-center">Salah</th>
-                                    <th class="text-center">Nilai</th>
-                                    <th class="text-center w-28">Aksi</th>
+                                    <th class="w-12 text-center whitespace-nowrap">No</th>
+                                    <th class="w-24 whitespace-nowrap">NIS</th>
+                                    <th class="min-w-[200px] whitespace-nowrap">Nama Siswa</th>
+                                    <th class="whitespace-nowrap">Kelas</th>
+                                    <th class="min-w-[150px] max-w-[220px]">Paket Kuis</th>
+                                    <th class="w-16 text-center whitespace-nowrap">Benar</th>
+                                    <th class="w-16 text-center whitespace-nowrap">Salah</th>
+                                    <th class="w-24 text-center whitespace-nowrap">Nilai Akhir</th>
+                                    <th class="w-28 text-center whitespace-nowrap">Status KKM</th>
+                                    <th class="min-w-[150px] whitespace-nowrap">Waktu Selesai</th>
+                                    <th class="text-center w-36 whitespace-nowrap">Aksi Guru</th>
                                 </tr>
                             </thead>
                             <tbody id="teacher-results-tbody" class="divide-y divide-slate-100">
                                 <tr>
-                                    <td colspan="10" class="p-8 text-center text-slate-400">
+                                    <td colspan="12" class="p-8 text-center text-slate-400">
                                         <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat data hasil ujian...
                                     </td>
                                 </tr>
@@ -245,6 +268,70 @@
         </div>
     </div>
 
+    <!-- Modal: Lembar Rincian Jawaban Siswa per Butir Soal -->
+    <div id="modal-student-detail" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-[99] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-base">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm leading-tight">Lembar Evaluasi & Rincian Jawaban Siswa</h3>
+                        <p id="detail-modal-subtitle" class="text-[11px] text-slate-500 mt-0.5">Rincian butir soal, pilihan jawaban siswa, kunci jawaban, dan pembahasan.</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleModal('modal-student-detail', false)" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Identitas & Ringkasan Nilai Siswa -->
+            <div class="p-4 bg-white border-b border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs shrink-0">
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <p class="text-[10px] text-slate-400 font-semibold uppercase">Nama Siswa</p>
+                    <p id="detail-student-name" class="font-bold text-slate-800 truncate mt-0.5">-</p>
+                    <p id="detail-student-nis" class="text-[11px] text-brand-700 font-mono font-bold">-</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <p class="text-[10px] text-slate-400 font-semibold uppercase">Kelas & Ujian</p>
+                    <p id="detail-student-class" class="font-bold text-slate-800 truncate mt-0.5">-</p>
+                    <p id="detail-student-quiz" class="text-[11px] text-slate-600 truncate">-</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <p class="text-[10px] text-slate-400 font-semibold uppercase">Benar / Salah</p>
+                    <p id="detail-student-correct-wrong" class="font-bold text-slate-800 mt-0.5">-</p>
+                    <p id="detail-student-date" class="text-[10px] text-slate-500 font-mono">-</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                    <p class="text-[10px] text-slate-400 font-semibold uppercase">Nilai Akhir</p>
+                    <div id="detail-student-score" class="text-2xl font-black text-brand-700 mt-0.5">0</div>
+                    <span id="detail-student-kkm" class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5">-</span>
+                </div>
+            </div>
+
+            <!-- Daftar Butir Soal & Jawaban (Scrollable) -->
+            <div id="detail-questions-container" class="p-4 overflow-y-auto custom-scrollbar space-y-3.5 flex-1 bg-slate-50/50">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3 bg-white border-t border-slate-200 flex items-center justify-between gap-2 shrink-0 text-xs">
+                <span class="text-slate-400 text-[11px]">ExamLAN Pro • Buku Rekap & Analisis Nilai</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="printSingleStudentReport()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex items-center gap-1.5 border border-slate-200">
+                        <i class="fa-solid fa-print text-xs"></i>
+                        <span>Cetak Lembar Siswa</span>
+                    </button>
+                    <button type="button" onclick="toggleModal('modal-student-detail', false)" class="px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="../assets/js/guru-core.js"></script>
     <script src="../assets/js/guru-nav.js"></script>
@@ -256,6 +343,7 @@
         let perPage = 20;
         let selectedKeys = new Set();
         let reviewStates = {};
+        let currentDetailItem = null;
 
         window.onDataLoaded = loadResultsData;
 
@@ -268,7 +356,89 @@
         // Load Data dari API
         async function loadResultsData() {
             await fetchDataFromAPI();
-            allResults = dbData.results || [];
+            allResults = [...(dbData.results || [])];
+            
+            // Sertakan juga siswa yang sedang aktif mengerjakan soal di lab sebagai "Hasil Sementara"
+            const activeAttempts = dbData.active_attempts ? Object.values(dbData.active_attempts) : [];
+            const finishedKeys = new Set(allResults.map(r => `${r.nis}|${r.code}`));
+
+            activeAttempts.forEach(att => {
+                if (!att || att.finished) return;
+                const key = `${att.nis}|${att.quiz_id}`;
+                if (finishedKeys.has(key)) return;
+
+                const quiz = (dbData.questions || []).find(q => q.id === att.quiz_id);
+                const qOrder = att.question_order || [];
+                const answers = att.answers || {};
+                let correctCount = 0;
+                let wrongCount = 0;
+                let answeredCount = 0;
+
+                if (quiz && Array.isArray(quiz.questions)) {
+                    qOrder.forEach((originalIdx, pos) => {
+                        const q = quiz.questions[originalIdx];
+                        if (!q) return;
+                        const userAns = answers[pos];
+                        if (userAns === undefined || userAns === null || userAns === '' || (Array.isArray(userAns) && userAns.length === 0)) {
+                            return;
+                        }
+                        answeredCount++;
+                        const optMap = (att.option_order && att.option_order[originalIdx]) ? att.option_order[originalIdx] : null;
+                        let mappedAns = userAns;
+                        if (optMap && typeof userAns === 'number' && optMap[userAns] !== undefined) {
+                            mappedAns = optMap[userAns];
+                        }
+                        if (q.type === 'mc' || q.type === 'case_analysis') {
+                            const studentNorm = (typeof mappedAns === 'number') ? mappedAns : (typeof mappedAns === 'string' && mappedAns ? (mappedAns.toUpperCase().charCodeAt(0) - 65) : -1);
+                            const keyNorm = (typeof q.answer === 'number') ? q.answer : (typeof q.answer === 'string' && q.answer ? (q.answer.toUpperCase().charCodeAt(0) - 65) : -1);
+                            if (studentNorm === keyNorm && studentNorm !== -1) correctCount++;
+                            else wrongCount++;
+                        } else if (q.type === 'complex') {
+                            const userArr = Array.isArray(userAns) ? userAns.map(Number).sort() : [];
+                            const keyArr = Array.isArray(q.answers) ? q.answers.map(Number).sort() : [];
+                            if (keyArr.length > 0 && JSON.stringify(userArr) === JSON.stringify(keyArr)) correctCount++;
+                            else wrongCount++;
+                        } else if (q.type === 'cause_effect') {
+                            const ceMap = { 'A': 'both_correct_connected', '0': 'both_correct_connected', '1': 'both_correct_connected', 'B': 'both_correct_not_connected', '2': 'both_correct_not_connected', 'C': 'statement_true_reason_false', '3': 'statement_true_reason_false', 'D': 'statement_false_reason_true', '4': 'statement_false_reason_true', 'E': 'both_false', '5': 'both_false' };
+                            const normStudent = ceMap[String(userAns).toUpperCase()] || userAns;
+                            const normKey = ceMap[String(q.answer).toUpperCase()] || q.answer;
+                            if (normStudent && normStudent === normKey) correctCount++;
+                            else wrongCount++;
+                        } else if (q.type === 'matching') {
+                            const expected = q.pairs || q.answer || {};
+                            const given = (typeof userAns === 'object' && userAns !== null) ? userAns : {};
+                            let matchAll = true;
+                            const pKeys = Object.keys(expected);
+                            if (pKeys.length === 0) matchAll = false;
+                            for (const pk of pKeys) {
+                                if (String(given[pk]) !== String(expected[pk])) { matchAll = false; break; }
+                            }
+                            if (matchAll) correctCount++; else wrongCount++;
+                        } else if (q.type === 'short_answer') {
+                            if (String(userAns).trim().toLowerCase() === String(q.answer || '').trim().toLowerCase()) correctCount++;
+                            else wrongCount++;
+                        }
+                    });
+                }
+
+                const totalQ = qOrder.length || (quiz?.questions?.length || 1);
+                const tempScore = totalQ > 0 ? Math.round((correctCount / totalQ) * 100) : 0;
+
+                allResults.unshift({
+                    nis: att.nis,
+                    name: att.name || att.nis,
+                    class: att.class || '-',
+                    code: att.quiz_id,
+                    title: quiz?.title || att.quiz_id,
+                    score: tempScore,
+                    correct: correctCount,
+                    wrong: wrongCount,
+                    date: 'Sedang Mengerjakan',
+                    is_in_progress: true,
+                    total_questions: totalQ,
+                    answered_count: answeredCount
+                });
+            });
             
             // Populate Quiz & Class Filters
             populateQuizFilter();
@@ -286,17 +456,55 @@
 
         // Summary Cards
         function updateSummaryCards() {
-            const studentsCount = (dbData.students || []).length;
-            const quizzesCount = (dbData.questions || []).length;
-            const today = new Date().toLocaleDateString('id-ID');
-            const todayCount = allResults.filter(x => String(x.date || '').includes(today)).length;
-            const avg = allResults.length ? Math.round(allResults.reduce((n, x) => n + Number(x.score || 0), 0) / allResults.length) : 0;
+            const finishedResults = allResults.filter(r => !r.is_in_progress);
+            const total = finishedResults.length;
+            const inProgressCount = allResults.filter(r => r.is_in_progress).length;
+            const scores = finishedResults.map(x => Number(x.score ?? 0));
+            const avg = total ? Math.round(scores.reduce((a, b) => a + b, 0) / total) : 0;
+            const maxScore = total ? Math.max(...scores) : 0;
+            const minScore = total ? Math.min(...scores) : 0;
+            
+            // KKM standar 75
+            const passed = scores.filter(s => s >= 75).length;
+            const remedial = total - passed;
+            const passRate = total ? Math.round((passed / total) * 100) : 0;
 
-            document.getElementById('sum-students').innerText = studentsCount;
-            document.getElementById('sum-quizzes').innerText = quizzesCount;
-            document.getElementById('sum-today').innerText = todayCount;
-            document.getElementById('sum-avg').innerText = avg;
-            document.getElementById('results-total-badge').innerText = `${allResults.length} hasil terekam`;
+            const elStudents = document.getElementById('sum-students');
+            const elStudentsSub = document.getElementById('sum-students-subtitle');
+            if (elStudents) {
+                if (inProgressCount > 0) {
+                    elStudents.innerHTML = `
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="inline-flex items-center gap-1 text-xs font-black text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-lg" title="${inProgressCount} siswa sedang mengerjakan ujian">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Mengerjakan: ${inProgressCount}
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-xs font-black text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg" title="${total} siswa telah selesai mengumpulkan ujian">
+                                <i class="fa-solid fa-circle-check text-emerald-600 text-[10px]"></i>
+                                Selesai: ${total}
+                            </span>
+                        </div>
+                    `;
+                    if (elStudentsSub) {
+                        elStudentsSub.innerText = `Total: ${total + inProgressCount} siswa (${total} submit, ${inProgressCount} sedang tes)`;
+                    }
+                } else {
+                    elStudents.innerHTML = `<span class="text-2xl font-black text-slate-800">${total}</span>`;
+                    if (elStudentsSub) {
+                        elStudentsSub.innerText = `${total} siswa telah submit jawaban ujian`;
+                    }
+                }
+            }
+            const elAvg = document.getElementById('sum-avg');
+            if (elAvg) elAvg.innerText = avg;
+            const elHighLow = document.getElementById('sum-high-low');
+            if (elHighLow) elHighLow.innerText = `${maxScore} / ${minScore}`;
+            const elPassRate = document.getElementById('sum-pass-rate');
+            if (elPassRate) elPassRate.innerText = `${passRate}%`;
+            const elPassDetail = document.getElementById('sum-pass-detail');
+            if (elPassDetail) elPassDetail.innerText = inProgressCount > 0 ? `${passed} tuntas • ${remedial} remedial (dari ${total} selesai)` : `${passed} tuntas • ${remedial} remedial`;
+            const elTotalBadge = document.getElementById('results-total-badge');
+            if (elTotalBadge) elTotalBadge.innerText = `${allResults.length} hasil terekam`;
         }
 
         // Filter Dropdowns
@@ -325,37 +533,40 @@
         function handleResultsFilter() {
             const filterQuiz = document.getElementById('teacher-quiz-filter')?.value || 'all';
             const filterClass = document.getElementById('results-filter-class')?.value || 'all';
+            const filterKkm = document.getElementById('results-filter-kkm')?.value || 'all';
             const sortMode = document.getElementById('results-sort')?.value || 'date_desc';
             const query = (document.getElementById('results-search-input')?.value || '').trim().toLowerCase();
 
             filteredResults = allResults.filter(r => {
                 const matchQuiz = (filterQuiz === 'all' || r.code === filterQuiz || r.quiz_id === filterQuiz);
                 const matchClass = (filterClass === 'all' || (r.class || '').trim().toLowerCase() === filterClass.toLowerCase());
+                
+                const score = Number(r.score ?? 0);
+                let matchKkm = true;
+                if (filterKkm === 'pass') matchKkm = score >= 75;
+                else if (filterKkm === 'remedial') matchKkm = score < 75;
+
                 const matchQuery = !query ||
                     (r.name && r.name.toLowerCase().includes(query)) ||
                     (r.nis && String(r.nis).includes(query)) ||
                     (r.class && r.class.toLowerCase().includes(query));
-                return matchQuiz && matchClass && matchQuery;
+                return matchQuiz && matchClass && matchKkm && matchQuery;
             });
 
             // Multi-criteria sorting
             filteredResults.sort((a, b) => {
                 if (sortMode === 'nis_asc') {
                     return String(a.nis || '').localeCompare(String(b.nis || ''), undefined, { numeric: true });
-                } else if (sortMode === 'nis_desc') {
-                    return String(b.nis || '').localeCompare(String(a.nis || ''), undefined, { numeric: true });
                 } else if (sortMode === 'name_asc') {
                     return String(a.name || '').localeCompare(String(b.name || ''));
-                } else if (sortMode === 'name_desc') {
-                    return String(b.name || '').localeCompare(String(a.name || ''));
                 } else if (sortMode === 'score_desc') {
                     return (Number(b.score) || 0) - (Number(a.score) || 0);
                 } else if (sortMode === 'score_asc') {
                     return (Number(a.score) || 0) - (Number(b.score) || 0);
                 } else {
                     // date_desc (default)
-                    const dateA = a.date ? new Date(a.date).getTime() : 0;
-                    const dateB = b.date ? new Date(b.date).getTime() : 0;
+                    const dateA = a.date ? new Date(a.date.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')).getTime() : 0;
+                    const dateB = b.date ? new Date(b.date.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')).getTime() : 0;
                     return dateB - dateA;
                 }
             });
@@ -386,43 +597,70 @@
             if (total === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10" class="p-8 text-center text-slate-400">
+                        <td colspan="12" class="p-8 text-center text-slate-400">
                             <i class="fa-regular fa-folder-open text-2xl mb-1 text-slate-300"></i>
-                            <p class="text-xs">Tidak ada data hasil ujian yang cocok.</p>
+                            <p class="text-xs">Tidak ada data hasil ujian yang cocok dengan filter.</p>
                         </td>
                     </tr>
                 `;
             } else {
                 tbody.innerHTML = pageData.map((s, idx) => {
                     const rowNumber = startIdx + idx + 1;
+                    const globalIdx = startIdx + idx;
                     const itemKey = `${s.nis || ''}|${s.code || ''}`;
                     const isChecked = selectedKeys.has(itemKey);
                     const score = Number(s.score ?? 0);
-                    const scoreBadge = score >= 70
-                        ? '<span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800">' + score + '</span>'
-                        : '<span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-black bg-amber-100 text-amber-800">' + score + '</span>';
+                    const isInProgress = !!s.is_in_progress;
+                    const isPassed = score >= 75;
+
+                    let scoreBadge = isPassed
+                        ? `<span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800">${score}</span>`
+                        : `<span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-black bg-rose-100 text-rose-800">${score}</span>`;
+
+                    let kkmBadge = isPassed
+                        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check text-[9px]"></i> TUNTAS</span>`
+                        : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-triangle-exclamation text-[9px]"></i> REMEDIAL</span>`;
+
+                    let dateDisplay = escapeHtml(s.date || '-');
+
+                    if (isInProgress) {
+                        scoreBadge = `<span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-black bg-sky-100 text-sky-800 border border-sky-300" title="Skor sementara">${score}*</span>`;
+                        kkmBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-[9px]"></i> SEMENTARA</span>`;
+                        dateDisplay = `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Mengerjakan (${s.answered_count || 0}/${s.total_questions || 0})</span>`;
+                    }
 
                     return `
-                        <tr class="hover:bg-slate-50/80 transition">
+                        <tr class="hover:bg-slate-50/80 transition ${isInProgress ? 'bg-sky-50/20' : ''}">
                             <td class="p-3 text-center">
-                                <input type="checkbox" class="result-row-check w-3.5 h-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer" data-result-key="${encodeURIComponent(s.nis || '')}|${encodeURIComponent(s.code || '')}" ${isChecked ? 'checked' : ''} onchange="toggleResultSelection('${encodeURIComponent(s.nis || '')}|${encodeURIComponent(s.code || '')}', this.checked)">
+                                ${isInProgress ? `<span class="text-slate-300 text-[10px]">-</span>` : `<input type="checkbox" class="result-row-check w-3.5 h-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer" data-result-key="${encodeURIComponent(s.nis || '')}|${encodeURIComponent(s.code || '')}" ${isChecked ? 'checked' : ''} onchange="toggleResultSelection('${encodeURIComponent(s.nis || '')}|${encodeURIComponent(s.code || '')}', this.checked)">`}
                             </td>
-                            <td class="p-3 text-center font-bold text-slate-400">${rowNumber}</td>
-                            <td class="p-3 font-mono font-bold text-brand-700">${s.nis || '-'}</td>
-                            <td class="p-3 font-bold text-slate-800">${s.name || '-'}</td>
-                            <td class="p-3 text-slate-600">${s.class || '-'}</td>
-                            <td class="p-3 font-medium text-slate-700 max-w-[200px] truncate" title="${s.title || s.code || '-'}">${s.title || s.code || '-'}</td>
-                            <td class="p-3 text-center font-bold text-emerald-600">${s.correct ?? 0}</td>
-                            <td class="p-3 text-center font-bold text-rose-600">${s.wrong ?? 0}</td>
-                            <td class="p-3 text-center">${scoreBadge}</td>
-                            <td class="p-3 text-center">
+                            <td class="p-3 text-center font-bold text-slate-400 whitespace-nowrap">${rowNumber}</td>
+                            <td class="p-3 font-mono font-bold text-brand-700 whitespace-nowrap">${escapeHtml(s.nis || '-')}</td>
+                            <td class="p-3 font-bold text-slate-800 whitespace-nowrap min-w-[200px]">${escapeHtml(s.name || '-')}</td>
+                            <td class="p-3 text-slate-600 whitespace-nowrap">${escapeHtml(s.class || '-')}</td>
+                            <td class="p-3 font-medium text-slate-700 max-w-[180px] truncate" title="${escapeHtml(s.title || s.code || '-')}">${escapeHtml(s.title || s.code || '-')}</td>
+                            <td class="p-3 text-center font-bold text-emerald-600 whitespace-nowrap">${s.correct ?? 0}</td>
+                            <td class="p-3 text-center font-bold text-rose-600 whitespace-nowrap">${s.wrong ?? 0}</td>
+                            <td class="p-3 text-center whitespace-nowrap">${scoreBadge}</td>
+                            <td class="p-3 text-center whitespace-nowrap">${kkmBadge}</td>
+                            <td class="p-3 text-slate-500 font-mono text-[11px] whitespace-nowrap">${dateDisplay}</td>
+                            <td class="p-3 text-center whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-1">
-                                    <button onclick="allowRetake('${String(s.nis || '').replace(/'/g, "\\'")}', '${String(s.code || '').replace(/'/g, "\\'")}')" title="Izinkan Ujian Ulang" class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-lg font-bold text-[11px] transition flex items-center gap-1">
-                                        <i class="fa-solid fa-rotate-left text-[10px]"></i> Ulang
-                                    </button>
-                                    <button onclick="deleteResult('${String(s.nis || '').replace(/'/g, "\\'")}', '${String(s.code || '').replace(/'/g, "\\'")}')" title="Hapus Hasil" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
-                                        <i class="fa-solid fa-trash-can text-xs"></i>
-                                    </button>
+                                    ${isInProgress ? `
+                                        <a href="../monitoring/" class="px-2.5 py-1 bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 rounded-lg font-bold text-[11px] transition flex items-center gap-1 shadow-2xs" data-tooltip="Lihat Siswa di Monitoring Ujian Live">
+                                            <i class="fa-solid fa-tower-broadcast text-[10px]"></i> Pantau Live
+                                        </a>
+                                    ` : `
+                                        <button type="button" onclick="showStudentDetailModal(${globalIdx})" class="px-2 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 rounded-lg font-bold text-[11px] transition flex items-center gap-1 shadow-2xs" data-tooltip="Lihat Lembar Jawaban Siswa per Butir Soal">
+                                            <i class="fa-solid fa-clipboard-check text-[10px]"></i> Rincian
+                                        </button>
+                                        <button type="button" onclick="allowRetake('${String(s.nis || '').replace(/'/g, "\\'")}', '${String(s.code || '').replace(/'/g, "\\'")}')" class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-lg font-bold text-[11px] transition flex items-center gap-1 shadow-2xs" data-tooltip="Izinkan Remedial / Ujian Ulang">
+                                            <i class="fa-solid fa-rotate-left text-[10px]"></i> Ulang
+                                        </button>
+                                        <button type="button" onclick="deleteResult('${String(s.nis || '').replace(/'/g, "\\'")}', '${String(s.code || '').replace(/'/g, "\\'")}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" data-tooltip="Hapus Hasil Ujian">
+                                            <i class="fa-solid fa-trash-can text-xs"></i>
+                                        </button>
+                                    `}
                                 </div>
                             </td>
                         </tr>
@@ -440,12 +678,12 @@
             const btns = document.getElementById('results-pagination-buttons');
 
             if (total === 0) {
-                info.innerText = 'Menampilkan 0 hasil';
-                btns.innerHTML = '';
+                if (info) info.innerText = 'Menampilkan 0 hasil';
+                if (btns) btns.innerHTML = '';
                 return;
             }
 
-            info.innerText = `Menampilkan ${startIdx + 1} - ${endIdx} dari ${total} hasil`;
+            if (info) info.innerText = `Menampilkan ${startIdx + 1} - ${endIdx} dari ${total} hasil`;
 
             let html = `
                 <button onclick="goToPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled class="px-2 py-1 rounded-lg border border-slate-200 text-slate-300 cursor-not-allowed"' : 'class="px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"'} title="Sebelumnya">
@@ -468,7 +706,7 @@
                 </button>
             `;
 
-            btns.innerHTML = html;
+            if (btns) btns.innerHTML = html;
         }
 
         function goToPage(page) {
@@ -501,16 +739,27 @@
             const btnDelete = document.getElementById('btn-delete-selected-res');
             const selectAllCb = document.getElementById('select-all-results');
 
-            if (count > 0) {
-                badge.innerText = `${count} dipilih`;
-                badge.classList.remove('hidden');
-                btnDelete.disabled = false;
-                btnDelete.className = 'btn-icon bg-rose-600 hover:bg-rose-700 text-white shadow-2xs transition';
-            } else {
-                badge.classList.add('hidden');
-                btnDelete.disabled = true;
-                btnDelete.className = 'btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition';
-                if (selectAllCb) selectAllCb.checked = false;
+            if (badge) {
+                if (count > 0) {
+                    badge.innerText = `${count} dipilih`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            if (btnDelete) {
+                if (count > 0) {
+                    btnDelete.disabled = false;
+                    btnDelete.className = 'btn-icon bg-rose-600 hover:bg-rose-700 text-white shadow-2xs transition';
+                } else {
+                    btnDelete.disabled = true;
+                    btnDelete.className = 'btn-icon bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed transition';
+                }
+            }
+
+            if (selectAllCb && count === 0) {
+                selectAllCb.checked = false;
             }
         }
 
@@ -568,18 +817,20 @@
             }
         }
 
-        // Export to CSV / Excel
+        // Export to CSV / Excel Lengkap untuk Buku Nilai
         function exportToCSV() {
             if (!allResults.length) {
                 appAlert("Belum ada data hasil ujian untuk diekspor!");
                 return;
             }
 
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "No,NIS,Nama Siswa,Kelas,Paket Kuis,Benar,Salah,Nilai Akhir,Waktu Selesai\r\n";
+            let csvContent = "\uFEFF"; // UTF-8 BOM untuk Excel
+            csvContent += "No,NIS,Nama Siswa,Kelas,Paket Kuis,Benar,Salah,Nilai Akhir,Status KKM,Waktu Selesai\r\n";
 
             filteredResults.forEach((s, idx) => {
                 const clean = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
+                const score = Number(s.score ?? 0);
+                const kkmStatus = score >= 75 ? 'TUNTAS' : 'REMEDIAL';
                 const row = [
                     idx + 1,
                     clean(s.nis),
@@ -588,19 +839,358 @@
                     clean(s.title || s.code),
                     s.correct ?? 0,
                     s.wrong ?? 0,
-                    s.score ?? 0,
+                    score,
+                    kkmStatus,
                     clean(s.date || '-')
                 ];
                 csvContent += row.join(",") + "\r\n";
             });
 
-            const encodedUri = encodeURI(csvContent);
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Hasil_Ujian_ExamLAN_${new Date().toISOString().slice(0, 10)}.csv`);
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Buku_Rekap_Nilai_ExamLAN_${new Date().toISOString().slice(0, 10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Cetak Rekap Nilai Resmi Dokumen Kurikulum / Sekolah
+        function printGradeReport() {
+            if (!filteredResults.length) {
+                appAlert("Tidak ada data hasil ujian yang dapat dicetak!");
+                return;
+            }
+
+            const currentQuizTitle = document.getElementById('teacher-quiz-filter')?.selectedOptions[0]?.text || 'Semua Paket Ujian';
+            const currentClass = document.getElementById('results-filter-class')?.value !== 'all' ? document.getElementById('results-filter-class')?.value : 'Semua Kelas';
+            const printDate = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const scores = filteredResults.map(x => Number(x.score ?? 0));
+            const avg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+            const maxScore = scores.length ? Math.max(...scores) : 0;
+            const minScore = scores.length ? Math.min(...scores) : 0;
+            const passed = scores.filter(s => s >= 75).length;
+            const remedial = scores.length - passed;
+            const passPct = scores.length ? Math.round((passed / scores.length) * 100) : 0;
+
+            const printWin = window.open('', '_blank', 'width=950,height=750');
+            if (!printWin) {
+                appAlert("Popup browser diblokir! Izinkan popup untuk mencetak rekap nilai.");
+                return;
+            }
+
+            let rowsHtml = filteredResults.map((s, idx) => {
+                const score = Number(s.score ?? 0);
+                const isPassed = score >= 75;
+                return `
+                    <tr>
+                        <td style="text-align: center;">${idx + 1}</td>
+                        <td style="font-family: monospace; text-align: center;">${escapeHtml(s.nis || '-')}</td>
+                        <td><b>${escapeHtml(s.name || '-')}</b></td>
+                        <td style="text-align: center;">${escapeHtml(s.class || '-')}</td>
+                        <td>${escapeHtml(s.title || s.code || '-')}</td>
+                        <td style="text-align: center; color: #047857;">${s.correct ?? 0}</td>
+                        <td style="text-align: center; color: #b91c1c;">${s.wrong ?? 0}</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 13px;">${score}</td>
+                        <td style="text-align: center; font-weight: bold; color: ${isPassed ? '#047857' : '#b45309'};">
+                            ${isPassed ? 'TUNTAS' : 'REMEDIAL'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            printWin.document.write(`
+                <!DOCTYPE html>
+                <html lang="id">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Rekapitulasi Hasil Ujian - ${escapeHtml(currentQuizTitle)}</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; color: #1e293b; margin: 25px; line-height: 1.4; }
+                        .kop { border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 15px; text-align: center; }
+                        .kop h2 { margin: 0; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+                        .kop p { margin: 3px 0 0; font-size: 11px; color: #475569; }
+                        .meta-grid { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 11px; background: #f8fafc; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 6px; }
+                        .meta-col p { margin: 3px 0; }
+                        .meta-col b { color: #0f172a; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                        th, td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 11px; }
+                        th { background: #f1f5f9; text-transform: uppercase; font-size: 10px; color: #334155; }
+                        .stats-box { display: flex; gap: 12px; margin-bottom: 20px; }
+                        .stat-item { flex: 1; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px; text-align: center; background: #f8fafc; }
+                        .stat-item p { margin: 0; font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+                        .stat-item h3 { margin: 4px 0 0; font-size: 15px; font-weight: 800; color: #0f172a; }
+                        .ttd-box { display: flex; justify-content: space-between; margin-top: 40px; page-break-inside: avoid; }
+                        .ttd-col { width: 200px; text-align: center; }
+                        .ttd-space { height: 60px; }
+                        @media print {
+                            body { margin: 15mm; }
+                            button { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="kop">
+                        <h2>REKAPITULASI EVALUASI HASIL UJIAN SISWA</h2>
+                        <p>Sistem Ujian Lab Komputer Berbasis Jaringan Lokal (ExamLAN Pro CBT)</p>
+                    </div>
+
+                    <div class="meta-grid">
+                        <div class="meta-col">
+                            <p><b>Paket Soal Ujian:</b> ${escapeHtml(currentQuizTitle)}</p>
+                            <p><b>Kelas / Rombel:</b> ${escapeHtml(currentClass)}</p>
+                        </div>
+                        <div class="meta-col" style="text-align: right;">
+                            <p><b>Kriteria Ketuntasan (KKM):</b> 75</p>
+                            <p><b>Tanggal Cetak:</b> ${escapeHtml(printDate)}</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-box">
+                        <div class="stat-item">
+                            <p>Total Peserta</p>
+                            <h3>${scores.length} Siswa</h3>
+                        </div>
+                        <div class="stat-item">
+                            <p>Rata-rata Nilai</p>
+                            <h3>${avg}</h3>
+                        </div>
+                        <div class="stat-item">
+                            <p>Nilai Tertinggi</p>
+                            <h3 style="color: #047857;">${maxScore}</h3>
+                        </div>
+                        <div class="stat-item">
+                            <p>Nilai Terendah</p>
+                            <h3 style="color: #b91c1c;">${minScore}</h3>
+                        </div>
+                        <div class="stat-item">
+                            <p>Ketuntasan Belajar</p>
+                            <h3 style="color: ${passPct >= 75 ? '#047857' : '#b45309'};">${passPct}% (${passed}/${scores.length})</h3>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 30px;">No</th>
+                                <th style="width: 80px;">NIS</th>
+                                <th>Nama Peserta Didik</th>
+                                <th style="width: 75px;">Kelas</th>
+                                <th>Paket Kuis</th>
+                                <th style="width: 45px;">Benar</th>
+                                <th style="width: 45px;">Salah</th>
+                                <th style="width: 65px;">Nilai Akhir</th>
+                                <th style="width: 75px;">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+
+                    <div class="ttd-box">
+                        <div class="ttd-col">
+                            <p>Mengetahui,<br>Kepala Sekolah</p>
+                            <div class="ttd-space"></div>
+                            <p><b>_______________________</b><br>NIP. .....................................</p>
+                        </div>
+                        <div class="ttd-col">
+                            <p>Pengawas / Guru Mata Pelajaran</p>
+                            <div class="ttd-space"></div>
+                            <p><b>_______________________</b><br>NIP. .....................................</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWin.document.close();
+            setTimeout(() => {
+                printWin.print();
+            }, 300);
+        }
+
+        // Tampilkan Modal Lembar Rincian Jawaban Siswa per Butir Soal
+        function showStudentDetailModal(idx) {
+            const item = filteredResults[idx];
+            if (!item) return;
+            currentDetailItem = item;
+
+            document.getElementById('detail-student-name').innerText = item.name || '-';
+            document.getElementById('detail-student-nis').innerText = `NIS: ${item.nis || '-'}`;
+            document.getElementById('detail-student-class').innerText = item.class || '-';
+            document.getElementById('detail-student-quiz').innerText = item.title || item.code || '-';
+            document.getElementById('detail-student-correct-wrong').innerHTML = `
+                <span class="text-emerald-700 font-bold">${item.correct ?? 0} Benar</span> • 
+                <span class="text-rose-700 font-bold">${item.wrong ?? 0} Salah</span>
+            `;
+            document.getElementById('detail-student-date').innerText = item.date ? `Submit: ${item.date}` : '-';
+
+            const score = Number(item.score ?? 0);
+            const isPassed = score >= 75;
+            document.getElementById('detail-student-score').innerText = score;
+            const kkmEl = document.getElementById('detail-student-kkm');
+            if (isPassed) {
+                kkmEl.innerText = 'TUNTAS (≥ 75)';
+                kkmEl.className = 'inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300';
+            } else {
+                kkmEl.innerText = 'REMEDIAL (< 75)';
+                kkmEl.className = 'inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5 bg-rose-100 text-rose-800 border border-rose-300';
+            }
+
+            const container = document.getElementById('detail-questions-container');
+            const breakdowns = item.breakdowns || [];
+
+            if (!breakdowns.length) {
+                container.innerHTML = `
+                    <div class="p-6 text-center text-slate-400">
+                        <i class="fa-regular fa-folder-open text-2xl mb-1"></i>
+                        <p class="text-xs">Rincian per butir soal tidak tersedia untuk riwayat ujian ini.</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = breakdowns.map((b, i) => {
+                    const isCorrect = !!b.isCorrect;
+                    const qObj = b.question || {};
+                    let qTextHtml = escapeHtml(qObj.question || `Pertanyaan Nomor ${i + 1}`);
+                    if (qObj.type === 'cause_effect') {
+                        qTextHtml = `
+                            <div class="space-y-1">
+                                <p><span class="font-bold text-slate-700">Pernyataan:</span> "${escapeHtml(qObj.statement || qObj.question || '-')}"</p>
+                                <p><span class="font-bold text-slate-700">Alasan:</span> "${escapeHtml(qObj.reason || '-')}"</p>
+                            </div>
+                        `;
+                    } else if (qObj.type === 'case_analysis' && qObj.passage) {
+                        qTextHtml = `
+                            <div class="space-y-1.5">
+                                <div class="bg-slate-100/80 p-2.5 rounded-lg text-slate-700 italic font-serif text-[11px] border border-slate-200">
+                                    <strong class="font-sans not-italic text-slate-900 block mb-0.5">Teks Kasus:</strong>
+                                    ${escapeHtml(qObj.passage)}
+                                </div>
+                                <div class="font-bold text-slate-800">${escapeHtml(qObj.question || '')}</div>
+                            </div>
+                        `;
+                    }
+                    const studentAns = b.studentAnswerText || 'Tidak dijawab';
+                    const correctAns = b.correctAnswerText || '-';
+                    const explanation = qObj.explanation || b.explanation || '';
+                    const qImage = qObj.image || '';
+
+                    return `
+                        <div class="p-3.5 rounded-xl border ${isCorrect ? 'bg-emerald-50/40 border-emerald-200' : 'bg-rose-50/40 border-rose-200'} space-y-2">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-lg ${isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'} flex items-center justify-center font-bold text-xs shrink-0">
+                                        ${i + 1}
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                        ${isCorrect ? '<i class="fa-solid fa-check mr-1"></i> Jawaban Benar' : '<i class="fa-solid fa-xmark mr-1"></i> Jawaban Salah'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="text-xs font-semibold text-slate-800 pl-8 leading-relaxed">
+                                ${qTextHtml}
+                            </div>
+
+                            ${qImage ? `
+                                <div class="pl-8 my-2">
+                                    <img src="../${escapeHtml(qImage)}" alt="Gambar Soal" class="max-h-40 rounded-lg border border-slate-200 object-contain">
+                                </div>
+                            ` : ''}
+
+                            <div class="pl-8 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                                <div class="p-2 rounded-lg bg-white border border-slate-200">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase">Jawaban Siswa:</p>
+                                    <div class="font-bold ${isCorrect ? 'text-emerald-700' : 'text-rose-700'} mt-0.5">
+                                        ${studentAns}
+                                    </div>
+                                </div>
+                                <div class="p-2 rounded-lg bg-white border border-slate-200">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase">Kunci Jawaban Resmi:</p>
+                                    <div class="font-bold text-emerald-700 mt-0.5">
+                                        ${correctAns}
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${explanation ? `
+                                <div class="pl-8 pt-1 text-[11px] text-slate-600">
+                                    <span class="font-bold text-slate-700"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Pembahasan:</span> ${escapeHtml(explanation)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            toggleModal('modal-student-detail', true);
+        }
+
+        // Cetak Lembar Rincian Jawaban Siswa Tertentu
+        function printSingleStudentReport() {
+            if (!currentDetailItem) return;
+            const s = currentDetailItem;
+            const printWin = window.open('', '_blank', 'width=850,height=750');
+            if (!printWin) {
+                appAlert("Popup browser diblokir! Izinkan popup untuk mencetak.");
+                return;
+            }
+
+            const breakdowns = s.breakdowns || [];
+            let itemsHtml = breakdowns.map((b, i) => {
+                const isCorrect = !!b.isCorrect;
+                const qObj = b.question || {};
+                let qText = qObj.question || `Pertanyaan Nomor ${i + 1}`;
+                if (qObj.type === 'cause_effect') {
+                    qText = `[Sebab-Akibat] Pernyataan: "${qObj.statement || '-'}" | Alasan: "${qObj.reason || '-'}"`;
+                } else if (qObj.type === 'case_analysis' && qObj.passage) {
+                    qText = `[Kasus: ${qObj.passage}] ${qObj.question || ''}`;
+                }
+                return `
+                    <div style="margin-bottom: 12px; padding: 10px; border: 1px solid ${isCorrect ? '#a7f3d0' : '#fecdd3'}; border-radius: 6px; background: ${isCorrect ? '#f0fdf4' : '#fff1f2'};">
+                        <p style="margin: 0 0 6px 0; font-size: 11px;"><b>No. ${i + 1} (${isCorrect ? 'BENAR' : 'SALAH'})</b>: ${escapeHtml(qText)}</p>
+                        <p style="margin: 2px 0; font-size: 11px;">Jawaban Siswa: <b style="color: ${isCorrect ? '#047857' : '#b91c1c'};">${b.studentAnswerText || 'Tidak dijawab'}</b></p>
+                        <p style="margin: 2px 0; font-size: 11px;">Kunci Jawaban: <b style="color: #047857;">${b.correctAnswerText || '-'}</b></p>
+                    </div>
+                `;
+            }).join('');
+
+            printWin.document.write(`
+                <!DOCTYPE html>
+                <html lang="id">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Lembar Jawaban Siswa - ${escapeHtml(s.name)}</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; margin: 25px; line-height: 1.4; color: #1e293b; }
+                        .kop { border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 12px; }
+                        .meta { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; margin-bottom: 15px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="kop">
+                        <h2 style="margin: 0; font-size: 14px;">LEMBAR JAWABAN & EVALUASI SISWA</h2>
+                        <p style="margin: 3px 0 0; font-size: 10px; color: #64748b;">ExamLAN Pro - Sistem Ujian Lab Komputer</p>
+                    </div>
+                    <div class="meta">
+                        <p style="margin: 2px 0;"><b>Nama Siswa:</b> ${escapeHtml(s.name || '-')} (NIS: ${escapeHtml(s.nis || '-')})</p>
+                        <p style="margin: 2px 0;"><b>Kelas:</b> ${escapeHtml(s.class || '-')} | <b>Paket Soal:</b> ${escapeHtml(s.title || s.code || '-')}</p>
+                        <p style="margin: 2px 0;"><b>Nilai Akhir:</b> <span style="font-size: 14px; font-weight: bold;">${s.score ?? 0}</span> (${s.correct ?? 0} Benar, ${s.wrong ?? 0} Salah) - <b>${(Number(s.score) >= 75) ? 'TUNTAS' : 'REMEDIAL'}</b></p>
+                        <p style="margin: 2px 0; font-size: 10px; color: #64748b;">Tanggal Pengerjaan: ${escapeHtml(s.date || '-')}</p>
+                    </div>
+                    <div>
+                        ${itemsHtml}
+                    </div>
+                </body>
+                </html>
+            `);
+            printWin.document.close();
+            setTimeout(() => {
+                printWin.print();
+            }, 300);
         }
 
         // Review States
