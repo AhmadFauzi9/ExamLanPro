@@ -356,8 +356,60 @@
                         </div>
                     </div>
                 </div>
-                    <div id="system-status-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                        <p class="text-slate-400 text-xs">Memeriksa status server...</p>
+
+                <!-- MODAL RINCIAN PELANGGARAN / KECURANGAN SISWA -->
+                <div id="modal-violation-detail" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-[100] flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl max-w-xl w-full p-5 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-150">
+                        <!-- Header -->
+                        <div class="flex items-start justify-between border-b pb-3 shrink-0">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg font-bold shrink-0">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                                        <span>Log Deteksi Kecurangan</span>
+                                        <span id="vmodal-badge-count" class="px-2 py-0.5 rounded-full text-[11px] font-black bg-rose-500 text-white">0x Curang</span>
+                                    </h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">
+                                        <strong id="vmodal-student-name" class="text-slate-700">Nama Siswa</strong> • NIS: <span id="vmodal-student-nis" class="font-mono font-bold text-brand-600">000000</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="closeViolationModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Alert Notice -->
+                        <div class="bg-rose-50/80 border border-rose-200 rounded-xl p-3 flex items-start gap-2.5 text-xs text-rose-900 shrink-0">
+                            <i class="fa-solid fa-shield-halved text-rose-600 text-sm mt-0.5 shrink-0"></i>
+                            <div class="space-y-0.5">
+                                <p class="font-bold">Aktivitas Mencurigakan Terekam Otomatis</p>
+                                <p class="text-[11px] text-rose-700 leading-relaxed">
+                                    Sistem anti-cheat ExamLAN mendeteksi setiap saat siswa beralih tab, meminimalkan browser, membuka aplikasi lain, keluar dari mode layar penuh (fullscreen), atau menekan tombol pintasan.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Body: Scrollable Log Timeline -->
+                        <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-2.5 min-h-[180px]" id="vmodal-log-container">
+                            <!-- Populated dynamically -->
+                            <div class="p-6 text-center text-slate-400">
+                                <i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-rose-500"></i>
+                                <p class="text-xs">Memuat riwayat kecurangan siswa...</p>
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions -->
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-100 shrink-0">
+                            <button type="button" id="vmodal-btn-reset" onclick="resetCurrentStudentViolations()" class="px-3.5 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs" title="Reset hitungan kecurangan siswa ini menjadi 0 jika merupakan toleransi">
+                                <i class="fa-solid fa-rotate-left text-xs"></i> <span>Reset Pelanggaran</span>
+                            </button>
+                            <button type="button" onclick="closeViolationModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition">
+                                Tutup
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -571,7 +623,11 @@
                         <td class="p-3">
                             <div class="flex items-center gap-1.5 flex-wrap">
                                 <span class="font-bold text-slate-800">${escapeHtml(m.name || '-')}</span>
-                                ${m.violations_count > 0 ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse" title="Siswa terdeteksi: ${m.violations_count}x pindah tab / keluar fullscreen / buka aplikasi lain"><i class="fa-solid fa-triangle-exclamation"></i> ${m.violations_count}x Curang</span>` : ''}
+                                ${m.violations_count > 0 ? `
+                                    <button type="button" onclick="openViolationModal('${escapeHtml(m.nis)}', '${escapeHtml(m.name || m.nis)}', ${m.violations_count})" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500 hover:bg-rose-600 active:scale-95 text-white shadow-xs animate-pulse transition cursor-pointer" title="Klik untuk melihat rincian ${m.violations_count}x kecurangan siswa">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> ${m.violations_count}x Curang
+                                    </button>
+                                ` : ''}
                             </div>
                             ${m.ip ? `<span class="text-[10px] text-slate-400 font-mono"><i class="fa-solid fa-desktop text-[9px] mr-0.5"></i>${escapeHtml(m.ip)}</span>` : ''}
                         </td>
@@ -898,6 +954,146 @@
                 }
             } catch (e) {
                 grid.innerHTML = '<p class="text-rose-500 text-xs">Status server tidak dapat dibaca.</p>';
+            }
+        }
+
+        // ================= VIOLATION DETAIL MODAL =================
+        let activeViolationStudent = null;
+
+        async function openViolationModal(nis, studentName, violationsCount) {
+            activeViolationStudent = { nis, name: studentName, count: violationsCount };
+            const modal = document.getElementById('modal-violation-detail');
+            const nameEl = document.getElementById('vmodal-student-name');
+            const nisEl = document.getElementById('vmodal-student-nis');
+            const badgeCountEl = document.getElementById('vmodal-badge-count');
+            const logContainer = document.getElementById('vmodal-log-container');
+
+            nameEl.innerText = studentName;
+            nisEl.innerText = nis;
+            badgeCountEl.innerText = `${violationsCount}x Curang`;
+            logContainer.innerHTML = `
+                <div class="p-8 text-center text-slate-400">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-rose-500"></i>
+                    <p class="text-xs">Memuat rincian aktivitas kecurangan...</p>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`${API_URL}?action=get_student_violations&nis=${encodeURIComponent(nis)}`, {
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                });
+                const data = await res.json();
+                if (!res.ok || data.status !== 'success') {
+                    throw new Error(data.message || 'Gagal memuat log kecurangan');
+                }
+
+                badgeCountEl.innerText = `${data.violations_count || violationsCount}x Curang`;
+                renderViolationLogList(data.violations || []);
+            } catch (err) {
+                logContainer.innerHTML = `
+                    <div class="p-6 text-center text-rose-600 bg-rose-50 rounded-xl border border-rose-200">
+                        <i class="fa-solid fa-triangle-exclamation text-xl mb-1"></i>
+                        <p class="text-xs font-bold">${escapeHtml(err.message || 'Gagal memuat log')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function closeViolationModal() {
+            const modal = document.getElementById('modal-violation-detail');
+            if (modal) modal.classList.add('hidden');
+            activeViolationStudent = null;
+        }
+
+        function renderViolationLogList(violations) {
+            const container = document.getElementById('vmodal-log-container');
+            if (!violations.length) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-slate-400">
+                        <i class="fa-regular fa-circle-check text-3xl text-emerald-500 mb-2"></i>
+                        <p class="text-xs font-bold text-slate-700">Tidak ada rincian log kecurangan terekam.</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Siswa mungkin belum pernah beralih tab atau melanggar aturan.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const iconMap = {
+                'fullscreen_exit': '<i class="fa-solid fa-compress text-rose-600"></i>',
+                'tab_switch': '<i class="fa-solid fa-window-restore text-amber-600"></i>',
+                'window_blur': '<i class="fa-solid fa-arrow-up-right-from-square text-amber-600"></i>',
+                'blocked_shortcut': '<i class="fa-solid fa-keyboard text-purple-600"></i>',
+                'contextmenu': '<i class="fa-solid fa-arrow-pointer text-indigo-600"></i>',
+                'other': '<i class="fa-solid fa-triangle-exclamation text-rose-600"></i>'
+            };
+
+            const typeTitleMap = {
+                'fullscreen_exit': 'Keluar dari Layar Penuh (Fullscreen)',
+                'tab_switch': 'Pindah Tab / Minimalkan Jendela Browser',
+                'window_blur': 'Fokus Layar Berpindah ke Aplikasi Lain',
+                'blocked_shortcut': 'Tombol Pintasan Terlarang Ditekan',
+                'contextmenu': 'Mencoba Klik Kanan (Context Menu)',
+                'other': 'Aktivitas Terlarang'
+            };
+
+            container.innerHTML = violations.map((v, idx) => {
+                const icon = iconMap[v.type] || iconMap.other;
+                const title = typeTitleMap[v.type] || 'Aktivitas Terlarang';
+                const countBadge = v.count ? `<span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">Ke-${v.count}</span>` : `<span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-slate-100 text-slate-600">#${violations.length - idx}</span>`;
+
+                return `
+                    <div class="p-3 bg-white hover:bg-slate-50/80 rounded-xl border border-slate-200 shadow-2xs transition space-y-1.5 text-left">
+                        <div class="flex items-center justify-between gap-2 text-xs">
+                            <div class="flex items-center gap-1.5 font-bold text-slate-800">
+                                <span class="w-6 h-6 rounded-lg bg-rose-50 flex items-center justify-center shrink-0 text-xs">
+                                    ${icon}
+                                </span>
+                                <span>${title}</span>
+                                ${countBadge}
+                            </div>
+                            <span class="text-[11px] font-mono text-slate-400 shrink-0 flex items-center gap-1">
+                                <i class="fa-regular fa-clock text-[10px]"></i> ${v.time}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-600 pl-7 leading-relaxed">
+                            ${escapeHtml(v.details || '-')}
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function resetCurrentStudentViolations() {
+            if (!activeViolationStudent || !activeViolationStudent.nis) return;
+            const nis = activeViolationStudent.nis;
+            const name = activeViolationStudent.name;
+
+            const ok = await showConfirm(
+                `Apakah Anda yakin ingin mereset hitungan kecurangan untuk siswa:<br><b>${escapeHtml(name)}</b> (NIS: ${escapeHtml(nis)})?<br><br><span class="text-xs text-rose-600">Hitungan pelanggaran akan dikembalikan menjadi 0 kali.</span>`,
+                'Reset Hitungan Pelanggaran',
+                'Batal',
+                'Reset Sekarang'
+            );
+            if (!ok) return;
+
+            try {
+                const res = await fetch(`${API_URL}?action=reset_student_violations`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nis: nis })
+                });
+                const data = await res.json();
+                if (!res.ok || data.status !== 'success') {
+                    throw new Error(data.message || 'Gagal mereset pelanggaran.');
+                }
+                closeViolationModal();
+                await loadMonitoringData();
+                showToast(`Hitungan kecurangan siswa ${name} berhasil direset.`);
+            } catch (err) {
+                showAlert(err.message || 'Terjadi kesalahan saat mereset pelanggaran.', 'Gagal');
             }
         }
 

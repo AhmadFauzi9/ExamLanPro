@@ -3,8 +3,8 @@
         {
             "id": "quiz-1794921157572",
             "title": "UB Informatika Semester Ganjil 2026-2027",
-            "duration": 5,
-            "max_questions": 0,
+            "duration": 6,
+            "max_questions": 6,
             "quiz_type": "mixed",
             "description": "Jaawablah soal dengan benar!",
             "subject": "Informatika",
@@ -12,10 +12,10 @@
             "start_at": "",
             "end_at": "",
             "status": "ACTIVE",
-            "pin": "DQ87N3",
+            "pin": "MDWBK7",
             "pin_enabled": true,
             "pin_auto_refresh": true,
-            "pin_updated_at": 1794955497,
+            "pin_updated_at": 1795010513,
             "questions": [
                 {
                     "type": "mc",
@@ -891,6 +891,906 @@
     ],
     "results": [
         {
+            "nis": "250262",
+            "name": "M. KHANNAN KAROMUL UMAM",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "code": "quiz-1794921157572",
+            "title": "UB Informatika Semester Ganjil 2026-2027",
+            "score": 83,
+            "correct": 5,
+            "wrong": 1,
+            "date": "18\/11\/2026 15:04:19",
+            "review_token": "f7d4461f8ca6c230e6bce1938df26ffd9983f7f4f2c9b1921e6f36eeb1e47e06",
+            "question_order": [
+                8,
+                39,
+                7,
+                3,
+                10,
+                41
+            ],
+            "answers": [
+                1,
+                2,
+                2,
+                2,
+                "both_correct_connected"
+            ],
+            "breakdowns": [
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Jika kita ingin mencetak kertas secara mendatar atau melebar, pilihan Orientation apa yang harus dipilih?",
+                        "options": [
+                            "Portrait",
+                            "Landscape",
+                            "Letter",
+                            "Legal"
+                        ],
+                        "answer": 1,
+                        "answers": [],
+                        "explanation": "Orientation Landscape digunakan untuk posisi kertas mendatar.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": 1,
+                    "isCorrect": true,
+                    "studentAnswerText": "B. Landscape",
+                    "correctAnswerText": "B. Landscape"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Ikon apa di menu Insert yang dipilih untuk memasukkan gambar logo sekolah yang sudah ada di komputer?",
+                        "options": [
+                            "Shapes",
+                            "Clip Art",
+                            "Picture",
+                            "Table"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Picture digunakan untuk menyisipkan gambar\/foto (termasuk logo) yang sudah tersimpan sebagai file di komputer.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Pak Guru meminta murid menyisipkan logo sekolah di sudut kiri surat resmi (kop surat)."
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Picture",
+                    "correctAnswerText": "C. Picture"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Menu tab apakah yang harus Siti pilih untuk menemukan ikon Margin?",
+                        "options": [
+                            "Home",
+                            "Insert",
+                            "Page Layout",
+                            "View"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Tab Page Layout memuat grup Page Setup yang berisi ikon Margins untuk mengatur batas tepi kertas.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Siti ingin mengatur ukuran batas tepi (margin) kertas pada tugas laporannya."
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Page Layout",
+                    "correctAnswerText": "C. Page Layout"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Program aplikasi apakah yang sedang digunakan oleh Ahmad?",
+                        "options": [
+                            "Microsoft Excel",
+                            "Microsoft PowerPoint",
+                            "Microsoft Word",
+                            "Microsoft Access"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Microsoft Word 2007 adalah program pengolah kata dari Microsoft Office untuk mengetik dokumen.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Ahmad ingin mengetik tugas sekolah. Ia membuka sebuah program dari Microsoft Office yang memiliki logo huruf \"W\" berwarna biru."
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Microsoft Word",
+                    "correctAnswerText": "C. Microsoft Word"
+                },
+                {
+                    "question": {
+                        "type": "cause_effect",
+                        "question": "",
+                        "options": [],
+                        "answer": "both_correct_connected",
+                        "answers": [],
+                        "explanation": "Perintah Ctrl + U atau ikon Underline pada tab Home digunakan untuk memberi garis bawah pada teks.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "statement": "Teks pada MS Word 2007 dapat dibuat bergaris bawah dengan menekan Ctrl + U.",
+                        "reason": "Ikon Underline (U) berfungsi untuk memberikan efek cetak bergaris bawah pada huruf atau kata yang dipilih."
+                    },
+                    "studentAnswer": "both_correct_connected",
+                    "isCorrect": true,
+                    "studentAnswerText": "Pernyataan & alasan benar, berhubungan sebab akibat (A)",
+                    "correctAnswerText": "Pernyataan & alasan benar, berhubungan sebab akibat (A)"
+                },
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Dalam penggunaan tetikus (Mouse), apa saja istilah standar untuk menjalankannya?",
+                        "options": [
+                            "Klik (Click)",
+                            "Klik ganda (Double click)",
+                            "Drag & Drop",
+                            "Enter"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "explanation": "Mouse dijalankan dengan perintah Klik, Double click (klik ganda), dan Drag & Drop (tahan dan geser). Enter adalah tombol pada keyboard.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Klik (Click)<br>B. Klik ganda (Double click)<br>C. Drag & Drop"
+                }
+            ]
+        },
+        {
+            "nis": "250163",
+            "name": "DZEKO ZAHWAN KASIYANTO",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "code": "quiz-1794921157572",
+            "title": "UB Informatika Semester Ganjil 2026-2027",
+            "score": 100,
+            "correct": 5,
+            "wrong": 0,
+            "date": "18\/11\/2026 01:18:58",
+            "review_token": "c77063d41f52aeb4876ed458ae02b99f8505ea425d133771ffae652e4d7467a0",
+            "question_order": [
+                48,
+                19,
+                32,
+                0,
+                29
+            ],
+            "answers": [
+                1,
+                3,
+                2,
+                1,
+                [
+                    2,
+                    0,
+                    1
+                ]
+            ],
+            "breakdowns": [
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Tanda (simbol) khusus selain angka dan huruf alfabet, seperti copyright atau tanda akar, disisipkan menggunakan menu?",
+                        "options": [
+                            "WordArt",
+                            "Symbol",
+                            "Shapes",
+                            "Equation"
+                        ],
+                        "answer": 1,
+                        "answers": [],
+                        "explanation": "Symbol digunakan untuk menyisipkan karakter atau simbol khusus yang tidak ada di keyboard.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": 1,
+                    "isCorrect": true,
+                    "studentAnswerText": "B. Symbol",
+                    "correctAnswerText": "B. Symbol"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Fitur apakah yang paling tepat diakses melalui menu Insert?",
+                        "options": [
+                            "Shapes",
+                            "Header",
+                            "Footer",
+                            "Page Number"
+                        ],
+                        "answer": 3,
+                        "answers": [],
+                        "explanation": "Page Number digunakan untuk memberikan dan mengatur nomor otomatis pada setiap halaman file.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Ani ingin menambahkan nomor urut halaman di pojok kanan bawah pada dokumen laporannya."
+                    },
+                    "studentAnswer": 3,
+                    "isCorrect": true,
+                    "studentAnswerText": "D. Page Number",
+                    "correctAnswerText": "D. Page Number"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Setelah membuat naskah, langkah terakhir biasanya adalah mencetak dokumen ke kertas. Kombinasi tombol keyboard (shortcut) untuk mencetak adalah?",
+                        "options": [
+                            "Ctrl + S",
+                            "Ctrl + N",
+                            "Ctrl + P",
+                            "Ctrl + C"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Mencetak dokumen (Print) dapat dilakukan dari Office Button lalu klik Print atau dengan menekan tombol alternatif Ctrl + P.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Ctrl + P",
+                    "correctAnswerText": "C. Ctrl + P"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Perhatikan gambar di bawah ini! Perangkat komputer yang berfungsi untuk memproses data yang masuk adalah?",
+                        "options": [
+                            "Monitor",
+                            "CPU (Central Processing Unit)",
+                            "Keyboard",
+                            "Printer"
+                        ],
+                        "answer": 1,
+                        "answers": [],
+                        "explanation": "CPU bertugas memproses data yang masuk dan bekerja sesuai perintah dari pengguna.",
+                        "image": "uploads\/soal\/img_soal_quiz-1794921157572_1794921157_533478.png",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": 1,
+                    "isCorrect": true,
+                    "studentAnswerText": "B. CPU (Central Processing Unit)",
+                    "correctAnswerText": "B. CPU (Central Processing Unit)"
+                },
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Manakah yang termasuk dari pengaturan spasi baris (Line Spacing) yang biasa digunakan pada grup Paragraph?",
+                        "options": [
+                            "1.0 (Single)",
+                            "1.5 lines",
+                            "2.0 (Double)",
+                            "100%"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "explanation": "Line spacing dapat diatur ke Single, 1.5 lines, atau Double untuk menentukan jarak spasi antar baris.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": [
+                        2,
+                        0,
+                        1
+                    ],
+                    "isCorrect": true,
+                    "studentAnswerText": "C. 2.0 (Double)<br>A. 1.0 (Single)<br>B. 1.5 lines",
+                    "correctAnswerText": "A. 1.0 (Single)<br>B. 1.5 lines<br>C. 2.0 (Double)"
+                }
+            ]
+        },
+        {
+            "nis": "250163",
+            "name": "DZEKO ZAHWAN KASIYANTO",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "code": "quiz-1794921157572",
+            "title": "UB Informatika Semester Ganjil 2026-2027",
+            "score": 60,
+            "correct": 3,
+            "wrong": 2,
+            "date": "18\/11\/2026 00:38:15",
+            "review_token": "3eea62a1f379263b78d897902100d2d2eb30523d607ea6ada8edb2cd823b1c2a",
+            "question_order": [
+                9,
+                11,
+                44,
+                4,
+                42
+            ],
+            "answers": [
+                [
+                    0,
+                    1
+                ],
+                0,
+                0,
+                2,
+                "both_correct_not_connected"
+            ],
+            "breakdowns": [
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Ukuran kertas apa saja yang biasanya ada di pengaturan \"Paper Size\" pada Page Setup?",
+                        "options": [
+                            "A4",
+                            "Letter",
+                            "Arial",
+                            "Calibri"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            1
+                        ],
+                        "explanation": "A4 dan Letter adalah jenis ukuran kertas (Paper Size), sedangkan Arial dan Calibri adalah jenis huruf (Font).",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": [
+                        0,
+                        1
+                    ],
+                    "isCorrect": true,
+                    "studentAnswerText": "A. A4<br>B. Letter",
+                    "correctAnswerText": "A. A4<br>B. Letter"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Ikon efek huruf apakah yang harus diklik oleh Anton?",
+                        "options": [
+                            "Subscript",
+                            "Superscript",
+                            "Strikethrough",
+                            "Highlight Color"
+                        ],
+                        "answer": 1,
+                        "answers": [],
+                        "explanation": "Superscript digunakan untuk memberi efek pangkat atas.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Anton mengetik rumus matematika di MS Word. Ia ingin angka \"2\" pada m² berada di atas (pangkat)."
+                    },
+                    "studentAnswer": 0,
+                    "isCorrect": false,
+                    "studentAnswerText": "A. Subscript",
+                    "correctAnswerText": "B. Superscript"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Menu berbentuk lingkaran dengan logo Windows\/Office di pojok kiri atas MS Word 2007 yang menyimpan perintah dasar seperti New, Open, Save disebut?",
+                        "options": [
+                            "Office Button",
+                            "Start Button",
+                            "Title Bar",
+                            "Quick Access Toolbar"
+                        ],
+                        "answer": 0,
+                        "answers": [],
+                        "explanation": "Tombol Microsoft Office (Office Button) berisi menu utama dokumen seperti New, Open, Save, dan Print.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": 0,
+                    "isCorrect": true,
+                    "studentAnswerText": "A. Office Button",
+                    "correctAnswerText": "A. Office Button"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Ikon apa yang digunakan untuk membuat dokumen kosong yang baru di MS Word 2007?",
+                        "options": [
+                            "Save",
+                            "Open",
+                            "New",
+                            "Print"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Tombol New digunakan untuk membuat lembar dokumen baru (Blank document).",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. New",
+                    "correctAnswerText": "C. New"
+                },
+                {
+                    "question": {
+                        "type": "cause_effect",
+                        "question": "",
+                        "options": [],
+                        "answer": "statement_true_reason_false",
+                        "answers": [],
+                        "explanation": "RAM berada di dalam CPU namun ia tergolong sebagai Memori Internal, bukan Eksternal.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "statement": "Memori RAM (Random Access Memory) berada di dalam komputer atau CPU.",
+                        "reason": "RAM merupakan contoh dari Memori Eksternal."
+                    },
+                    "studentAnswer": "both_correct_not_connected",
+                    "isCorrect": false,
+                    "studentAnswerText": "Pernyataan & alasan benar, TIDAK berhubungan (B)",
+                    "correctAnswerText": "Pernyataan benar, alasan salah (C)"
+                }
+            ]
+        },
+        {
+            "nis": "250053",
+            "name": "AHMAD ZIYAD ASSYAFIQ",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "code": "quiz-1794921157572",
+            "title": "UB Informatika Semester Ganjil 2026-2027",
+            "score": 40,
+            "correct": 4,
+            "wrong": 6,
+            "date": "17\/11\/2026 23:59:56",
+            "review_token": "2ac4a40ce5e9a2212a197957e33a736d6c1c4705e05714e644c2392977bdac9e",
+            "question_order": [
+                14,
+                7,
+                35,
+                44,
+                32,
+                34,
+                33,
+                41,
+                26,
+                21
+            ],
+            "answers": [
+                "statement_false_reason_true",
+                2,
+                2,
+                0
+            ],
+            "breakdowns": [
+                {
+                    "question": {
+                        "type": "cause_effect",
+                        "question": "",
+                        "options": [],
+                        "answer": "statement_false_reason_true",
+                        "answers": [],
+                        "explanation": "Ctrl + J adalah untuk Justify (rata kiri-kanan), sedangkan rata tengah adalah Center (Ctrl + E).",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "statement": "Tombol pintasan (shortcut) Ctrl + J digunakan untuk membuat teks rata tengah.",
+                        "reason": "Align Center digunakan agar posisi teks berada di tengah-tengah dokumen."
+                    },
+                    "studentAnswer": "statement_false_reason_true",
+                    "isCorrect": true,
+                    "studentAnswerText": "Pernyataan salah, alasan benar (D)",
+                    "correctAnswerText": "Pernyataan salah, alasan benar (D)"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Menu tab apakah yang harus Siti pilih untuk menemukan ikon Margin?",
+                        "options": [
+                            "Home",
+                            "Insert",
+                            "Page Layout",
+                            "View"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Tab Page Layout memuat grup Page Setup yang berisi ikon Margins untuk mengatur batas tepi kertas.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Siti ingin mengatur ukuran batas tepi (margin) kertas pada tugas laporannya."
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Page Layout",
+                    "correctAnswerText": "C. Page Layout"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Apa yang harus Rita isikan di kotak jendela Print?",
+                        "options": [
+                            "Pilih All",
+                            "Pilih Current page lalu ketik 5,7",
+                            "Pilih Pages lalu ketik 5-7",
+                            "Pilih Number of copies 5"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Untuk mencetak halaman tertentu, pilih Pages dan isi rentang halamannya (misal: 5-7).",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Rita membuat makalah 10 halaman, namun ia hanya disuruh mengumpulkan halaman 5 sampai 7. Saat mau mencetak (Print), ia bingung memilih menunya."
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Pilih Pages lalu ketik 5-7",
+                    "correctAnswerText": "C. Pilih Pages lalu ketik 5-7"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Menu berbentuk lingkaran dengan logo Windows\/Office di pojok kiri atas MS Word 2007 yang menyimpan perintah dasar seperti New, Open, Save disebut?",
+                        "options": [
+                            "Office Button",
+                            "Start Button",
+                            "Title Bar",
+                            "Quick Access Toolbar"
+                        ],
+                        "answer": 0,
+                        "answers": [],
+                        "explanation": "Tombol Microsoft Office (Office Button) berisi menu utama dokumen seperti New, Open, Save, dan Print.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": 0,
+                    "isCorrect": true,
+                    "studentAnswerText": "A. Office Button",
+                    "correctAnswerText": "A. Office Button"
+                },
+                {
+                    "question": {
+                        "type": "mc",
+                        "question": "Setelah membuat naskah, langkah terakhir biasanya adalah mencetak dokumen ke kertas. Kombinasi tombol keyboard (shortcut) untuk mencetak adalah?",
+                        "options": [
+                            "Ctrl + S",
+                            "Ctrl + N",
+                            "Ctrl + P",
+                            "Ctrl + C"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Mencetak dokumen (Print) dapat dilakukan dari Office Button lalu klik Print atau dengan menekan tombol alternatif Ctrl + P.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "C. Ctrl + P"
+                },
+                {
+                    "question": {
+                        "type": "cause_effect",
+                        "question": "",
+                        "options": [],
+                        "answer": "both_false",
+                        "answers": [],
+                        "explanation": "\"Current page\" digunakan mencetak hanya pada halaman tempat kursor berada, sedangkan \"All\" untuk mencetak semua halaman dokumen.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "statement": "Opsi \"Current page\" pada menu cetak digunakan untuk mencetak seluruh halaman dokumen.",
+                        "reason": "Fungsi All pada jendela print adalah untuk mencetak hanya satu halaman tertentu."
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "Keduanya salah (E)"
+                },
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Pada jendela Print, opsi apa saja yang tersedia di dalam bagian \"Page range\"?",
+                        "options": [
+                            "All",
+                            "Current page",
+                            "Number of copies",
+                            "Pages"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            1,
+                            3
+                        ],
+                        "explanation": "Di bagian Page range terdapat pilihan All, Current page, dan Pages. Number of copies berbeda bagian.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. All<br>B. Current page<br>D. Pages"
+                },
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Dalam penggunaan tetikus (Mouse), apa saja istilah standar untuk menjalankannya?",
+                        "options": [
+                            "Klik (Click)",
+                            "Klik ganda (Double click)",
+                            "Drag & Drop",
+                            "Enter"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "explanation": "Mouse dijalankan dengan perintah Klik, Double click (klik ganda), dan Drag & Drop (tahan dan geser). Enter adalah tombol pada keyboard.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Klik (Click)<br>B. Klik ganda (Double click)<br>C. Drag & Drop"
+                },
+                {
+                    "question": {
+                        "type": "cause_effect",
+                        "question": "",
+                        "options": [],
+                        "answer": "both_correct_connected",
+                        "answers": [],
+                        "explanation": "Equation adalah fasilitas di Word 2007 untuk menulis rumus (typesetting matematis).",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "statement": "Kita dapat menyisipkan rumus matematika yang rumit di Word menggunakan Equation.",
+                        "reason": "Ikon Equation berfungsi menyisipkan lambang persamaan\/rumus dalam bidang matematika."
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "Pernyataan & alasan benar, berhubungan sebab akibat (A)"
+                },
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Manakah cara yang tepat untuk menambahkan tabel (Table) ke dalam lembar kerja Word?",
+                        "options": [
+                            "Klik tab Insert -> klik ikon Table",
+                            "Klik tab Home -> klik Paste",
+                            "Klik tab Insert -> klik Insert Table",
+                            "Klik tab Page Layout -> klik Margins"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            2
+                        ],
+                        "explanation": "Menyisipkan tabel dilakukan dari menu Insert, lalu ikon Table, kemudian Insert Table.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": null,
+                    "isCorrect": false,
+                    "studentAnswerText": "Tidak dijawab",
+                    "correctAnswerText": "A. Klik tab Insert -> klik ikon Table<br>C. Klik tab Insert -> klik Insert Table"
+                }
+            ]
+        },
+        {
+            "nis": "250121",
+            "name": "AZZAM PUTRA PRAYOGA",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "code": "quiz-1794921157572",
+            "title": "UB Informatika Semester Ganjil 2026-2027",
+            "score": 60,
+            "correct": 3,
+            "wrong": 2,
+            "date": "17\/11\/2026 23:53:04",
+            "review_token": "86b7793a368bbb26df3f37c40881a3484d55131bf8392e9f76130f9af06f6bd2",
+            "question_order": [
+                30,
+                45,
+                43,
+                23,
+                21
+            ],
+            "answers": [
+                "both_false",
+                [
+                    1
+                ],
+                2,
+                1,
+                [
+                    2
+                ]
+            ],
+            "breakdowns": [
+                {
+                    "question": {
+                        "type": "cause_effect",
+                        "question": "",
+                        "options": [],
+                        "answer": "both_false",
+                        "answers": [],
+                        "explanation": "Teks dalam tabel dapat diatur perataannya, misalnya rata kiri atas, tengah vertikal, atau kanan bawah.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "statement": "Kotak (sel) pada tabel tidak dapat diatur rata (alignment) teksnya.",
+                        "reason": "Perataan teks (alignment) hanya berlaku untuk teks paragraf biasa dan bukan di dalam tabel."
+                    },
+                    "studentAnswer": "both_false",
+                    "isCorrect": true,
+                    "studentAnswerText": "Keduanya salah (E)",
+                    "correctAnswerText": "Keduanya salah (E)"
+                },
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Pada keyboard, jari telunjuk tangan kanan digunakan untuk menekan huruf apa saat posisi mengetik 10 jari dasar?",
+                        "options": [
+                            "U",
+                            "J",
+                            "Y",
+                            "K"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "explanation": "Telunjuk kanan pada posisi home row mengetik tombol J, U, Y, H, N, dan M.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": [
+                        1
+                    ],
+                    "isCorrect": false,
+                    "studentAnswerText": "B. J",
+                    "correctAnswerText": "A. U<br>B. J<br>C. Y"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Nama garis mistar pembantu tersebut adalah?",
+                        "options": [
+                            "Scroll Bar",
+                            "Ribbon",
+                            "Ruler",
+                            "Status Bar"
+                        ],
+                        "answer": 2,
+                        "answers": [],
+                        "explanation": "Ruler (mistar) adalah elemen untuk mengetahui posisi kursor dan tabulasi batas margin.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Saat membuka MS Word 2007, terlihat garis mistar berangka di bagian atas dan kiri layar putih untuk membantu mengukur batas margin."
+                    },
+                    "studentAnswer": 2,
+                    "isCorrect": true,
+                    "studentAnswerText": "C. Ruler",
+                    "correctAnswerText": "C. Ruler"
+                },
+                {
+                    "question": {
+                        "type": "case_analysis",
+                        "question": "Cara termudah bagi Doni untuk melebarkan kolom tersebut adalah?",
+                        "options": [
+                            "Menghapus tabel dan membuat baru",
+                            "Menggeser (drag) garis batas (margin) antar kolom dengan mouse",
+                            "Mengubah ukuran kertas menjadi Legal",
+                            "Menambah baris pada tabel"
+                        ],
+                        "answer": 1,
+                        "answers": [],
+                        "explanation": "Cara manual melebarkan kolom tabel adalah mendrag (menyeret) garis pembatas kolom dengan mouse.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": [],
+                        "passage": "Setelah membuat tabel berisi jadwal piket kelas, Doni merasa kolom \"Nama Siswa\" kurang lebar untuk nama yang panjang."
+                    },
+                    "studentAnswer": 1,
+                    "isCorrect": true,
+                    "studentAnswerText": "B. Menggeser (drag) garis batas (margin) antar kolom dengan mouse",
+                    "correctAnswerText": "B. Menggeser (drag) garis batas (margin) antar kolom dengan mouse"
+                },
+                {
+                    "question": {
+                        "type": "complex",
+                        "question": "Manakah cara yang tepat untuk menambahkan tabel (Table) ke dalam lembar kerja Word?",
+                        "options": [
+                            "Klik tab Insert -> klik ikon Table",
+                            "Klik tab Home -> klik Paste",
+                            "Klik tab Insert -> klik Insert Table",
+                            "Klik tab Page Layout -> klik Margins"
+                        ],
+                        "answer": 0,
+                        "answers": [
+                            0,
+                            2
+                        ],
+                        "explanation": "Menyisipkan tabel dilakukan dari menu Insert, lalu ikon Table, kemudian Insert Table.",
+                        "image": "",
+                        "premises": [],
+                        "targets": [],
+                        "pairs": []
+                    },
+                    "studentAnswer": [
+                        2
+                    ],
+                    "isCorrect": false,
+                    "studentAnswerText": "C. Klik tab Insert -> klik Insert Table",
+                    "correctAnswerText": "A. Klik tab Insert -> klik ikon Table<br>C. Klik tab Insert -> klik Insert Table"
+                }
+            ]
+        },
+        {
             "nis": "250051",
             "name": "AHMAD WAHYU RAMADHANI",
             "class": "VIII A (UNGGULAN MIPA)",
@@ -1408,7 +2308,8 @@
         }
     ],
     "review_settings": {
-        "quiz-1794921157572": true
+        "quiz-1794921157572": false,
+        "all": false
     },
     "retake_permissions": [],
     "students": [
@@ -10549,11 +11450,438 @@
                 1
             ],
             "started_at": 1794953884,
-            "ends_at": 1794954184,
-            "updated_at": 1794954181,
-            "violations_count": 32,
-            "last_violation_at": 1794955302,
-            "last_violation_type": "tab_switch"
+            "ends_at": 1794955974,
+            "updated_at": 1794955950,
+            "violations_count": 54,
+            "last_violation_at": 1794956396,
+            "last_violation_type": "exit_fullscreen",
+            "finished": true,
+            "result_token": "2ac4a40ce5e9a2212a197957e33a736d6c1c4705e05714e644c2392977bdac9e",
+            "score": 40
+        },
+        "f4c5c49b1f6c875ce0e859f1e8cbcd21191702ec39db5205e6a54e6eb61924a4": {
+            "token": "9c501106f36b5083b9aa82ed986a7858f93130d0690663c4dde0ad47d3e2e846",
+            "token_hash": "f4c5c49b1f6c875ce0e859f1e8cbcd21191702ec39db5205e6a54e6eb61924a4",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "nis": "250121",
+            "name": "AZZAM PUTRA PRAYOGA",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "question_order": [
+                30,
+                45,
+                43,
+                23,
+                21
+            ],
+            "option_order": {
+                "21": [
+                    2,
+                    3,
+                    1,
+                    0
+                ],
+                "23": [
+                    0,
+                    3,
+                    1,
+                    2
+                ],
+                "30": [],
+                "43": [
+                    0,
+                    2,
+                    1,
+                    3
+                ],
+                "45": [
+                    0,
+                    2,
+                    1,
+                    3
+                ]
+            },
+            "answers": [
+                "both_false",
+                [
+                    2
+                ],
+                1,
+                2,
+                [
+                    0
+                ]
+            ],
+            "started_at": 1794955784,
+            "ends_at": 1794956084,
+            "updated_at": 1794955980,
+            "violations_count": 5,
+            "last_violation_at": 1794955984,
+            "last_violation_type": "exit_fullscreen",
+            "finished": true,
+            "result_token": "86b7793a368bbb26df3f37c40881a3484d55131bf8392e9f76130f9af06f6bd2",
+            "score": 60
+        },
+        "6b550c521224f8a64006784a3c9b5c94ecd268359d689ce094b6219e3cfe55f4": {
+            "token": "3c9c954b9515a25d728e459e5f628013d49499766dba3a21d520682b8b7d5431",
+            "token_hash": "6b550c521224f8a64006784a3c9b5c94ecd268359d689ce094b6219e3cfe55f4",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "nis": "250163",
+            "name": "DZEKO ZAHWAN KASIYANTO",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "question_order": [
+                9,
+                11,
+                44,
+                4,
+                42
+            ],
+            "option_order": {
+                "9": [
+                    0,
+                    1,
+                    3,
+                    2
+                ],
+                "11": [
+                    3,
+                    2,
+                    0,
+                    1
+                ],
+                "44": [
+                    2,
+                    0,
+                    1,
+                    3
+                ],
+                "4": [
+                    3,
+                    2,
+                    0,
+                    1
+                ],
+                "42": []
+            },
+            "answers": [
+                [
+                    0,
+                    1
+                ],
+                2,
+                1,
+                1,
+                "both_correct_not_connected"
+            ],
+            "started_at": 1794958622,
+            "ends_at": 1794958922,
+            "updated_at": 1794958690,
+            "finished": true,
+            "result_token": "3eea62a1f379263b78d897902100d2d2eb30523d607ea6ada8edb2cd823b1c2a",
+            "score": 60,
+            "violations_count": 1,
+            "last_violation_at": 1794958695,
+            "last_violation_type": "exit_fullscreen"
+        },
+        "ca131c9f258fc3e9ad139defd8ae86a15dccc8cd8ed2ba3ae0443f7be30d732f": {
+            "token": "165764c950014f47516163161eb9d24a69a5b66f65850ffa64bdcc1e461d244c",
+            "token_hash": "ca131c9f258fc3e9ad139defd8ae86a15dccc8cd8ed2ba3ae0443f7be30d732f",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "nis": "250163",
+            "name": "DZEKO ZAHWAN KASIYANTO",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "question_order": [
+                48,
+                19,
+                32,
+                0,
+                29
+            ],
+            "option_order": {
+                "48": [
+                    3,
+                    0,
+                    1,
+                    2
+                ],
+                "19": [
+                    3,
+                    0,
+                    1,
+                    2
+                ],
+                "32": [
+                    3,
+                    0,
+                    1,
+                    2
+                ],
+                "0": [
+                    3,
+                    0,
+                    1,
+                    2
+                ],
+                "29": [
+                    2,
+                    0,
+                    1,
+                    3
+                ]
+            },
+            "answers": [
+                2,
+                0,
+                3,
+                2,
+                [
+                    0,
+                    1,
+                    2
+                ]
+            ],
+            "started_at": 1794960573,
+            "ends_at": 1794961395,
+            "updated_at": 1794961135,
+            "violations_count": 17,
+            "last_violation_at": 1794961138,
+            "last_violation_type": "exit_fullscreen",
+            "violations_log": [
+                {
+                    "time": "18\/11\/2026 01:09:37",
+                    "timestamp": 1794960577,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 1
+                },
+                {
+                    "time": "18\/11\/2026 01:09:42",
+                    "timestamp": 1794960582,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 2
+                },
+                {
+                    "time": "18\/11\/2026 01:09:47",
+                    "timestamp": 1794960587,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 3
+                },
+                {
+                    "time": "18\/11\/2026 01:09:53",
+                    "timestamp": 1794960593,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 4
+                },
+                {
+                    "time": "18\/11\/2026 01:09:55",
+                    "timestamp": 1794960595,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 5
+                },
+                {
+                    "time": "18\/11\/2026 01:10:01",
+                    "timestamp": 1794960601,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 6
+                },
+                {
+                    "time": "18\/11\/2026 01:10:03",
+                    "timestamp": 1794960603,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 7
+                },
+                {
+                    "time": "18\/11\/2026 01:10:39",
+                    "timestamp": 1794960639,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 8
+                },
+                {
+                    "time": "18\/11\/2026 01:10:49",
+                    "timestamp": 1794960649,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 9
+                },
+                {
+                    "time": "18\/11\/2026 01:11:02",
+                    "timestamp": 1794960662,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 10
+                },
+                {
+                    "time": "18\/11\/2026 01:11:03",
+                    "timestamp": 1794960663,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 11
+                },
+                {
+                    "time": "18\/11\/2026 01:13:33",
+                    "timestamp": 1794960813,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 12
+                },
+                {
+                    "time": "18\/11\/2026 01:17:20",
+                    "timestamp": 1794961040,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 13
+                },
+                {
+                    "time": "18\/11\/2026 01:17:26",
+                    "timestamp": 1794961046,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 14
+                },
+                {
+                    "time": "18\/11\/2026 01:18:03",
+                    "timestamp": 1794961083,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 15
+                },
+                {
+                    "time": "18\/11\/2026 01:18:06",
+                    "timestamp": 1794961086,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 16
+                },
+                {
+                    "time": "18\/11\/2026 01:18:58",
+                    "timestamp": 1794961138,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 17
+                }
+            ],
+            "finished": true,
+            "result_token": "c77063d41f52aeb4876ed458ae02b99f8505ea425d133771ffae652e4d7467a0",
+            "score": 100
+        },
+        "5bf7a8251cad21a413dfec2270a91389580b241dffaaa0c26b0e6a82dbb1ef3e": {
+            "token": "26cc512b0e17b5a6846cb4d1d2866c0e11621ed2c12d35314066e58ecab1dd73",
+            "token_hash": "5bf7a8251cad21a413dfec2270a91389580b241dffaaa0c26b0e6a82dbb1ef3e",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "nis": "250262",
+            "name": "M. KHANNAN KAROMUL UMAM",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "question_order": [
+                8,
+                39,
+                7,
+                3,
+                10,
+                41
+            ],
+            "option_order": {
+                "8": [
+                    1,
+                    3,
+                    0,
+                    2
+                ],
+                "39": [
+                    0,
+                    3,
+                    1,
+                    2
+                ],
+                "7": [
+                    2,
+                    3,
+                    1,
+                    0
+                ],
+                "3": [
+                    0,
+                    2,
+                    3,
+                    1
+                ],
+                "10": [],
+                "41": [
+                    0,
+                    1,
+                    3,
+                    2
+                ]
+            },
+            "answers": [
+                0,
+                3,
+                0,
+                1,
+                "both_correct_connected"
+            ],
+            "started_at": 1794961543,
+            "ends_at": 1795010657,
+            "updated_at": 1795010657,
+            "violations_count": 6,
+            "last_violation_at": 1795010659,
+            "last_violation_type": "exit_fullscreen",
+            "violations_log": [
+                {
+                    "time": "18\/11\/2026 15:01:49",
+                    "timestamp": 1795010509,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 1
+                },
+                {
+                    "time": "18\/11\/2026 15:02:01",
+                    "timestamp": 1795010521,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 2
+                },
+                {
+                    "time": "18\/11\/2026 15:02:19",
+                    "timestamp": 1795010539,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 3
+                },
+                {
+                    "time": "18\/11\/2026 15:03:46",
+                    "timestamp": 1795010626,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 4
+                },
+                {
+                    "time": "18\/11\/2026 15:03:50",
+                    "timestamp": 1795010630,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 5
+                },
+                {
+                    "time": "18\/11\/2026 15:04:19",
+                    "timestamp": 1795010659,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 6
+                }
+            ],
+            "finished": true,
+            "result_token": "f7d4461f8ca6c230e6bce1938df26ffd9983f7f4f2c9b1921e6f36eeb1e47e06",
+            "score": 83
         }
     },
     "student_sessions": {
@@ -10588,16 +11916,233 @@
             "class": "VIII A (UNGGULAN MIPA)",
             "quiz_id": "quiz-1794921157572",
             "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
-            "status": "WORKING",
+            "status": "STANDBY",
             "ip": "::1",
             "login_at": 1794953862,
-            "last_seen": 1794954181,
-            "attempt_token_hash": "4b29a8371f2d4078fecfadf5f76bf458a5a4a31dbf7c09c40ec31b185552685d",
-            "started_at": 1794953884,
-            "ends_at": 1794954184,
-            "violations_count": 32,
-            "last_violation_at": 1794955302,
-            "last_violation_type": "tab_switch"
+            "last_seen": 1794956479,
+            "attempt_token_hash": "4b29a8371f2d4078fecfadf5f76bf458a5a4a31dbf7c09c40ec31b185552685d"
+        },
+        "250121": {
+            "nis": "250121",
+            "name": "AZZAM PUTRA PRAYOGA",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "status": "FINISHED",
+            "ip": "::1",
+            "login_at": 1794955737,
+            "last_seen": 1794955984,
+            "attempt_token_hash": "f4c5c49b1f6c875ce0e859f1e8cbcd21191702ec39db5205e6a54e6eb61924a4",
+            "started_at": 1794955784,
+            "ends_at": 1794956084,
+            "violations_count": 5,
+            "last_violation_at": 1794955984,
+            "last_violation_type": "exit_fullscreen",
+            "finished_at": 1794955984,
+            "score": 60
+        },
+        "250163": {
+            "nis": "250163",
+            "name": "DZEKO ZAHWAN KASIYANTO",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "status": "FINISHED",
+            "ip": "::1",
+            "login_at": 1794956545,
+            "last_seen": 1794961138,
+            "attempt_token_hash": "ca131c9f258fc3e9ad139defd8ae86a15dccc8cd8ed2ba3ae0443f7be30d732f",
+            "started_at": 1794960573,
+            "ends_at": 1794961395,
+            "violations_count": 17,
+            "last_violation_at": 1794961138,
+            "last_violation_type": "exit_fullscreen",
+            "violations_log": [
+                {
+                    "time": "18\/11\/2026 01:09:37",
+                    "timestamp": 1794960577,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 1
+                },
+                {
+                    "time": "18\/11\/2026 01:09:42",
+                    "timestamp": 1794960582,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 2
+                },
+                {
+                    "time": "18\/11\/2026 01:09:47",
+                    "timestamp": 1794960587,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 3
+                },
+                {
+                    "time": "18\/11\/2026 01:09:53",
+                    "timestamp": 1794960593,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 4
+                },
+                {
+                    "time": "18\/11\/2026 01:09:55",
+                    "timestamp": 1794960595,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 5
+                },
+                {
+                    "time": "18\/11\/2026 01:10:01",
+                    "timestamp": 1794960601,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 6
+                },
+                {
+                    "time": "18\/11\/2026 01:10:03",
+                    "timestamp": 1794960603,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 7
+                },
+                {
+                    "time": "18\/11\/2026 01:10:39",
+                    "timestamp": 1794960639,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 8
+                },
+                {
+                    "time": "18\/11\/2026 01:10:49",
+                    "timestamp": 1794960649,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 9
+                },
+                {
+                    "time": "18\/11\/2026 01:11:02",
+                    "timestamp": 1794960662,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 10
+                },
+                {
+                    "time": "18\/11\/2026 01:11:03",
+                    "timestamp": 1794960663,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 11
+                },
+                {
+                    "time": "18\/11\/2026 01:13:33",
+                    "timestamp": 1794960813,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 12
+                },
+                {
+                    "time": "18\/11\/2026 01:17:20",
+                    "timestamp": 1794961040,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 13
+                },
+                {
+                    "time": "18\/11\/2026 01:17:26",
+                    "timestamp": 1794961046,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 14
+                },
+                {
+                    "time": "18\/11\/2026 01:18:03",
+                    "timestamp": 1794961083,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 15
+                },
+                {
+                    "time": "18\/11\/2026 01:18:06",
+                    "timestamp": 1794961086,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 16
+                },
+                {
+                    "time": "18\/11\/2026 01:18:58",
+                    "timestamp": 1794961138,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 17
+                }
+            ],
+            "finished_at": 1794961138,
+            "score": 100
+        },
+        "250262": {
+            "nis": "250262",
+            "name": "M. KHANNAN KAROMUL UMAM",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "status": "FINISHED",
+            "ip": "::1",
+            "login_at": 1794961529,
+            "last_seen": 1795010659,
+            "attempt_token_hash": "5bf7a8251cad21a413dfec2270a91389580b241dffaaa0c26b0e6a82dbb1ef3e",
+            "started_at": 1794961543,
+            "ends_at": 1795010657,
+            "violations_count": 6,
+            "last_violation_at": 1795010659,
+            "last_violation_type": "exit_fullscreen",
+            "violations_log": [
+                {
+                    "time": "18\/11\/2026 15:01:49",
+                    "timestamp": 1795010509,
+                    "type": "app_switch",
+                    "details": "Fokus layar berpindah ke aplikasi lain atau jendela browser lain",
+                    "count": 1
+                },
+                {
+                    "time": "18\/11\/2026 15:02:01",
+                    "timestamp": 1795010521,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 2
+                },
+                {
+                    "time": "18\/11\/2026 15:02:19",
+                    "timestamp": 1795010539,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 3
+                },
+                {
+                    "time": "18\/11\/2026 15:03:46",
+                    "timestamp": 1795010626,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 4
+                },
+                {
+                    "time": "18\/11\/2026 15:03:50",
+                    "timestamp": 1795010630,
+                    "type": "tab_switch",
+                    "details": "Pindah tab atau meminimalkan jendela browser",
+                    "count": 5
+                },
+                {
+                    "time": "18\/11\/2026 15:04:19",
+                    "timestamp": 1795010659,
+                    "type": "exit_fullscreen",
+                    "details": "Keluar dari mode layar penuh (Full Screen)",
+                    "count": 6
+                }
+            ],
+            "finished_at": 1795010659,
+            "score": 83
         }
     },
     "audit_logs": [
@@ -10971,12 +12516,1268 @@
             "action": "Peringatan Kecurangan",
             "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-32)",
             "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:46:08+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-33)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:47:35+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-34)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:47:42+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-35)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:47:49+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-36)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:47:54+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250053",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:47:57+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-37)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:48:02+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-38)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:48:05+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-39)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:48:57+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250121 - AZZAM PUTRA PRAYOGA",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-17T23:49:20+01:00",
+            "user": "guru",
+            "action": "Simpan paket kuis",
+            "target": "",
+            "detail": "1 paket"
+        },
+        {
+            "time": "2026-11-17T23:49:44+01:00",
+            "user": "guru",
+            "action": "Mulai ujian",
+            "target": "250121 - AZZAM PUTRA PRAYOGA",
+            "detail": "Paket: UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-17T23:49:53+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AZZAM PUTRA PRAYOGA (NIS: 250121) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-1)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:49:59+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-40)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:50:46+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AZZAM PUTRA PRAYOGA (NIS: 250121) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-2)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:50:47+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AZZAM PUTRA PRAYOGA (NIS: 250121) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-3)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:51:31+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AZZAM PUTRA PRAYOGA (NIS: 250121) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-4)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:51:31+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-41)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:53:04+01:00",
+            "user": "guru",
+            "action": "Selesai ujian",
+            "target": "250121 - AZZAM PUTRA PRAYOGA",
+            "detail": "Nilai: 60 (3 Benar, 2 Salah) - UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-17T23:53:04+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AZZAM PUTRA PRAYOGA (NIS: 250121) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-5)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:53:37+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-42)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:54:06+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-43)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:56:31+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-44)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:56:44+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-45)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:58:51+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-46)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:58:53+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-47)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:59:04+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-48)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:59:16+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-49)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:59:23+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-50)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:59:30+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-51)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:59:39+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-52)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:59:52+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-53)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-17T23:59:56+01:00",
+            "user": "guru",
+            "action": "Selesai ujian",
+            "target": "250053 - AHMAD ZIYAD ASSYAFIQ",
+            "detail": "Nilai: 40 (4 Benar, 6 Salah) - UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-17T23:59:56+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa AHMAD ZIYAD ASSYAFIQ (NIS: 250053) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-54)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T00:01:19+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250053 - AHMAD ZIYAD ASSYAFIQ",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T00:02:25+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T00:21:09+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T00:22:16+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T00:23:19+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T00:31:49+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T00:36:50+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T00:37:02+01:00",
+            "user": "guru",
+            "action": "Mulai ujian",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Paket: UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-18T00:38:15+01:00",
+            "user": "guru",
+            "action": "Selesai ujian",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Nilai: 60 (3 Benar, 2 Salah) - UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-18T00:38:15+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-1)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T00:59:15+01:00",
+            "user": "guru",
+            "action": "Izin ujian ulang",
+            "target": "250163 \/ quiz-1794921157572",
+            "detail": "Kesempatan: 1"
+        },
+        {
+            "time": "2026-11-18T00:59:50+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T01:00:17+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T01:08:53+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T01:09:12+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T01:09:33+01:00",
+            "user": "guru",
+            "action": "Mulai ujian",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Paket: UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-18T01:09:37+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-1)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:09:42+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-2)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:09:47+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-3)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:09:53+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-4)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:09:55+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-5)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:10:01+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-6)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:10:03+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-7)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:10:39+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-8)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:10:49+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-9)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:11:02+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-10)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:11:03+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-11)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:13:33+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-12)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:17:20+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-13)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:17:26+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-14)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:18:01+01:00",
+            "user": "guru",
+            "action": "Minta perpanjangan waktu",
+            "target": "250163 \/ quiz-1794921157572",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:18:03+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-15)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:18:06+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-16)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:18:15+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250163",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:18:58+01:00",
+            "user": "guru",
+            "action": "Selesai ujian",
+            "target": "250163 - DZEKO ZAHWAN KASIYANTO",
+            "detail": "Nilai: 100 (5 Benar, 0 Salah) - UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-18T01:18:58+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa DZEKO ZAHWAN KASIYANTO (NIS: 250163) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-17)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:24:52+01:00",
+            "user": "guru",
+            "action": "Simpan paket kuis",
+            "target": "",
+            "detail": "1 paket"
+        },
+        {
+            "time": "2026-11-18T01:25:29+01:00",
+            "user": "guru",
+            "action": "Login siswa",
+            "target": "250262 - M. KHANNAN KAROMUL UMAM",
+            "detail": "Kelas VIII A (UNGGULAN MIPA) (UB Informatika Semester Ganjil 2026-2027)"
+        },
+        {
+            "time": "2026-11-18T01:25:43+01:00",
+            "user": "guru",
+            "action": "Mulai ujian",
+            "target": "250262 - M. KHANNAN KAROMUL UMAM",
+            "detail": "Paket: UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-18T01:26:07+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-1)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:26:10+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-2)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:33:29+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-3)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:33:35+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-4)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:33:47+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-5)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:33:53+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-6)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:34:01+01:00",
+            "user": "guru",
+            "action": "Minta perpanjangan waktu",
+            "target": "250262 \/ quiz-1794921157572",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:34:04+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-7)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:34:06+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-8)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:34:16+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250262",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:34:24+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-9)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:34:32+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-10)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:35:06+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-11)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:35:18+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-12)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:35:30+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-13)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:35:41+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-14)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:35:44+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-15)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:35:46+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-16)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:36:06+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-17)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:36:19+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-18)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:36:49+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-19)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:38:11+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-20)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:38:23+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-21)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:38:54+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-22)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:43:21+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-23)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:43:24+01:00",
+            "user": "guru",
+            "action": "Minta perpanjangan waktu",
+            "target": "250262 \/ quiz-1794921157572",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:43:26+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-24)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:43:32+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250262",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:43:47+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-25)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:43:49+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-26)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:50:47+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-27)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:02+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-28)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:08+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-29)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:13+01:00",
+            "user": "guru",
+            "action": "Minta perpanjangan waktu",
+            "target": "250262 \/ quiz-1794921157572",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:15+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-30)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:18+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250262",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:54+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-31)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:54+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-32)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:51:59+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-33)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:52:11+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-34)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:53:12+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-35)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:53:12+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-36)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:53:24+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-37)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:53:31+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-38)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:55:00+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-39)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T01:55:38+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-40)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:05+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-41)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:10+01:00",
+            "user": "guru",
+            "action": "Minta perpanjangan waktu",
+            "target": "250262 \/ quiz-1794921157572",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:13+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-42)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:16+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-43)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:23+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250262",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:38+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-44)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:38+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-45)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:48+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-46)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:00:56+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-47)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:01:08+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-48)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:01:34+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-49)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:01:40+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-50)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:01:51+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-51)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:01:58+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-52)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:08+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-53)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:21+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-54)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:28+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-55)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:29+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-56)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:36+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-57)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:42+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-58)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:44+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-59)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:48+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-60)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:02:58+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-61)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:03:11+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-62)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:06:08+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-63)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:06:11+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-64)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:06:57+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-65)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:06:59+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-66)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:07:04+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-67)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:07:26+01:00",
+            "user": "guru",
+            "action": "Minta perpanjangan waktu",
+            "target": "250262 \/ quiz-1794921157572",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:07:27+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-68)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:07:35+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250262",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:08:03+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-69)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:08:37+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-70)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:10:23+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-71)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:10:36+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-72)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:23:36+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-73)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T02:23:38+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-74)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:54:34+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-75)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:54:45+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-76)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:54:48+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-77)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:54:52+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-78)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:55:03+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-79)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:55:04+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-80)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:55:07+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-81)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:55:46+01:00",
+            "user": "guru",
+            "action": "Login guru",
+            "target": "::1",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:58:58+01:00",
+            "user": "guru",
+            "action": "Minta perpanjangan waktu",
+            "target": "250262 \/ quiz-1794921157572",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:58:59+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-82)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:59:17+01:00",
+            "user": "guru",
+            "action": "Setujui perpanjangan waktu +5m",
+            "target": "250262",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:59:28+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-83)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:59:40+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-84)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T14:59:48+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-85)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T15:00:31+01:00",
+            "user": "guru",
+            "action": "Reset Pelanggaran",
+            "target": "NIS: 250262",
+            "detail": "Jumlah pelanggaran direset ke 0 oleh guru"
+        },
+        {
+            "time": "2026-11-18T15:01:49+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Fokus layar berpindah ke aplikasi lain atau jendela browser lain (ke-1)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T15:02:01+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-2)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T15:02:19+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-3)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T15:03:46+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-4)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T15:03:50+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Pindah tab atau meminimalkan jendela browser (ke-5)",
+            "detail": ""
+        },
+        {
+            "time": "2026-11-18T15:04:19+01:00",
+            "user": "guru",
+            "action": "Selesai ujian",
+            "target": "250262 - M. KHANNAN KAROMUL UMAM",
+            "detail": "Nilai: 83 (5 Benar, 1 Salah) - UB Informatika Semester Ganjil 2026-2027"
+        },
+        {
+            "time": "2026-11-18T15:04:19+01:00",
+            "user": "guru",
+            "action": "Peringatan Kecurangan",
+            "target": "Siswa M. KHANNAN KAROMUL UMAM (NIS: 250262) terdeteksi: Keluar dari mode layar penuh (Full Screen) (ke-6)",
+            "detail": ""
         }
     ],
     "backups": [
         {
             "file": "examlan-20261117-141237-before-save-quizzes.json",
             "time": "2026-11-17T14:12:37+01:00",
+            "reason": "before-save-quizzes"
+        },
+        {
+            "file": "examlan-20261117-234920-before-save-quizzes.json",
+            "time": "2026-11-17T23:49:20+01:00",
+            "reason": "before-save-quizzes"
+        },
+        {
+            "file": "examlan-20261118-012452-before-save-quizzes.json",
+            "time": "2026-11-18T01:24:52+01:00",
             "reason": "before-save-quizzes"
         }
     ],
@@ -11011,8 +13812,38 @@
             "quiz_id": "quiz-1794921157572",
             "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
             "requested_at": 1794954341,
-            "status": "PENDING",
-            "added_minutes": 0
+            "status": "APPROVED",
+            "added_minutes": 5,
+            "new_ends_at": 1794955974,
+            "responded_at": 1794955674
+        },
+        {
+            "id": "req_1031536c1c9f7bae",
+            "token_hash": "ca131c9f258fc3e9ad139defd8ae86a15dccc8cd8ed2ba3ae0443f7be30d732f",
+            "nis": "250163",
+            "name": "DZEKO ZAHWAN KASIYANTO",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "requested_at": 1794961081,
+            "status": "APPROVED",
+            "added_minutes": 5,
+            "new_ends_at": 1794961395,
+            "responded_at": 1794961095
+        },
+        {
+            "id": "req_b9be0fe9f1ca3b5d",
+            "token_hash": "5bf7a8251cad21a413dfec2270a91389580b241dffaaa0c26b0e6a82dbb1ef3e",
+            "nis": "250262",
+            "name": "M. KHANNAN KAROMUL UMAM",
+            "class": "VIII A (UNGGULAN MIPA)",
+            "quiz_id": "quiz-1794921157572",
+            "quiz_title": "UB Informatika Semester Ganjil 2026-2027",
+            "requested_at": 1795010338,
+            "status": "APPROVED",
+            "added_minutes": 5,
+            "new_ends_at": 1795010657,
+            "responded_at": 1795010357
         }
     ],
     "settings": {

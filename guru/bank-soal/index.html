@@ -446,8 +446,22 @@
                 const qCount = (q.questions || []).length;
                 const isDraft = (q.status || 'ACTIVE') === 'DRAFT';
                 const statusBadge = isDraft
-                    ? '<span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">DRAF</span>'
-                    : '<span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">AKTIF</span>';
+                    ? '<span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full border border-slate-200">DRAF</span>'
+                    : '<span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">AKTIF</span>';
+
+                const maxQ = (q.max_questions && q.max_questions > 0) ? parseInt(q.max_questions) : 0;
+                const isSubset = (maxQ > 0 && maxQ < qCount);
+                const activeCount = isSubset ? maxQ : qCount;
+
+                const typeNames = {
+                    'mc': 'Pilihan Ganda',
+                    'complex': 'Ganda Kompleks',
+                    'cause_effect': 'Sebab Akibat',
+                    'case_analysis': 'Analisis Kasus',
+                    'matching': 'Menjodohkan',
+                    'mixed': 'Campuran 5 Bentuk'
+                };
+                const typeName = typeNames[q.quiz_type] || 'Campuran';
 
                 const isAutoPin = (q.pin && q.pin_auto_refresh !== false);
                 const tokenBadge = q.pin ? `
@@ -470,36 +484,77 @@
                 `;
 
                 return `
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs hover:shadow-sm transition p-4 space-y-3 flex flex-col justify-between">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between space-y-3.5 group">
+                        <!-- Top: Badges & Judul -->
                         <div class="space-y-2">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-[11px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md border border-brand-100 truncate max-w-[150px]">
-                                    ${q.subject || 'Umum'}
-                                </span>
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-[11px] font-bold text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-lg border border-brand-200/80 truncate max-w-[150px]" title="${escapeHtml(q.subject || 'Umum')}">
+                                        ${escapeHtml(q.subject || 'Umum')}
+                                    </span>
+                                    <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">
+                                        ${q.class ? 'Kelas ' + escapeHtml(q.class) : 'Semua Kelas'}
+                                    </span>
+                                </div>
                                 ${statusBadge}
                             </div>
+
                             <div>
-                                <h3 class="font-bold text-slate-800 text-sm leading-snug line-clamp-2" title="${q.title}">${q.title}</h3>
-                                <p class="text-[11px] text-slate-500 mt-0.5">${q.class ? 'Kelas: ' + q.class : 'Semua Kelas'}</p>
-                            </div>
-                            <div class="flex items-center justify-between pt-1 flex-wrap gap-1">
-                                <div class="flex items-center gap-1.5 flex-wrap">
-                                    ${tokenBadge}
-                                </div>
-                                <span class="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-                                    <i class="fa-solid fa-clock text-slate-400"></i> ${q.duration || 60}m
-                                </span>
+                                <h3 class="font-bold text-slate-900 text-sm sm:text-[15px] leading-snug line-clamp-2 group-hover:text-brand-600 transition" title="${escapeHtml(q.title)}">
+                                    ${escapeHtml(q.title)}
+                                </h3>
+                                <p class="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+                                    <span class="inline-flex items-center gap-1 text-slate-500 font-medium"><i class="fa-solid fa-shapes text-slate-400 text-[10px]"></i> ${typeName}</span>
+                                </p>
                             </div>
                         </div>
 
-                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5">
-                            <button type="button" onclick="openQuestionManager('${q.id}')" class="flex-1 btn-compact bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 flex items-center justify-center gap-1.5 font-bold transition">
-                                <i class="fa-solid fa-list-check text-xs"></i> <span>Soal (${qCount})</span>
+                        <!-- Info Box: Soal Aktif per Total Soal & Durasi Waktu -->
+                        <div class="bg-slate-50/90 rounded-xl p-3 border border-slate-100 space-y-2.5">
+                            <div class="flex items-center justify-between gap-2 text-xs">
+                                <!-- Info Soal Aktif per Total Soal -->
+                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                    <div class="w-8 h-8 rounded-lg ${isSubset ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'} flex items-center justify-center text-xs font-bold shrink-0">
+                                        <i class="fa-solid ${isSubset ? 'fa-shuffle' : 'fa-list-check'}"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="font-extrabold text-slate-800 text-xs">${activeCount} <span class="text-slate-400 font-normal">/</span> ${qCount} Soal Aktif</span>
+                                            ${isSubset ? '<span class="text-[9px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-200 px-1.5 py-0.2 rounded-md">Acak</span>' : '<span class="text-[9px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 px-1.5 py-0.2 rounded-md">Semua</span>'}
+                                        </div>
+                                        <p class="text-[10px] text-slate-500 mt-0.5 leading-tight truncate">
+                                            ${isSubset ? `Siswa mengerjakan ${activeCount} soal acak dari total ${qCount}` : `Seluruh ${qCount} butir soal dikerjakan`}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Durasi Waktu -->
+                                <div class="text-right shrink-0 pl-2.5 border-l border-slate-200/70">
+                                    <span class="font-bold text-slate-700 text-xs flex items-center justify-end gap-1">
+                                        <i class="fa-regular fa-clock text-slate-400"></i> ${q.duration || 60}m
+                                    </span>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 leading-none">Durasi</p>
+                                </div>
+                            </div>
+
+                            <!-- Token Akses -->
+                            <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-1 flex-wrap">
+                                <span class="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
+                                    <i class="fa-solid fa-shield-halved text-[10px] text-slate-400"></i> Token Siswa:
+                                </span>
+                                ${tokenBadge}
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions -->
+                        <div class="pt-1 flex items-center justify-between gap-1.5">
+                            <button type="button" onclick="openQuestionManager('${q.id}')" class="flex-1 btn-compact py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl flex items-center justify-center gap-1.5 font-bold transition text-xs shadow-2xs">
+                                <i class="fa-solid fa-list-check text-xs"></i> <span>Kelola Soal (${qCount})</span>
                             </button>
-                            <button type="button" onclick="openQuizModal('${q.id}')" class="p-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Edit Paket">
+                            <button type="button" onclick="openQuizModal('${q.id}')" class="p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl border border-slate-200 transition" title="Edit Paket Kuis">
                                 <i class="fa-solid fa-pen text-xs"></i>
                             </button>
-                            <button type="button" onclick="deleteQuiz('${q.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Paket">
+                            <button type="button" onclick="deleteQuiz('${q.id}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 transition" title="Hapus Paket Kuis">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>

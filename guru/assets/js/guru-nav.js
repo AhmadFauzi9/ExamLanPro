@@ -114,15 +114,15 @@
                         <h3 class="text-base font-bold text-slate-800">Login Guru / Server</h3>
                         <p class="text-xs text-slate-500">Masukkan password pengawas ujian untuk membuka dashboard.</p>
                     </div>
-                    <form onsubmit="verifyServerPassword(event)" class="space-y-3">
+                    <div class="space-y-3">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-600 mb-1 uppercase tracking-wider">Password Guru</label>
-                            <input type="password" id="server-password-input" required autocomplete="current-password" placeholder="Masukkan password..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
+                            <input type="text" id="server-password-input" name="server_auth_key" required autocomplete="one-time-code" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" onkeydown="if(event.key === 'Enter') verifyServerPassword(event)" style="-webkit-text-security: disc; text-security: disc;" placeholder="Masukkan password..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-xs">
                         </div>
-                        <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                        <button type="button" onclick="verifyServerPassword(event)" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
                             Masuk Dashboard
                         </button>
-                    </form>
+                    </div>
                 </div>
             `;
             document.body.appendChild(authDiv);

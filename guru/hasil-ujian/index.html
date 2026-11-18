@@ -510,12 +510,17 @@
         // Filter Dropdowns
         function populateQuizFilter() {
             const select = document.getElementById('teacher-quiz-filter');
+            if (!select) return;
             const currentVal = select.value || 'all';
             const quizzes = dbData.questions || [];
 
-            select.innerHTML = '<option value="all">Soal Ujian</option>' + quizzes.map(q => `
+            select.innerHTML = '<option value="all">Soal Ujian (Semua)</option>' + quizzes.map(q => `
                 <option value="${q.id}" ${q.id === currentVal ? 'selected' : ''}>${escapeHtml(q.title || q.id)}</option>
             `).join('');
+
+            if (quizzes.length === 1 && (currentVal === 'all' || !currentVal)) {
+                select.value = quizzes[0].id;
+            }
         }
 
         function populateClassFilter() {
@@ -1199,7 +1204,7 @@
                 const res = await fetch(`${API_URL}?action=get_review_states`, { credentials: 'same-origin', cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
-                    reviewStates = data.review_states || {};
+                    reviewStates = data.review_states || data.review_settings || {};
                     updateTeacherReviewControl();
                 }
             } catch (e) {
@@ -1211,36 +1216,53 @@
             const filterValue = document.getElementById('teacher-quiz-filter').value;
             const statusEl = document.getElementById('teacher-review-status');
             const toggleBtn = document.getElementById('teacher-review-toggle');
+            if (!statusEl || !toggleBtn) return;
+
+            const quizzes = dbData.questions || [];
+            let isOpen = false;
+            let targetLabel = '';
 
             if (filterValue === 'all') {
-                statusEl.textContent = '';
-                toggleBtn.disabled = true;
-                toggleBtn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed flex items-center gap-1.5 font-bold';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Tampilkan Pembahasan</span>';
-                toggleBtn.setAttribute('data-tooltip', 'Pilih Soal Ujian terlebih dahulu');
-                return;
+                if (quizzes.length === 0) {
+                    statusEl.textContent = '';
+                    toggleBtn.disabled = true;
+                    toggleBtn.className = 'btn-compact bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed flex items-center gap-1.5 font-bold';
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Tampilkan Pembahasan</span>';
+                    toggleBtn.setAttribute('data-tooltip', 'Belum ada paket kuis terdaftar');
+                    return;
+                }
+                isOpen = quizzes.every(q => !!reviewStates[q.id]);
+                targetLabel = 'Semua Paket';
+            } else {
+                isOpen = !!reviewStates[filterValue];
+                targetLabel = 'Paket Ini';
             }
 
             toggleBtn.disabled = false;
-            const isOpen = !!reviewStates[filterValue];
             if (isOpen) {
                 statusEl.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Terbuka</span>';
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-xs"></i> <span>Tutup Pembahasan</span>';
                 toggleBtn.className = 'btn-compact bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1.5 font-bold transition shadow-2xs';
-                toggleBtn.setAttribute('data-tooltip', 'Klik untuk mengunci pembahasan siswa');
+                toggleBtn.setAttribute('data-tooltip', `Klik untuk mengunci pembahasan siswa (${targetLabel})`);
             } else {
                 statusEl.innerHTML = '<span class="text-slate-500 font-semibold"><i class="fa-solid fa-lock"></i> Terkunci</span>';
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-xs"></i> <span>Tampilkan Pembahasan</span>';
                 toggleBtn.className = 'btn-compact bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5 font-bold transition shadow-2xs';
-                toggleBtn.setAttribute('data-tooltip', 'Klik untuk membuka pembahasan untuk siswa');
+                toggleBtn.setAttribute('data-tooltip', `Klik untuk membuka pembahasan untuk siswa (${targetLabel})`);
             }
         }
 
         async function toggleTeacherReview() {
             const filterValue = document.getElementById('teacher-quiz-filter').value;
-            if (filterValue === 'all') return;
+            const quizzes = dbData.questions || [];
+            if (filterValue === 'all' && quizzes.length === 0) return;
 
-            const currentState = !!reviewStates[filterValue];
+            let currentState = false;
+            if (filterValue === 'all') {
+                currentState = quizzes.every(q => !!reviewStates[q.id]);
+            } else {
+                currentState = !!reviewStates[filterValue];
+            }
             const newState = !currentState;
 
             try {
@@ -1250,15 +1272,21 @@
                     body: JSON.stringify({ quiz_id: filterValue, enabled: newState })
                 });
                 const data = await res.json();
-                if (!res.ok) {
-                    appAlert(data.message || 'Gagal mengubah status pembahasan.');
+                if (!res.ok || data.status !== 'success') {
+                    appAlert(data.message || 'Gagal mengubah status pembahasan.', 'Gagal');
                     return;
                 }
-                reviewStates[filterValue] = newState;
+                if (data.review_settings) {
+                    reviewStates = data.review_settings;
+                } else if (filterValue === 'all') {
+                    quizzes.forEach(q => { reviewStates[q.id] = newState; });
+                } else {
+                    reviewStates[filterValue] = newState;
+                }
                 updateTeacherReviewControl();
-                appAlert(newState ? 'Pembahasan paket ini sekarang DIBUKA untuk siswa.' : 'Pembahasan paket ini sekarang DIKUNCI.', 'Status Pembahasan');
+                appAlert(newState ? 'Pembahasan berhasil DIBUKA untuk siswa.' : 'Pembahasan berhasil DIKUNCI dari siswa.', 'Status Pembahasan');
             } catch (e) {
-                appAlert('Gagal mengubah status pembahasan.');
+                appAlert('Gagal mengubah status pembahasan ke server.');
             }
         }
 

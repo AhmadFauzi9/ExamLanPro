@@ -180,10 +180,11 @@ function lockTeacherServer() {
 }
 
 async function verifyServerPassword(e, onSuccessCallback = null) {
-    if (e) e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const input = document.getElementById('server-password-input');
     if (!input) return;
     const pwd = input.value;
+    input.value = ''; // Segera hapus nilai dari DOM agar browser tidak menawarkan simpan sandi
     try {
         const res = await fetch(`${API_URL}?action=teacher_login`, {
             method: 'POST',

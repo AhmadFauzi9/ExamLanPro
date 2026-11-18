@@ -33,7 +33,18 @@
             }
         }
     </script>
+    <script>
+        // Mencegah kedip (flicker) form login saat reload jika siswa memiliki sesi aktif
+        try {
+            if (localStorage.getItem('examlan_active_attempt') || sessionStorage.getItem('examlan_pending_exam_info') || sessionStorage.getItem('examlan_student_session')) {
+                document.documentElement.classList.add('has-active-session');
+            }
+        } catch (e) {}
+    </script>
     <style>
+        .has-active-session #student-login-card {
+            display: none !important;
+        }
         /* Mencegah horizontal scroll window & memastikan tinggi penuh layar */
         html, body {
             overflow-x: hidden;
@@ -130,19 +141,33 @@
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col m-0 p-0 overflow-x-hidden">
 
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30">
-        <div class="w-full px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-2.5 flex justify-between items-center gap-3">
+            <div class="flex items-center space-x-3 shrink-0">
                 <div class="bg-brand-600 p-2 rounded-lg text-white">
                     <i class="fa-solid fa-network-wired text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight flex items-center gap-2">
+                    <h1 class="font-bold text-base sm:text-lg leading-tight flex items-center gap-2">
                         ExamLAN Pro <span class="bg-amber-500/20 text-amber-300 text-[10px] px-2 py-0.5 rounded-full border border-amber-500/30">v2.0 API Live Sync</span>
                     </h1>
                     <p class="text-xs text-slate-400">Sistem Evaluasi Lab Komputer Terintegrasi</p>
                 </div>
             </div>
 
+            <!-- Profil Peserta di Kanan Navbar (NIS, Kelas, Nama) -->
+            <div id="navbar-student-profile" class="hidden items-center gap-2.5 bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-xl">
+                <div class="w-8 h-8 rounded-lg bg-brand-600/30 border border-brand-500/40 text-brand-300 flex items-center justify-center font-bold text-xs shrink-0">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div class="text-right leading-tight min-w-0">
+                    <div id="nav-student-name" class="font-bold text-xs sm:text-sm text-white truncate max-w-[130px] sm:max-w-[220px]">-</div>
+                    <div class="text-[10px] sm:text-[11px] text-slate-400 flex items-center justify-end gap-1.5 mt-0.5 font-mono">
+                        <span id="nav-student-nis" class="text-brand-300 font-semibold">-</span>
+                        <span class="text-slate-600">•</span>
+                        <span id="nav-student-class" class="text-slate-300 truncate max-w-[80px] sm:max-w-none">-</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -161,7 +186,7 @@
                     <p class="text-slate-500 text-sm mt-1">Masukkan identitas Anda untuk melanjutkan ke ujian</p>
                 </div>
 
-                <form id="student-start-form" onsubmit="handleStudentLogin(event)" class="space-y-4">
+                <div id="student-start-form" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Pilih Paket Kuis / Ujian</label>
                         <select id="student-quiz-select" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm bg-white" required>
@@ -171,35 +196,35 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">NIS (Nomor Induk Santri - Maks 6 Angka)</label>
-                        <input type="text" id="student-nis" required maxlength="6" pattern="\d{6}" oninput="handleNisInput(this)" placeholder="Contoh: 123456" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm">
+                        <input type="text" id="student-nis" required maxlength="6" pattern="\d{6}" oninput="handleNisInput(this)" onkeydown="if(event.key === 'Enter') handleStudentLogin(event)" placeholder="Contoh: 123456" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm">
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nama Lengkap Siswa</label>
-                        <input type="text" id="student-name" required placeholder="Contoh: Budi Santoso" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm">
+                        <input type="text" id="student-name" required placeholder="Contoh: Budi Santoso" onkeydown="if(event.key === 'Enter') handleStudentLogin(event)" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm">
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Kelas & Bagian</label>
-                        <input type="text" id="student-class" required placeholder="Contoh: 7A" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm">
+                        <input type="text" id="student-class" required placeholder="Contoh: 7A" onkeydown="if(event.key === 'Enter') handleStudentLogin(event)" autocomplete="off" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm">
                     </div>
 
                     <div id="student-password-container">
-                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Password Siswa</label>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Kode Akses / Sandi Siswa</label>
                         <div class="relative">
-                            <input type="password" id="student-password" required placeholder="Masukkan password acak dari guru" maxlength="12" autocomplete="current-password" class="w-full px-4 py-2.5 pr-11 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm font-mono tracking-wider">
-                            <button type="button" onclick="toggleStudentLoginPassword()" class="absolute inset-y-0 right-0 px-3.5 flex items-center text-slate-400 hover:text-slate-600" title="Tampilkan/Sembunyikan Password">
+                            <input type="text" id="student-auth-code" name="student_auth_code" required placeholder="Masukkan kode akses dari guru" maxlength="12" autocomplete="one-time-code" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" onkeydown="if(event.key === 'Enter') handleStudentLogin(event)" style="-webkit-text-security: disc; text-security: disc;" class="w-full px-4 py-2.5 pr-11 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm font-mono tracking-wider">
+                            <button type="button" onclick="toggleStudentLoginPassword()" class="absolute inset-y-0 right-0 px-3.5 flex items-center text-slate-400 hover:text-slate-600" title="Tampilkan/Sembunyikan Sandi">
                                 <i id="login-pass-icon" class="fa-solid fa-eye text-sm"></i>
                             </button>
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-lock text-slate-400 mr-1"></i> Password acak diperoleh dari guru pengawas di Data Siswa.</p>
+                        <p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-key text-slate-400 mr-1"></i> Kode akses diperoleh dari guru pengawas di Data Siswa.</p>
                     </div>
 
-                    <button type="submit" id="btn-student-login" class="w-full mt-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2">
+                    <button type="button" id="btn-student-login" onclick="handleStudentLogin(event)" class="w-full mt-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2">
                         <span>Login</span>
                         <i class="fa-solid fa-right-to-bracket text-sm"></i>
                     </button>
-                </form>
+                </div>
             </div>
 
             <!-- Informasi Data Ujian (Exam Info & Confirmation Screen) -->
@@ -356,7 +381,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2.5 sm:gap-4 flex-wrap">
                         <div class="bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg border border-amber-200 text-xs font-semibold flex items-center gap-2">
                             <i class="fa-solid fa-clock"></i>
                             <span id="quiz-timer">--:--</span>
@@ -365,6 +390,10 @@
                             Soal <span id="current-question-num">1</span> dari <span id="total-questions-num">0</span>
                         </div>
                         <span id="save-status" class="text-xs font-medium text-slate-500">⟳ Menyambungkan…</span>
+                        <button type="button" id="btn-header-reload" onclick="promptReloadExam()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-slate-300 transition" title="Muat ulang data ujian jika koneksi terputus atau atas instruksi pengawas">
+                            <i class="fa-solid fa-rotate text-[11px]"></i>
+                            <span class="hidden sm:inline">Muat Ulang</span>
+                        </button>
                     </div>
                 </div>
 
@@ -438,6 +467,24 @@
                     </div>
                     <button type="button" onclick="resumeFullScreenAndExam()" class="px-7 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-rose-600/50 transition-all hover:scale-105">
                         <i class="fa-solid fa-expand text-base"></i> <span>Kembali ke Layar Penuh & Lanjutkan Ujian</span>
+                    </button>
+                </div>
+
+                <!-- Fullscreen Restoration Overlay (jika halaman dimuat ulang saat ujian aktif) -->
+                <div id="fullscreen-restore-overlay" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[120] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-200">
+                    <div class="w-16 h-16 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center mb-4 border border-brand-500/40 animate-pulse">
+                        <svg class="w-8 h-8 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                    </div>
+                    <span class="text-[11px] font-black uppercase tracking-widest text-brand-300 bg-brand-500/20 px-3.5 py-1 rounded-full border border-brand-500/30 mb-3">Keamanan Ujian CBT</span>
+                    <h3 class="text-2xl font-black text-white mb-2">Mode Layar Penuh Diperlukan</h3>
+                    <p class="text-slate-300 text-sm max-w-md mb-6 leading-relaxed">
+                        Halaman ujian baru saja dimuat ulang. Sesuai ketentuan ujian CBT, Anda wajib berada dalam mode layar penuh (Full Screen) untuk melanjutkan pengerjaan soal.
+                    </p>
+                    <button type="button" onclick="activateFullScreenFromOverlay()" class="px-8 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm flex items-center gap-2.5 shadow-xl shadow-brand-500/40 transition-all hover:scale-105">
+                        <i class="fa-solid fa-expand text-base"></i>
+                        <span>Masuk Layar Penuh & Lanjutkan Ujian</span>
                     </button>
                 </div>
             </div>
@@ -566,6 +613,28 @@
         function resumeFullScreenAndExam() {
             enterFullScreen();
             document.getElementById('violation-overlay')?.classList.add('hidden');
+            document.getElementById('fullscreen-restore-overlay')?.classList.add('hidden');
+        }
+
+        function activateFullScreenFromOverlay() {
+            enterFullScreen();
+            document.getElementById('fullscreen-restore-overlay')?.classList.add('hidden');
+        }
+
+        function checkAndEnforceFullScreen() {
+            if (!isExamActive()) {
+                document.getElementById('fullscreen-restore-overlay')?.classList.add('hidden');
+                return;
+            }
+            if (!isFullScreen()) {
+                const violationOverlay = document.getElementById('violation-overlay');
+                const restoreOverlay = document.getElementById('fullscreen-restore-overlay');
+                if (restoreOverlay && (!violationOverlay || violationOverlay.classList.contains('hidden'))) {
+                    restoreOverlay.classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('fullscreen-restore-overlay')?.classList.add('hidden');
+            }
         }
 
         async function reportStudentViolation(type, details) {
@@ -647,13 +716,24 @@
                     if (!isExamActive()) return;
                     if (!isFullScreen()) {
                         reportStudentViolation('exit_fullscreen', 'Keluar dari mode layar penuh (Full Screen)');
+                    } else {
+                        document.getElementById('fullscreen-restore-overlay')?.classList.add('hidden');
                     }
                 });
             });
 
-            // 4. Blokir Tombol Pintasan Keyboard yang Dipakai untuk Mencontek / Keluar
+            // 4. Blokir Tombol Pintasan Keyboard yang Dipakai untuk Mencontek / Keluar / Refresh
             window.addEventListener('keydown', (e) => {
                 if (!isExamActive()) return;
+
+                // Penanganan F5 & Ctrl+R saat ujian aktif: Tampilkan Modal Konfirmasi Muat Ulang
+                if (e.key === 'F5' || e.keyCode === 116 || ((e.ctrlKey || e.metaKey) && ['r'].includes((e.key || '').toLowerCase()))) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    promptReloadExam();
+                    return false;
+                }
+
                 // F12 (DevTools), F11 (Toggle Fullscreen)
                 if (e.key === 'F12' || e.keyCode === 123 || e.key === 'F11' || e.keyCode === 122) {
                     e.preventDefault();
@@ -677,20 +757,78 @@
                     return false;
                 }
             }, true);
+
+            // 6. Klik Layar Otomatis Masuk Kembali ke Layar Penuh jika Terlepas
+            document.addEventListener('click', () => {
+                if (isExamActive() && !isFullScreen()) {
+                    enterFullScreen();
+                    document.getElementById('fullscreen-restore-overlay')?.classList.add('hidden');
+                }
+            });
+
+            // 7. Peringatan beforeunload jika browser dipaksa refresh/tutup
+            window.addEventListener('beforeunload', (e) => {
+                if (isReloadingIntended) return; // Lewati peringatan jika reload dipicu dari konfirmasi resmi
+                if (isExamActive()) {
+                    e.preventDefault();
+                    e.returnValue = 'Ujian sedang berlangsung! Memuat ulang halaman akan membatalkan mode layar penuh.';
+                    return e.returnValue;
+                }
+            });
         }
 
         function stopAntiCheat() {
             exitFullScreen();
             document.getElementById('violation-overlay')?.classList.add('hidden');
+            document.getElementById('fullscreen-restore-overlay')?.classList.add('hidden');
         }
 
         // Initialize App
         window.onload = async function() {
-            // Pulihkan tampilan hasil SEBELUM mengambil data dari server.
-            // Ini mencegah kartu identitas siswa tetap tampil setelah refresh.
-            restoreStudentResultAfterRefresh();
+            // Sembunyikan login card lebih awal jika siswa sedang di halaman informasi ujian atau resume token
+            // Ini mencegah layar login berkedip saat halaman di-refresh
+            try {
+                if (sessionStorage.getItem('examlan_pending_exam_info')) {
+                    document.getElementById('student-login-card')?.classList.add('hidden');
+                    document.getElementById('student-exam-info-screen')?.classList.remove('hidden');
+                } else if (sessionStorage.getItem('examlan_pending_resume_info')) {
+                    document.getElementById('student-login-card')?.classList.add('hidden');
+                    document.getElementById('student-resume-token-screen')?.classList.remove('hidden');
+                }
+
+                // Segera muat identitas siswa di navbar kanan dari cache jika ada
+                const pendingRaw = sessionStorage.getItem('examlan_pending_exam_info');
+                if (pendingRaw) {
+                    const parsed = JSON.parse(pendingRaw);
+                    if (parsed && (parsed.name || parsed.nis)) {
+                        updateNavbarStudentProfile(parsed.name, parsed.nis, parsed.classId);
+                    }
+                } else {
+                    const attemptRaw = localStorage.getItem('examlan_active_attempt');
+                    if (attemptRaw) {
+                        const parsed = JSON.parse(attemptRaw);
+                        if (parsed && (parsed.name || parsed.nis)) {
+                            updateNavbarStudentProfile(parsed.name, parsed.nis, parsed.classId);
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            // Pulihkan tampilan hasil SEBELUM mengambil data dari server jika ada
+            const resultRestored = restoreStudentResultAfterRefresh();
             await fetchDataFromAPI();
-            await restoreActiveAttemptAfterRefresh();
+            const attemptRestored = await restoreActiveAttemptAfterRefresh();
+
+            // Jika bukan hasil selesai dan bukan pengerjaan aktif, pulihkan status informasi ujian / resume token
+            if (!resultRestored && !attemptRestored && !currentStudentResult && !attemptToken) {
+                const infoRestored = restorePendingStudentSessionAfterRefresh();
+                const resumeRestored = restorePendingResumeSessionAfterRefresh();
+                if (!infoRestored && !resumeRestored) {
+                    document.getElementById('student-exam-info-screen')?.classList.add('hidden');
+                    document.getElementById('student-resume-token-screen')?.classList.add('hidden');
+                    document.getElementById('student-login-card')?.classList.remove('hidden');
+                }
+            }
         };
 
         // Simpan hasil ujian di sessionStorage agar refresh tidak mengembalikan siswa
@@ -712,7 +850,144 @@
             try { sessionStorage.removeItem('examlan_student_session'); } catch (err) {}
         }
 
-        function saveActiveAttempt() { try { localStorage.setItem('examlan_active_attempt', JSON.stringify({ token: attemptToken })); } catch (e) {} }
+        function savePendingStudentSession() {
+            try {
+                if (pendingStudentSession) {
+                    sessionStorage.setItem('examlan_pending_exam_info', JSON.stringify(pendingStudentSession));
+                } else {
+                    sessionStorage.removeItem('examlan_pending_exam_info');
+                }
+            } catch (e) {}
+        }
+
+        function clearPendingStudentSession() {
+            pendingStudentSession = null;
+            try { sessionStorage.removeItem('examlan_pending_exam_info'); } catch (e) {}
+        }
+
+        function restorePendingStudentSessionAfterRefresh() {
+            if (currentStudentResult || attemptToken) return false;
+            try {
+                const raw = sessionStorage.getItem('examlan_pending_exam_info');
+                if (!raw) return false;
+                const saved = JSON.parse(raw);
+                if (!saved || !saved.nis || !saved.quizId) return false;
+
+                if (dbData && dbData.questions && dbData.questions.length) {
+                    const freshQuiz = dbData.questions.find(q => q.id === saved.quizId);
+                    if (freshQuiz) saved.quiz = freshQuiz;
+                }
+
+                renderExamInfoScreen(saved);
+                return true;
+            } catch (e) {
+                console.warn('Gagal memulihkan informasi ujian:', e);
+                return false;
+            }
+        }
+
+        function savePendingResumeSession() {
+            try {
+                if (pendingResumeData) {
+                    sessionStorage.setItem('examlan_pending_resume_info', JSON.stringify(pendingResumeData));
+                } else {
+                    sessionStorage.removeItem('examlan_pending_resume_info');
+                }
+            } catch (e) {}
+        }
+
+        function clearPendingResumeSession() {
+            pendingResumeData = null;
+            try { sessionStorage.removeItem('examlan_pending_resume_info'); } catch (e) {}
+        }
+
+        function restorePendingResumeSessionAfterRefresh() {
+            if (currentStudentResult || attemptToken) return false;
+            try {
+                const raw = sessionStorage.getItem('examlan_pending_resume_info');
+                if (!raw) return false;
+                const saved = JSON.parse(raw);
+                if (!saved || !saved.nis) return false;
+                showResumeTokenScreen(saved);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function renderExamInfoScreen(info) {
+            if (!info) return;
+            pendingStudentSession = info;
+            savePendingStudentSession();
+            updateNavbarStudentProfile(info.name, info.nis, info.classId);
+
+            const selectedQuiz = info.quiz || (dbData && dbData.questions ? dbData.questions.find(q => q.id === info.quizId) : null);
+            if (selectedQuiz) pendingStudentSession.quiz = selectedQuiz;
+
+            document.getElementById('info-student-name').innerText = info.name || '-';
+            document.getElementById('info-student-nis').innerText = info.nis || '-';
+            document.getElementById('info-student-class').innerText = info.classId || '-';
+
+            if (selectedQuiz) {
+                document.getElementById('info-quiz-title').innerText = selectedQuiz.title || '-';
+                const totalQ = (selectedQuiz.questions || []).length;
+                const maxQ = (selectedQuiz.max_questions && selectedQuiz.max_questions > 0) ? parseInt(selectedQuiz.max_questions) : 0;
+                if (maxQ > 0 && maxQ < totalQ) {
+                    document.getElementById('info-quiz-questions').innerText = `${maxQ} Soal Acak (dari total ${totalQ} soal di bank) • ${selectedQuiz.duration} Menit`;
+                } else {
+                    document.getElementById('info-quiz-questions').innerText = `${totalQ} Soal (${selectedQuiz.duration} Menit)`;
+                }
+
+                const typeLabels = {
+                    'mc': 'Pilihan Ganda',
+                    'complex': 'Ganda Kompleks',
+                    'matching': 'Menjodohkan',
+                    'short_answer': 'Isian Singkat',
+                    'essay': 'Uraian / Esai',
+                    'cause_effect': 'Sebab Akibat',
+                    'case_analysis': 'Analisis Kasus',
+                    'scaled': 'Skala Likert'
+                };
+                const uniqueTypes = Array.from(new Set((selectedQuiz.questions || []).map(q => q.type || 'mc')));
+                const typesEl = document.getElementById('info-quiz-types');
+                if (typesEl) {
+                    typesEl.innerHTML = uniqueTypes.map(t => `<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-brand-50 text-brand-700 border border-brand-200">${typeLabels[t] || t}</span>`).join('');
+                }
+            }
+
+            const now = new Date();
+            const dateStr = new Intl.DateTimeFormat('id-ID', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(now);
+            document.getElementById('info-exam-date').innerText = dateStr;
+
+            const tokenInput = document.getElementById('exam-token-input');
+            if (tokenInput && !tokenInput.value) tokenInput.value = '';
+
+            const pwdInputEl = document.getElementById('student-auth-code');
+            if (pwdInputEl) pwdInputEl.value = '';
+
+            document.getElementById('student-login-card').classList.add('hidden');
+            document.getElementById('student-resume-token-screen')?.classList.add('hidden');
+            document.getElementById('student-quiz-screen')?.classList.add('hidden');
+            document.getElementById('student-result-screen')?.classList.add('hidden');
+            document.getElementById('student-exam-info-screen').classList.remove('hidden');
+            if (tokenInput) setTimeout(() => tokenInput.focus(), 150);
+        }
+
+        function saveActiveAttempt() {
+            try {
+                localStorage.setItem('examlan_active_attempt', JSON.stringify({
+                    token: attemptToken,
+                    nis: activeStudent?.nis || pendingStudentSession?.nis || '',
+                    name: activeStudent?.name || pendingStudentSession?.name || '',
+                    classId: activeStudent?.classId || pendingStudentSession?.classId || ''
+                }));
+            } catch (e) {}
+        }
         function clearActiveAttempt() {
             stopAntiCheat();
             try { localStorage.removeItem('examlan_active_attempt'); } catch (e) {}
@@ -722,6 +997,14 @@
             if (currentStudentResult) return;
             let saved; try { saved=JSON.parse(localStorage.getItem('examlan_active_attempt')||'null'); } catch(e) { return; }
             if (!saved || !saved.token) return;
+            if (saved.name && saved.nis) {
+                activeStudent = {
+                    nis: saved.nis,
+                    name: saved.name,
+                    classId: saved.classId || ''
+                };
+                updateNavbarStudentProfile(activeStudent.name, activeStudent.nis, activeStudent.classId);
+            }
             try {
                 const r=await fetch(`${API_URL}?action=get_attempt&token=${encodeURIComponent(saved.token)}`,{cache:'no-store'});
                 const d=await r.json();
@@ -761,6 +1044,7 @@
                 if (resultScreen) resultScreen.classList.remove('hidden');
 
                 activeStudent = saved.activeStudent;
+                updateNavbarStudentProfile(activeStudent.name, activeStudent.nis, activeStudent.classId);
                 currentQuiz = dbData.questions.find(q => q.id === saved.quizId) || { id: saved.quizId };
                 studentReviewToken = saved.reviewToken || null;
                 currentStudentResult = saved.result;
@@ -821,7 +1105,7 @@
                 // Cek pengaturan apakah login siswa mewajibkan password
                 const reqPassword = dbData.settings?.require_student_password !== false;
                 const passContainer = document.getElementById('student-password-container');
-                const passInput = document.getElementById('student-password');
+                const passInput = document.getElementById('student-auth-code');
                 if (passContainer && passInput) {
                     if (!reqPassword) {
                         passContainer.classList.add('hidden');
@@ -849,25 +1133,27 @@
         }
 
         function toggleStudentLoginPassword() {
-            const input = document.getElementById('student-password');
+            const input = document.getElementById('student-auth-code');
             const icon = document.getElementById('login-pass-icon');
             if (!input || !icon) return;
-            if (input.type === 'password') {
-                input.type = 'text';
+            const isMasked = (input.style.webkitTextSecurity !== 'none');
+            if (isMasked) {
+                input.style.webkitTextSecurity = 'none';
                 icon.className = 'fa-solid fa-eye-slash text-sm text-brand-600';
             } else {
-                input.type = 'password';
+                input.style.webkitTextSecurity = 'disc';
                 icon.className = 'fa-solid fa-eye text-sm text-slate-400';
             }
         }
 
         async function handleStudentLogin(e) {
-            e.preventDefault();
+            if (e && e.preventDefault) e.preventDefault();
             const quizId = document.getElementById('student-quiz-select').value;
             const nis = document.getElementById('student-nis').value.trim();
             const name = document.getElementById('student-name').value.trim();
             const classId = document.getElementById('student-class').value.trim();
-            const password = document.getElementById('student-password').value.trim();
+            const passInput = document.getElementById('student-auth-code');
+            const password = passInput ? passInput.value.trim() : '';
             const reqPassword = dbData.settings?.require_student_password !== false;
 
             if (nis.length > 6) {
@@ -879,8 +1165,8 @@
                 return;
             }
             if (reqPassword && !password) {
-                appAlert("Harap masukkan password login siswa!\nPassword acak diberikan oleh guru pengawas ruang.", "Password Diperlukan");
-                document.getElementById('student-password')?.focus();
+                appAlert("Harap masukkan kode akses / sandi siswa!\nKode sandi diperoleh dari guru pengawas ruang.", "Kode Sandi Diperlukan");
+                passInput?.focus();
                 return;
             }
 
@@ -889,6 +1175,10 @@
                 appAlert('Kuis tidak ditemukan atau belum memiliki soal!');
                 return;
             }
+
+            // INSTANT DOM CLEAR: Kosongkan isi input dari DOM sekarang juga sebelum fetch
+            // agar Chrome Password Manager tidak pernah menangkap nilai field saat transisi layar
+            if (passInput) passInput.value = '';
 
             const loginBtn = document.getElementById('btn-student-login');
             if (loginBtn) {
@@ -909,8 +1199,11 @@
                         loginBtn.disabled = false;
                         loginBtn.innerHTML = `<span>Login</span> <i class="fa-solid fa-right-to-bracket text-sm"></i>`;
                     }
-                    appAlert(data.message || 'Login gagal. Periksa kembali NIS dan Password.', 'Autentikasi Gagal');
-                    document.getElementById('student-password')?.select();
+                    if (passInput) {
+                        passInput.value = password; // Pulihkan jika autentikasi ditolak
+                        passInput.select();
+                    }
+                    appAlert(data.message || 'Login gagal. Periksa kembali NIS dan Kode Sandi.', 'Autentikasi Gagal');
                     return;
                 }
 
@@ -939,63 +1232,15 @@
                     return;
                 }
 
-                pendingStudentSession = {
+                // Tampilkan Informasi Ujian & Simpan ke Session Storage
+                renderExamInfoScreen({
                     quizId,
                     nis,
                     name: data.student?.name || name,
                     classId: data.student?.class || classId,
                     password: password,
                     quiz: selectedQuiz
-                };
-
-                // Render rincian informasi ujian
-                document.getElementById('info-student-name').innerText = pendingStudentSession.name;
-                document.getElementById('info-student-nis').innerText = nis;
-                document.getElementById('info-student-class').innerText = pendingStudentSession.classId;
-                document.getElementById('info-quiz-title').innerText = selectedQuiz.title;
-                const totalQ = (selectedQuiz.questions || []).length;
-                const maxQ = (selectedQuiz.max_questions && selectedQuiz.max_questions > 0) ? parseInt(selectedQuiz.max_questions) : 0;
-                if (maxQ > 0 && maxQ < totalQ) {
-                    document.getElementById('info-quiz-questions').innerText = `${maxQ} Soal Acak (dari total ${totalQ} soal di bank) • ${selectedQuiz.duration} Menit`;
-                } else {
-                    document.getElementById('info-quiz-questions').innerText = `${totalQ} Soal (${selectedQuiz.duration} Menit)`;
-                }
-
-                // Format tanggal ujian bahasa Indonesia
-                const now = new Date();
-                const dateStr = new Intl.DateTimeFormat('id-ID', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                }).format(now);
-                document.getElementById('info-exam-date').innerText = dateStr;
-
-                // Jenis soal yang ada di paket kuis ini
-                const typeLabels = {
-                    'mc': 'Pilihan Ganda',
-                    'complex': 'Ganda Kompleks',
-                    'matching': 'Menjodohkan',
-                    'short_answer': 'Isian Singkat',
-                    'essay': 'Uraian / Esai',
-                    'cause_effect': 'Sebab Akibat',
-                    'case_analysis': 'Analisis Kasus',
-                    'scaled': 'Skala Likert'
-                };
-                const uniqueTypes = Array.from(new Set((selectedQuiz.questions || []).map(q => q.type || 'mc')));
-                const typesEl = document.getElementById('info-quiz-types');
-                if (typesEl) {
-                    typesEl.innerHTML = uniqueTypes.map(t => `<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-brand-50 text-brand-700 border border-brand-200">${typeLabels[t] || t}</span>`).join('');
-                }
-
-                // Reset field token
-                const tokenInput = document.getElementById('exam-token-input');
-                if (tokenInput) tokenInput.value = '';
-
-                // Tampilkan layar Informasi Data Ujian
-                document.getElementById('student-login-card').classList.add('hidden');
-                document.getElementById('student-exam-info-screen').classList.remove('hidden');
-                if (tokenInput) setTimeout(() => tokenInput.focus(), 150);
+                });
 
             } catch (err) {
                 if (loginBtn) {
@@ -1007,7 +1252,12 @@
         }
 
         function backToStudentLogin() {
+            clearPendingStudentSession();
+            clearPendingResumeSession();
+            document.documentElement.classList.remove('has-active-session');
+            updateNavbarStudentProfile('', '', '');
             document.getElementById('student-exam-info-screen')?.classList.add('hidden');
+            document.getElementById('student-resume-token-screen')?.classList.add('hidden');
             document.getElementById('student-login-card')?.classList.remove('hidden');
         }
 
@@ -1015,6 +1265,8 @@
 
         function showResumeTokenScreen(info) {
             pendingResumeData = info;
+            savePendingResumeSession();
+            updateNavbarStudentProfile(info.student?.name || info.name, info.student?.nis || info.nis, info.student?.class || info.classId);
             document.getElementById('student-login-card')?.classList.add('hidden');
             document.getElementById('student-exam-info-screen')?.classList.add('hidden');
 
@@ -1026,14 +1278,15 @@
             if (nameEl) nameEl.textContent = info.student?.name || '-';
             if (nisEl) nisEl.textContent = info.student?.nis || info.nis || '-';
             if (titleEl) titleEl.textContent = info.quiz?.title || 'Ujian Berjalan';
-            if (inputEl) inputEl.value = '';
+            if (inputEl && !inputEl.value) inputEl.value = '';
 
             document.getElementById('student-resume-token-screen')?.classList.remove('hidden');
             if (inputEl) setTimeout(() => inputEl.focus(), 150);
         }
 
         function cancelResumeTokenScreen() {
-            pendingResumeData = null;
+            clearPendingResumeSession();
+            updateNavbarStudentProfile('', '', '');
             document.getElementById('student-resume-token-screen')?.classList.add('hidden');
             document.getElementById('student-login-card')?.classList.remove('hidden');
         }
@@ -1090,6 +1343,7 @@
                         btn.disabled = false;
                         btn.innerHTML = prevText;
                     }
+                    clearPendingResumeSession();
                     document.getElementById('student-resume-token-screen')?.classList.add('hidden');
                     pendingResumeData = null;
                     attemptToken = data.attempt.attempt_token;
@@ -1153,6 +1407,7 @@
 
                 attemptToken = d.attempt_token;
                 saveActiveAttempt();
+                clearPendingStudentSession();
                 hydrateAttempt(d);
             } catch (err) {
                 appAlert('Tidak dapat memulai ujian. Periksa koneksi LAN lalu coba lagi.', 'Koneksi Error');
@@ -1160,15 +1415,23 @@
         }
 
         function hydrateAttempt(data) {
+            clearPendingStudentSession();
+            clearPendingResumeSession();
             enterFullScreen();
             initAntiCheat(data.violations_count || 0);
             currentQuiz = data.quiz;
             studentAnswers = data.answers || {};
             activeStudent = {
-                nis: data.nis || pendingStudentSession?.nis || pendingResumeData?.nis || '',
-                name: data.name || pendingStudentSession?.name || pendingResumeData?.name || '',
-                classId: data.class || pendingStudentSession?.classId || pendingResumeData?.classId || ''
+                nis: data.nis || activeStudent.nis || pendingStudentSession?.nis || pendingResumeData?.nis || '',
+                name: data.name || activeStudent.name || pendingStudentSession?.name || pendingResumeData?.name || '',
+                classId: data.class || activeStudent.classId || pendingStudentSession?.classId || pendingResumeData?.classId || ''
             };
+            saveActiveAttempt();
+            updateNavbarStudentProfile(activeStudent.name, activeStudent.nis, activeStudent.classId);
+            if (activeStudent.name && activeStudent.nis) {
+                const infoEl = document.getElementById('active-student-info');
+                if (infoEl) infoEl.innerText = `NIS: ${activeStudent.nis} | Siswa: ${activeStudent.name} | Kelas: ${activeStudent.classId}`;
+            }
             studentReviewToken = null;
             currentStudentResult = null;
             answerReviewVisible = false;
@@ -1183,6 +1446,11 @@
             startTimer();
             renderCurrentQuestion();
             setSaveStatus('✓ Jawaban tersimpan', 'text-emerald-600');
+
+            // Jika browser memblokir requestFullscreen otomatis setelah reload (F5), pastikan layar penuh segera dipulihkan
+            setTimeout(() => {
+                checkAndEnforceFullScreen();
+            }, 300);
         }
 
         function startTimer() {
@@ -1573,6 +1841,9 @@
 
         function renderResultScreen(sub) {
             // Pastikan hanya halaman hasil yang tampil. Ini juga dipanggil setelah refresh.
+            if (activeStudent && (activeStudent.name || activeStudent.nis)) {
+                updateNavbarStudentProfile(activeStudent.name, activeStudent.nis, activeStudent.classId);
+            }
             document.getElementById('student-login-card').classList.add('hidden');
             document.getElementById('student-exam-info-screen')?.classList.add('hidden');
             document.getElementById('student-quiz-screen').classList.add('hidden');
@@ -1772,22 +2043,146 @@
         function resetStudentView() {
             clearInterval(studentReviewPollInterval);
             clearStudentSession();
+            clearPendingStudentSession();
+            clearPendingResumeSession();
             studentReviewToken = null;
             currentStudentResult = null;
             currentQuiz = null;
             pendingStudentSession = null;
+            pendingResumeData = null;
             answerReviewVisible = false;
             document.getElementById('student-result-screen').classList.add('hidden');
             document.getElementById('student-quiz-screen').classList.add('hidden');
             document.getElementById('student-exam-info-screen')?.classList.add('hidden');
+            document.getElementById('student-resume-token-screen')?.classList.add('hidden');
             document.getElementById('student-login-card').classList.remove('hidden');
-            document.getElementById('student-start-form').reset();
+
+            const nisInput = document.getElementById('student-nis');
+            if (nisInput) nisInput.value = '';
+            const nameInput = document.getElementById('student-name');
+            if (nameInput) nameInput.value = '';
+            const classInput = document.getElementById('student-class');
+            if (classInput) classInput.value = '';
+            const authInput = document.getElementById('student-auth-code');
+            if (authInput) authInput.value = '';
+
             const tokenInput = document.getElementById('exam-token-input');
             if (tokenInput) tokenInput.value = '';
+            document.documentElement.classList.remove('has-active-session');
+            updateNavbarStudentProfile('', '', '');
             fetchDataFromAPI();
         }
 
+        function updateNavbarStudentProfile(name = '', nis = '', classId = '') {
+            const container = document.getElementById('navbar-student-profile');
+            if (!container) return;
+            if (!name && !nis) {
+                container.classList.add('hidden');
+                container.classList.remove('flex');
+                return;
+            }
+            const nameEl = document.getElementById('nav-student-name');
+            const nisEl = document.getElementById('nav-student-nis');
+            const classEl = document.getElementById('nav-student-class');
+            if (nameEl) nameEl.textContent = name || '-';
+            if (nisEl) nisEl.textContent = nis ? `NIS: ${nis}` : '-';
+            if (classEl) classEl.textContent = classId ? `Kelas: ${classId}` : '-';
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+        }
+
+        function promptReloadExam() {
+            const modal = document.getElementById('modal-confirm-reload');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeConfirmReloadModal() {
+            const modal = document.getElementById('modal-confirm-reload');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        let isReloadingIntended = false;
+
+        async function executeLiveReload() {
+            closeConfirmReloadModal();
+            const btn = document.getElementById('btn-header-reload');
+            const prevHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[11px]"></i> <span class="hidden sm:inline">Memuat...</span>`;
+            }
+            setSaveStatus('⟳ Menyinkronkan…', 'text-amber-500');
+
+            try {
+                // 1. Simpan jawaban lokal terlebih dahulu jika server online
+                if (typeof syncAnswers === 'function') {
+                    await syncAnswers();
+                }
+
+                // 2. Refresh attempt data dari server via API
+                if (attemptToken) {
+                    const r = await fetch(`${API_URL}?action=get_attempt&token=${encodeURIComponent(attemptToken)}`, { cache: 'no-store' });
+                    const d = await r.json();
+                    if (r.ok && d.status === 'success' && !d.finished) {
+                        hydrateAttempt(d);
+                        setSaveStatus('✓ Jawaban tersimpan', 'text-emerald-600');
+                        showToast('✓ Data ujian berhasil dimuat ulang & tetap dalam layar penuh!', 'success');
+                        return;
+                    } else if (d.status === 'needs_login') {
+                        appAlert(d.message || 'Sesi ujian telah direset oleh Pengawas.', 'Sesi Berakhir');
+                        resetStudentView();
+                        return;
+                    }
+                }
+                await fetchDataFromAPI();
+                showToast('✓ Data kuis berhasil disinkronkan!', 'success');
+            } catch (err) {
+                setSaveStatus('⚠ Koneksi offline — jawaban lokal aman', 'text-amber-600');
+                showToast('Koneksi server terputus. Jawaban lokal tetap tersimpan aman.', 'warning');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = prevHtml;
+                }
+            }
+        }
+
+        function executeHardBrowserReload() {
+            isReloadingIntended = true;
+            try {
+                if (typeof syncAnswers === 'function') syncAnswers();
+            } catch (e) {}
+            window.location.reload();
+        }
+
     </script>
+
+    <!-- MODAL KONFIRMASI MUAT ULANG (F5 / REFRESH) -->
+    <div id="modal-confirm-reload" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-[130] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-center animate-in fade-in duration-150">
+            <div class="w-14 h-14 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-3 text-amber-600 text-2xl">
+                <i class="fa-solid fa-arrows-rotate"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">Muat Ulang Halaman Ujian?</h3>
+            <p class="text-slate-600 text-xs sm:text-sm mt-2 leading-relaxed">
+                Pilih opsi di bawah. Disarankan memilih <b>Muat Ulang Cepat</b> agar data dan koneksi diperbarui <b>tanpa keluar dari mode layar penuh</b>.
+            </p>
+            <div class="space-y-2.5 mt-5">
+                <button type="button" onclick="executeLiveReload()" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-brand-500/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt text-xs"></i>
+                    <span>Muat Ulang Data (Tetap Layar Penuh)</span>
+                </button>
+                <div class="flex items-center gap-2 pt-1">
+                    <button type="button" onclick="closeConfirmReloadModal()" class="w-1/2 py-2 px-3 border border-slate-300 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                        Batal
+                    </button>
+                    <button type="button" onclick="executeHardBrowserReload()" class="w-1/2 py-2 px-3 border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-medium transition" title="Muat ulang halaman browser secara penuh jika tampilan browser bermasalah">
+                        <i class="fa-solid fa-rotate text-[10px] mr-1"></i> Reload Browser
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- MODAL NOTIFIKASI APLIKASI -->
     <div id="app-modal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">

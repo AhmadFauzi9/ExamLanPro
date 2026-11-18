@@ -17,6 +17,8 @@ session_start();
 // Access-Control-Allow-Origin: * karena wildcard tidak kompatibel dengan credentials.
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -969,7 +971,17 @@ if ($action === 'start_attempt' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
     audit($db, 'Mulai ujian', "{$nis} - {$name}", 'Paket: ' . ($quiz['title'] ?? $quizId));
     saveDb($file_db, $db);
-    echo json_encode(['status'=>'success','attempt_token'=>$token,'quiz'=>publicAttemptQuiz($quiz,$attempt),'server_now'=>time(),'ends_at'=>$attempt['ends_at'],'answers'=>[]]); exit;
+    echo json_encode([
+        'status' => 'success',
+        'attempt_token' => $token,
+        'nis' => $nis,
+        'name' => $name,
+        'class' => $class,
+        'quiz' => publicAttemptQuiz($quiz, $attempt),
+        'server_now' => time(),
+        'ends_at' => $attempt['ends_at'],
+        'answers' => []
+    ]); exit;
 }
 
 if ($action === 'get_attempt') {
@@ -985,7 +997,19 @@ if ($action === 'get_attempt') {
     }
     $quiz = null; foreach ($db['questions'] as $candidate) if ((string)($candidate['id'] ?? '') === (string)$attempt['quiz_id']) { $quiz=$candidate; break; }
     if (!$quiz) { http_response_code(404); echo json_encode(['status'=>'error','message'=>'Kuis tidak ditemukan.']); exit; }
-    echo json_encode(['status'=>'success','quiz'=>publicAttemptQuiz($quiz,$attempt),'answers'=>$attempt['answers'],'server_now'=>time(),'ends_at'=>$attempt['ends_at'],'finished'=>!empty($attempt['finished']),'violations_count'=>(int)($attempt['violations_count']??0)]); exit;
+    echo json_encode([
+        'status' => 'success',
+        'attempt_token' => $token,
+        'nis' => (string)($attempt['nis'] ?? ''),
+        'name' => (string)($attempt['name'] ?? ''),
+        'class' => (string)($attempt['class'] ?? ''),
+        'quiz' => publicAttemptQuiz($quiz, $attempt),
+        'answers' => $attempt['answers'],
+        'server_now' => time(),
+        'ends_at' => $attempt['ends_at'],
+        'finished' => !empty($attempt['finished']),
+        'violations_count' => (int)($attempt['violations_count'] ?? 0)
+    ]); exit;
 }
 
 if ($action === 'student_heartbeat' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -1054,30 +1078,203 @@ if ($action === 'report_student_violation' && $_SERVER['REQUEST_METHOD'] === 'PO
     }
 
     $count = 0;
+    $vLogItem = [
+        'time' => date('d/m/Y H:i:s'),
+        'timestamp' => time(),
+        'type' => $type,
+        'details' => $details,
+        'count' => 0
+    ];
+
     if ($attempt) {
         $count = (int)($db['active_attempts'][$key]['violations_count'] ?? 0) + 1;
+        $vLogItem['count'] = $count;
         $db['active_attempts'][$key]['violations_count'] = $count;
         $db['active_attempts'][$key]['last_violation_at'] = time();
         $db['active_attempts'][$key]['last_violation_type'] = $type;
+        if (!isset($db['active_attempts'][$key]['violations_log'])) $db['active_attempts'][$key]['violations_log'] = [];
+        $db['active_attempts'][$key]['violations_log'][] = $vLogItem;
+        if (count($db['active_attempts'][$key]['violations_log']) > 200) {
+            $db['active_attempts'][$key]['violations_log'] = array_slice($db['active_attempts'][$key]['violations_log'], -200);
+        }
+
         $nis = (string)($attempt['nis'] ?? $nisInput);
         if ($nis !== '' && isset($db['student_sessions'][$nis])) {
             $db['student_sessions'][$nis]['violations_count'] = $count;
             $db['student_sessions'][$nis]['last_violation_at'] = time();
             $db['student_sessions'][$nis]['last_violation_type'] = $type;
+            if (!isset($db['student_sessions'][$nis]['violations_log'])) $db['student_sessions'][$nis]['violations_log'] = [];
+            $db['student_sessions'][$nis]['violations_log'][] = $vLogItem;
+            if (count($db['student_sessions'][$nis]['violations_log']) > 200) {
+                $db['student_sessions'][$nis]['violations_log'] = array_slice($db['student_sessions'][$nis]['violations_log'], -200);
+            }
         }
         $name = (string)($attempt['name'] ?? ($db['student_sessions'][$nis]['name'] ?? $nis));
         audit($db, 'Peringatan Kecurangan', "Siswa {$name} (NIS: {$nis}) terdeteksi: {$details} (ke-{$count})");
         saveDb($file_db, $db);
     } elseif ($nisInput !== '' && isset($db['student_sessions'][$nisInput])) {
         $count = (int)($db['student_sessions'][$nisInput]['violations_count'] ?? 0) + 1;
+        $vLogItem['count'] = $count;
         $db['student_sessions'][$nisInput]['violations_count'] = $count;
         $db['student_sessions'][$nisInput]['last_violation_at'] = time();
         $db['student_sessions'][$nisInput]['last_violation_type'] = $type;
+        if (!isset($db['student_sessions'][$nisInput]['violations_log'])) $db['student_sessions'][$nisInput]['violations_log'] = [];
+        $db['student_sessions'][$nisInput]['violations_log'][] = $vLogItem;
+        if (count($db['student_sessions'][$nisInput]['violations_log']) > 200) {
+            $db['student_sessions'][$nisInput]['violations_log'] = array_slice($db['student_sessions'][$nisInput]['violations_log'], -200);
+        }
         $name = (string)($db['student_sessions'][$nisInput]['name'] ?? $nisInput);
         audit($db, 'Peringatan Kecurangan', "Siswa {$name} (NIS: {$nisInput}) terdeteksi: {$details} (ke-{$count})");
         saveDb($file_db, $db);
     }
     echo json_encode(['status' => 'success', 'violations_count' => $count]);
+    exit;
+}
+
+if ($action === 'get_student_violations') {
+    teacherOnly();
+    $nis = trim((string)($_GET['nis'] ?? ''));
+    if ($nis === '') { http_response_code(400); echo json_encode(['status'=>'error','message'=>'NIS tidak valid']); exit; }
+    $db = loadDb($file_db);
+    
+    $name = $nis;
+    $class = '-';
+    $quizTitle = '-';
+    $violationsCount = 0;
+    $violations = [];
+
+    // 1. Dari student_sessions
+    if (isset($db['student_sessions'][$nis])) {
+        $st = $db['student_sessions'][$nis];
+        $name = (string)($st['name'] ?? $name);
+        $class = (string)($st['class'] ?? $class);
+        $quizTitle = (string)($st['quiz_title'] ?? $quizTitle);
+        $violationsCount = (int)($st['violations_count'] ?? 0);
+        if (!empty($st['violations_log']) && is_array($st['violations_log'])) {
+            $violations = $st['violations_log'];
+        }
+    }
+
+    // 2. Dari active_attempts
+    foreach (($db['active_attempts'] ?? []) as $att) {
+        if ((string)($att['nis'] ?? '') === $nis) {
+            $name = (string)($att['name'] ?? $name);
+            $class = (string)($att['class'] ?? $class);
+            $quizTitle = (string)($att['quiz_title'] ?? $quizTitle);
+            $violationsCount = max($violationsCount, (int)($att['violations_count'] ?? 0));
+            if (!empty($att['violations_log']) && is_array($att['violations_log'])) {
+                foreach ($att['violations_log'] as $vl) {
+                    $violations[] = $vl;
+                }
+            }
+        }
+    }
+
+    // 3. Fallback nama dari master data students
+    if ($name === $nis) {
+        foreach (($db['students'] ?? []) as $s) {
+            if ((string)($s['nis'] ?? '') === $nis) {
+                $name = (string)($s['name'] ?? $name);
+                $class = (string)($s['class'] ?? $class);
+                break;
+            }
+        }
+    }
+
+    // 4. Dari audit_logs (mencakup seluruh riwayat audit terperinci)
+    $auditLogs = $db['audit_logs'] ?? [];
+    $nisPattern = '(NIS: ' . $nis . ')';
+    foreach ($auditLogs as $a) {
+        if (($a['action'] ?? '') === 'Peringatan Kecurangan' && strpos((string)($a['target'] ?? ''), $nisPattern) !== false) {
+            $target = (string)$a['target'];
+            $details = $target;
+            $count = null;
+            if (preg_match('/terdeteksi:\s*(.+?)(?:\s*\(ke-(\d+)\))?$/i', $target, $m)) {
+                $details = trim($m[1]);
+                $count = isset($m[2]) ? (int)$m[2] : null;
+            }
+            $t = $a['time'] ?? '';
+            $timeFormatted = $t ? date('d/m/Y H:i:s', strtotime($t)) : '-';
+            $type = 'other';
+            if (stripos($details, 'layar penuh') !== false || stripos($details, 'fullscreen') !== false) {
+                $type = 'fullscreen_exit';
+            } elseif (stripos($details, 'pindah tab') !== false || stripos($details, 'minimalkan') !== false) {
+                $type = 'tab_switch';
+            } elseif (stripos($details, 'fokus') !== false || stripos($details, 'aplikasi') !== false) {
+                $type = 'window_blur';
+            } elseif (stripos($details, 'pintasan') !== false || stripos($details, 'shortcut') !== false) {
+                $type = 'blocked_shortcut';
+            } elseif (stripos($details, 'klik kanan') !== false) {
+                $type = 'contextmenu';
+            }
+
+            $violations[] = [
+                'time' => $timeFormatted,
+                'timestamp' => $t ? strtotime($t) : 0,
+                'type' => $type,
+                'details' => $details,
+                'count' => $count
+            ];
+        }
+    }
+
+    // Deduplikasi catatan
+    $unique = [];
+    $seen = [];
+    foreach ($violations as $v) {
+        $sig = ($v['time'] ?? '') . '|' . ($v['details'] ?? '') . '|' . ($v['count'] ?? '');
+        if (!isset($seen[$sig])) {
+            $seen[$sig] = true;
+            $unique[] = $v;
+        }
+    }
+
+    // Urutkan waktu terbaru di atas
+    usort($unique, function($a, $b) {
+        $tA = (int)($a['timestamp'] ?? 0);
+        $tB = (int)($b['timestamp'] ?? 0);
+        if ($tA === $tB) {
+            return ($b['count'] ?? 0) - ($a['count'] ?? 0);
+        }
+        return $tB - $tA;
+    });
+
+    if ($violationsCount <= 0) {
+        $violationsCount = count($unique);
+    }
+
+    echo json_encode([
+        'status' => 'success',
+        'nis' => $nis,
+        'name' => $name,
+        'class' => $class,
+        'quiz_title' => $quizTitle,
+        'violations_count' => $violationsCount,
+        'violations' => $unique
+    ]);
+    exit;
+}
+
+if ($action === 'reset_student_violations' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    teacherOnly();
+    $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+    $nis = trim((string)($input['nis'] ?? ''));
+    if ($nis === '') { http_response_code(400); echo json_encode(['status'=>'error','message'=>'NIS tidak valid']); exit; }
+    $db = loadDb($file_db);
+    if (isset($db['student_sessions'][$nis])) {
+        $db['student_sessions'][$nis]['violations_count'] = 0;
+        $db['student_sessions'][$nis]['violations_log'] = [];
+    }
+    foreach ($db['active_attempts'] as &$att) {
+        if ((string)($att['nis'] ?? '') === $nis) {
+            $att['violations_count'] = 0;
+            $att['violations_log'] = [];
+        }
+    }
+    unset($att);
+    audit($db, 'Reset Pelanggaran', "NIS: {$nis}", "Jumlah pelanggaran direset ke 0 oleh guru");
+    saveDb($file_db, $db);
+    echo json_encode(['status'=>'success','message'=>'Riwayat pelanggaran siswa berhasil direset.']);
     exit;
 }
 
@@ -1169,8 +1366,9 @@ if ($action === 'get_review') {
     $db = loadDb($file_db);
     foreach ($db['results'] as $r) {
         if (($r['review_token'] ?? '') === $token) {
-            $allowed = !empty($db['review_settings'][$r['code']]);
-            echo json_encode(['allowed' => $allowed, 'breakdowns' => $allowed ? ($r['breakdowns'] ?? []) : []]);
+            $quizCode = (string)($r['code'] ?? '');
+            $allowed = !empty($db['review_settings'][$quizCode]) || !empty($db['review_settings']['all']);
+            echo json_encode(['allowed' => (bool)$allowed, 'breakdowns' => $allowed ? ($r['breakdowns'] ?? []) : []]);
             exit;
         }
     }
@@ -1186,16 +1384,36 @@ if ($action === 'set_review_state' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $enabled = !empty($input['enabled']);
     $db = loadDb($file_db);
     if ($quizId === '') { http_response_code(400); echo json_encode(['status'=>'error','message'=>'Paket kuis tidak valid.']); exit; }
-    $db['review_settings'][$quizId] = $enabled;
+    if ($quizId === 'all') {
+        $db['review_settings']['all'] = $enabled;
+        foreach (($db['questions'] ?? []) as $q) {
+            if (!empty($q['id'])) {
+                $db['review_settings'][$q['id']] = $enabled;
+            }
+        }
+    } else {
+        $db['review_settings'][$quizId] = $enabled;
+    }
     saveDb($file_db, $db);
-    echo json_encode(['status'=>'success','enabled'=>$enabled,'message'=>$enabled ? 'Jawaban & pembahasan dibuka untuk siswa.' : 'Jawaban & pembahasan disembunyikan dari siswa.']);
+    audit($db, $enabled ? 'Buka Pembahasan Ujian' : 'Kunci Pembahasan Ujian', $quizId);
+    echo json_encode([
+        'status' => 'success',
+        'enabled' => $enabled,
+        'review_settings' => $db['review_settings'],
+        'review_states' => $db['review_settings'],
+        'message' => $enabled ? 'Jawaban & pembahasan dibuka untuk siswa.' : 'Jawaban & pembahasan disembunyikan dari siswa.'
+    ]);
     exit;
 }
 
 if ($action === 'get_review_states') {
     teacherOnly();
     $db = loadDb($file_db);
-    echo json_encode(['review_settings' => $db['review_settings']]);
+    echo json_encode([
+        'status' => 'success',
+        'review_settings' => $db['review_settings'] ?? [],
+        'review_states' => $db['review_settings'] ?? []
+    ]);
     exit;
 }
 
